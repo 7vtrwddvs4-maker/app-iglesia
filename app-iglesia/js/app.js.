@@ -1,0 +1,15 @@
+// js/app.js
+import { db, auth } from './firebase-config.js';
+
+document.addEventListener("DOMContentLoaded", () => {
+    const estado = document.getElementById('estado');
+    
+    if (db && auth) {
+        estado.textContent = "¡Conexión exitosa a la base de datos de Firebase!";
+        estado.style.color = "green";
+        console.log("Firestore y Auth están listos para usar.");
+    } else {
+        estado.textContent = "Error de conexión.";
+        estado.style.color = "red";
+    }
+});

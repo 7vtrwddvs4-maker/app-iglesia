@@ -242,7 +242,8 @@
             // Limpiamos el QR anterior y generamos el nuevo usando el ID del documento
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById("qrcode"), {
-                text: eventoID,
+                // Genera la URL dinámica basada en dónde está alojada tu página
+                text: window.location.href.split('index.html')[0].replace(/\/$/, "") + "/asistencia.html?evento=" + eventoID,
                 width: 250,
                 height: 250,
                 colorDark : "#000000",

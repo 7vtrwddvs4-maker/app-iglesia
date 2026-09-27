@@ -20,7 +20,7 @@
         .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
         .btn-rojo:hover { background-color: #c82333; }
         
-        /* Estilos específicos para el Panel de Administrador */
+        /* Panel de Administrador y Pestañas */
         .admin-panel { border: 2px solid #ff9800; background-color: #fff8e1; display: none; }
         .botones-admin { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; margin-bottom: 20px;}
         .btn-admin { background-color: #ff9800; width: auto; flex: 1; min-width: 150px; }
@@ -28,10 +28,11 @@
         .btn-finanzas { background-color: #28a745; }
         .btn-finanzas:hover { background-color: #218838; }
 
-        /* Estilos para formularios de gestión */
-        .gestion-form { background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ffcc80; margin-top: 15px;}
-        .gestion-form button { background-color: #ff9800; }
-        .gestion-form button:hover { background-color: #e68a00; }
+        /* Formularios de gestión */
+        .seccion-gestion { display: none; background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ffcc80; margin-top: 15px;}
+        .seccion-gestion.activa { display: block; }
+        .seccion-gestion button { background-color: #ff9800; }
+        .seccion-gestion button:hover { background-color: #e68a00; }
 
         #dashboard-container { display: none; }
     </style>
@@ -62,19 +63,28 @@
             <p>Opciones exclusivas de configuración y control.</p>
             
             <div class="botones-admin">
-                <button class="btn-admin" id="btn-gestion-usuarios">Gestionar Usuarios</button>
-                <button class="btn-admin" id="btn-config-catalogos">Configurar Catálogos</button>
-                <button class="btn-admin btn-finanzas" id="btn-modulo-finanzas">💰 Módulo Finanzas</button>
+                <button class="btn-admin" id="btn-tab-ministerios">Ministerios</button>
+                <button class="btn-admin" id="btn-tab-catalogos">Configurar Catálogos</button>
             </div>
 
-            <!-- FORMULARIO PARA AGREGAR MINISTERIO -->
-            <div class="gestion-form">
+            <!-- PESTAÑA: GESTIÓN DE MINISTERIOS -->
+            <div class="seccion-gestion" id="sec-ministerios">
                 <h3>Agregar Nuevo Ministerio</h3>
                 <form id="form-nuevo-ministerio">
-                    <input type="text" id="min-nombre" placeholder="Nombre del Ministerio (ej. Jóvenes)" required>
+                    <input type="text" id="min-nombre" placeholder="Nombre del Ministerio (ej. Niños)" required>
                     <textarea id="min-descripcion" rows="2" placeholder="Descripción breve" required></textarea>
                     <button type="submit">Guardar Ministerio</button>
                     <p id="min-mensaje"></p>
+                </form>
+            </div>
+
+            <!-- PESTAÑA: CONFIGURACIÓN DE CATÁLOGOS -->
+            <div class="seccion-gestion" id="sec-catalogos">
+                <h3>Agregar Etapa a Ruta de Formación</h3>
+                <form id="form-nueva-etapa">
+                    <input type="text" id="etapa-nombre" placeholder="Nueva etapa (ej. Bautismo)" required>
+                    <button type="submit">Agregar a la Ruta</button>
+                    <p id="etapa-mensaje"></p>
                 </form>
             </div>
         </div>
@@ -96,8 +106,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // Importamos addDoc para poder escribir datos nuevos
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importamos updateDoc y arrayUnion para inyectar datos en arreglos existentes
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -123,9 +133,26 @@
         const listaMinisterios = document.getElementById('lista-ministerios');
         const listaFormacion = document.getElementById('lista-formacion');
         
-        // Elementos del nuevo formulario
+        // Elementos de pestañas y formularios
+        const btnTabMinisterios = document.getElementById('btn-tab-ministerios');
+        const btnTabCatalogos = document.getElementById('btn-tab-catalogos');
+        const secMinisterios = document.getElementById('sec-ministerios');
+        const secCatalogos = document.getElementById('sec-catalogos');
+        
         const formNuevoMinisterio = document.getElementById('form-nuevo-ministerio');
         const minMensaje = document.getElementById('min-mensaje');
+        const formNuevaEtapa = document.getElementById('form-nueva-etapa');
+        const etapaMensaje = document.getElementById('etapa-mensaje');
+
+        // LÓGICA DE PESTAÑAS
+        btnTabMinisterios.addEventListener('click', () => {
+            secMinisterios.classList.add('activa');
+            secCatalogos.classList.remove('activa');
+        });
+        btnTabCatalogos.addEventListener('click', () => {
+            secCatalogos.classList.add('activa');
+            secMinisterios.classList.remove('activa');
+        });
 
         // 1. EL VIGILANTE
         onAuthStateChanged(auth, async (user) => {
@@ -149,7 +176,6 @@
                     }
                 } catch (error) {
                     console.error("Error al leer perfil:", error);
-                    estado.textContent = "Error al verificar permisos de usuario.";
                 }
 
                 estado.className = "success";
@@ -167,97 +193,77 @@
             }
         });
 
-        // 2. ACCIÓN DE LOGIN
+        // 2. ACCIÓN DE LOGIN Y LOGOUT
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            loginError.textContent = "Validando credenciales...";
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then(() => {
-                    loginError.textContent = "";
-                    loginForm.reset();
-                })
-                .catch((error) => {
-                    console.error("Error de login:", error);
-                    loginError.textContent = "Correo o contraseña incorrectos.";
-                });
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
+                .then(() => { loginError.textContent = ""; loginForm.reset(); })
+                .catch(() => { loginError.textContent = "Correo o contraseña incorrectos."; });
         });
+        btnLogout.addEventListener('click', () => signOut(auth));
 
-        // 3. ACCIÓN DE LOGOUT
-        btnLogout.addEventListener('click', () => {
-            signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
-        });
-
-        // 4. LECTURA DE DATOS
+        // 3. LECTURA DE DATOS
         async function cargarDatosBaseDeDatos() {
             try {
                 const ministeriosSnapshot = await getDocs(collection(db, "ministerios"));
                 listaMinisterios.innerHTML = ""; 
-                
-                if (ministeriosSnapshot.empty) {
-                     listaMinisterios.innerHTML = "<li>No hay ministerios registrados.</li>";
-                } else {
-                     ministeriosSnapshot.forEach((doc) => {
-                        const min = doc.data();
-                        if(min.estado) {
-                            listaMinisterios.innerHTML += `<li><strong>${min.nombre}</strong>: ${min.descripcion}</li>`;
-                        }
-                    });
-                }
+                if (ministeriosSnapshot.empty) listaMinisterios.innerHTML = "<li>No hay ministerios registrados.</li>";
+                else ministeriosSnapshot.forEach((doc) => {
+                    const min = doc.data();
+                    if(min.estado) listaMinisterios.innerHTML += `<li><strong>${min.nombre}</strong>: ${min.descripcion}</li>`;
+                });
 
                 const docRef = doc(db, "configuracion", "etapas_formacion");
                 const docSnap = await getDoc(docRef);
                 listaFormacion.innerHTML = ""; 
-
                 if (docSnap.exists()) {
-                    const etapas = docSnap.data().lista;
-                    etapas.forEach(etapa => {
-                        listaFormacion.innerHTML += `<li>${etapa}</li>`;
-                    });
-                } else {
-                    listaFormacion.innerHTML = "<li>No se encontró configuración de formación.</li>";
+                    docSnap.data().lista.forEach(etapa => listaFormacion.innerHTML += `<li>${etapa}</li>`);
                 }
-            } catch (error) {
-                console.error("Error leyendo Firestore:", error);
-                estado.textContent = "Error al cargar los datos. Revisa la consola (F12).";
-                estado.className = "error";
-            }
+            } catch (error) { console.error("Error leyendo Firestore:", error); }
         }
 
-        // 5. ACCIÓN: CREAR NUEVO MINISTERIO
+        // 4. ACCIÓN: CREAR NUEVO MINISTERIO
         formNuevoMinisterio.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Evita que la página se recargue
-            
-            const nombre = document.getElementById('min-nombre').value;
-            const descripcion = document.getElementById('min-descripcion').value;
-            
+            e.preventDefault();
             minMensaje.textContent = "Guardando...";
             minMensaje.style.color = "orange";
-
             try {
-                // Escribimos en Firestore
                 await addDoc(collection(db, "ministerios"), {
-                    nombre: nombre,
-                    descripcion: descripcion,
-                    estado: true // Por defecto lo creamos activo
+                    nombre: document.getElementById('min-nombre').value,
+                    descripcion: document.getElementById('min-descripcion').value,
+                    estado: true
                 });
-                
                 minMensaje.textContent = "¡Ministerio guardado con éxito!";
                 minMensaje.style.color = "green";
-                formNuevoMinisterio.reset(); // Limpiamos el formulario
-                
-                // Recargamos la lista visualmente
+                formNuevoMinisterio.reset();
                 cargarDatosBaseDeDatos(); 
-                
-                // Borramos el mensaje de éxito después de 3 segundos
                 setTimeout(() => { minMensaje.textContent = ""; }, 3000);
+            } catch (error) { minMensaje.textContent = "Error al guardar."; minMensaje.style.color = "red"; }
+        });
 
-            } catch (error) {
-                console.error("Error al crear ministerio:", error);
-                minMensaje.textContent = "Error al guardar. Revisa tus permisos.";
-                minMensaje.style.color = "red";
+        // 5. ACCIÓN: AGREGAR ETAPA A LA RUTA (NUEVO)
+        formNuevaEtapa.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            etapaMensaje.textContent = "Actualizando catálogo...";
+            etapaMensaje.style.color = "orange";
+            try {
+                const nombreEtapa = document.getElementById('etapa-nombre').value;
+                const docRef = doc(db, "configuracion", "etapas_formacion");
+                
+                // updateDoc con arrayUnion empuja el nuevo valor al final de la lista existente
+                await updateDoc(docRef, {
+                    lista: arrayUnion(nombreEtapa)
+                });
+                
+                etapaMensaje.textContent = "¡Etapa agregada con éxito!";
+                etapaMensaje.style.color = "green";
+                formNuevaEtapa.reset();
+                cargarDatosBaseDeDatos(); 
+                setTimeout(() => { etapaMensaje.textContent = ""; }, 3000);
+            } catch (error) { 
+                console.error("Error actualizando catálogo:", error);
+                etapaMensaje.textContent = "Error al actualizar catálogo."; 
+                etapaMensaje.style.color = "red"; 
             }
         });
 

@@ -8,12 +8,11 @@
         body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9;}
         h1, h2 { color: #333; }
         .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,00,0.1); margin-bottom: 20px; }
-        .success { color: green; font-weight: bold;}
+        .success { color: #0f5132; background-color: #d1e7dd; padding: 10px; border-radius: 4px; font-weight: bold; border: 1px solid #badbcc;}
         .error { color: red; font-weight: bold;}
         ul, ol { padding-left: 20px; }
         li { margin-bottom: 5px; }
         
-        /* Estilos para la barrera de seguridad (Login) */
         #login-container { max-width: 400px; margin: 0 auto; }
         input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
         button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;}
@@ -21,7 +20,6 @@
         .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
         .btn-rojo:hover { background-color: #c82333; }
         
-        /* Ocultamos el contenido del sistema por defecto */
         #dashboard-container { display: none; }
     </style>
 </head>
@@ -41,7 +39,7 @@
         <p id="login-error" class="error"></p>
     </div>
 
-    <!-- SISTEMA INTERNO (Oculto hasta validar credenciales) -->
+    <!-- SISTEMA INTERNO -->
     <div id="dashboard-container">
         <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
 
@@ -60,11 +58,9 @@
         </div>
     </div>
 
-    <!-- Código principal unificado -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        // Importamos los módulos de autenticación de Firebase
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -78,9 +74,8 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app); // Encendemos el motor de autenticación
+        const auth = getAuth(app); 
 
-        // Conexión con los elementos visuales (HTML)
         const estado = document.getElementById('estado');
         const loginContainer = document.getElementById('login-container');
         const dashboardContainer = document.getElementById('dashboard-container');
@@ -90,19 +85,31 @@
         const listaMinisterios = document.getElementById('lista-ministerios');
         const listaFormacion = document.getElementById('lista-formacion');
 
-        // 1. EL VIGILANTE: Escucha en tiempo real si hay una sesión activa o no
+        // 1. EL VIGILANTE: Conectando Auth con Firestore
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // Usuario validado -> Abrimos las puertas
-                estado.textContent = `Sesión iniciada: ${user.email}`;
+                try {
+                    // Vamos a la colección 'usuarios' y buscamos el documento con el UID secreto
+                    const userDocRef = doc(db, "usuarios", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+
+                    if (userDoc.exists()) {
+                        const datosUsuario = userDoc.data();
+                        estado.textContent = `Bienvenido(a), ${datosUsuario.nombre} | Perfil: ${datosUsuario.perfilAcceso}`;
+                    } else {
+                        estado.textContent = `Sesión iniciada: ${user.email} (Perfil no configurado)`;
+                    }
+                } catch (error) {
+                    console.error("Error al leer perfil:", error);
+                    estado.textContent = "Error al verificar permisos de usuario.";
+                }
+
                 estado.className = "success";
                 loginContainer.style.display = "none";
                 dashboardContainer.style.display = "block";
                 
-                // Solo si el usuario entró, leemos la base de datos
                 cargarDatosBaseDeDatos();
             } else {
-                // Usuario bloqueado -> Mostramos la puerta de seguridad
                 estado.textContent = "Por favor, inicia sesión para acceder al sistema.";
                 estado.className = "";
                 estado.style.color = "black";
@@ -111,7 +118,7 @@
             }
         });
 
-        // 2. ACCIÓN DE LOGIN: Procesar el formulario
+        // 2. ACCIÓN DE LOGIN
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -129,15 +136,14 @@
                 });
         });
 
-        // 3. ACCIÓN DE LOGOUT: Botón de salida
+        // 3. ACCIÓN DE LOGOUT
         btnLogout.addEventListener('click', () => {
             signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
         });
 
-        // 4. LECTURA DE DATOS: Encapsulado en una función segura
+        // 4. LECTURA DE DATOS
         async function cargarDatosBaseDeDatos() {
             try {
-                // Ministerios
                 const ministeriosSnapshot = await getDocs(collection(db, "ministerios"));
                 listaMinisterios.innerHTML = ""; 
                 
@@ -152,7 +158,6 @@
                     });
                 }
 
-                // Ruta de Formación
                 const docRef = doc(db, "configuracion", "etapas_formacion");
                 const docSnap = await getDoc(docRef);
                 listaFormacion.innerHTML = ""; 

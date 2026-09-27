@@ -20,6 +20,14 @@
         .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
         .btn-rojo:hover { background-color: #c82333; }
         
+        /* Estilos específicos para el Panel de Administrador */
+        .admin-panel { border: 2px solid #ff9800; background-color: #fff8e1; display: none; }
+        .botones-admin { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        .btn-admin { background-color: #ff9800; width: auto; flex: 1; min-width: 150px; }
+        .btn-admin:hover { background-color: #e68a00; }
+        .btn-finanzas { background-color: #28a745; }
+        .btn-finanzas:hover { background-color: #218838; }
+
         #dashboard-container { display: none; }
     </style>
 </head>
@@ -42,6 +50,17 @@
     <!-- SISTEMA INTERNO -->
     <div id="dashboard-container">
         <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
+
+        <!-- PANEL EXCLUSIVO PARA ADMINISTRADORES (Oculto por defecto) -->
+        <div class="card admin-panel" id="admin-panel">
+            <h2>⚙️ Panel de Administración</h2>
+            <p>Opciones exclusivas de configuración y control financiero.</p>
+            <div class="botones-admin">
+                <button class="btn-admin" id="btn-gestion-usuarios">Gestionar Usuarios</button>
+                <button class="btn-admin" id="btn-config-catalogos">Configurar Catálogos</button>
+                <button class="btn-admin btn-finanzas" id="btn-modulo-finanzas">💰 Módulo Finanzas</button>
+            </div>
+        </div>
 
         <div class="card" id="modulo-ministerios">
             <h2>Ministerios Activos</h2>
@@ -79,25 +98,34 @@
         const estado = document.getElementById('estado');
         const loginContainer = document.getElementById('login-container');
         const dashboardContainer = document.getElementById('dashboard-container');
+        const adminPanel = document.getElementById('admin-panel');
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('login-error');
         const btnLogout = document.getElementById('btn-logout');
         const listaMinisterios = document.getElementById('lista-ministerios');
         const listaFormacion = document.getElementById('lista-formacion');
 
-        // 1. EL VIGILANTE: Conectando Auth con Firestore
+        // 1. EL VIGILANTE: Conectando Auth con Firestore y aplicando permisos
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    // Vamos a la colección 'usuarios' y buscamos el documento con el UID secreto
                     const userDocRef = doc(db, "usuarios", user.uid);
                     const userDoc = await getDoc(userDocRef);
 
                     if (userDoc.exists()) {
                         const datosUsuario = userDoc.data();
                         estado.textContent = `Bienvenido(a), ${datosUsuario.nombre} | Perfil: ${datosUsuario.perfilAcceso}`;
+                        
+                        // LÓGICA DE PERMISOS (RBAC)
+                        if (datosUsuario.perfilAcceso === "Administrador") {
+                            adminPanel.style.display = "block"; // Revela el panel secreto
+                        } else {
+                            adminPanel.style.display = "none";  // Lo mantiene oculto
+                        }
+
                     } else {
                         estado.textContent = `Sesión iniciada: ${user.email} (Perfil no configurado)`;
+                        adminPanel.style.display = "none";
                     }
                 } catch (error) {
                     console.error("Error al leer perfil:", error);
@@ -115,6 +143,7 @@
                 estado.style.color = "black";
                 loginContainer.style.display = "block";
                 dashboardContainer.style.display = "none";
+                adminPanel.style.display = "none"; // Seguridad extra al cerrar sesión
             }
         });
 

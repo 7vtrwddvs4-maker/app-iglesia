@@ -112,16 +112,16 @@
     <div id="dashboard-container">
         <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
 
-        <!-- PORTAL DEL MIEMBRO (Visible para todos) -->
+        <!-- PORTAL DEL MIEMBRO -->
         <div class="card" id="modulo-mi-perfil" style="display: none; border-top: 4px solid #007bff;">
             <h2>👤 Mi Perfil</h2>
             <p style="margin: 5px 0;"><strong>Nombre:</strong> <span id="mi-nombre"></span></p>
             <p style="margin: 5px 0;"><strong>Estado en la Iglesia:</strong> <span id="mi-estado"></span></p>
             
             <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Ruta de Formación</h3>
-            <div style="background: #e9ecef; border-radius: 4px; padding: 10px; border: 1px solid #ced4da;">
-                <p id="mi-avance-texto" style="margin: 0; font-weight: bold; color: #495057;"></p>
-                <ul id="mi-lista-etapas" style="margin-top: 10px; margin-bottom: 0; padding-left: 0;"></ul>
+            <div style="background: #e9ecef; border-radius: 4px; padding: 15px; border: 1px solid #ced4da;">
+                <p id="mi-avance-texto" style="margin: 0; font-weight: bold; color: #495057; border-bottom: 1px solid #ccc; padding-bottom: 8px;"></p>
+                <ul id="mi-lista-etapas" style="margin-top: 12px; margin-bottom: 0; padding-left: 5px; list-style: none;"></ul>
             </div>
 
             <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Historial de Asistencia</h3>
@@ -213,18 +213,16 @@
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    await cargarCatalogoEtapas(); // Cargar catálogo primero
+                    await cargarCatalogoEtapas(); 
                     const userDoc = await getDoc(doc(db, "usuarios", user.uid));
                     if (userDoc.exists()) {
                         const datosUsuario = userDoc.data(); 
                         window.perfilUsuarioActual = datosUsuario.perfilAcceso;
                         estado.textContent = `Bienvenido(a), ${datosUsuario.nombre} | Perfil: ${datosUsuario.perfilAcceso}`;
                         
-                        // Habilitar Portal del Miembro para TODOS
                         document.getElementById('modulo-mi-perfil').style.display = "block";
                         await cargarPerfilMiembro(user.uid, datosUsuario);
 
-                        // Habilitar Panel Admin solo para Administradores
                         if (datosUsuario.perfilAcceso === "Administrador") {
                             document.getElementById('admin-panel').style.display = "block"; 
                             await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas();
@@ -241,14 +239,11 @@
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
         window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; }
 
-        // ==========================================
-        // PORTAL DEL MIEMBRO (NUEVO)
-        // ==========================================
+        // PORTAL DEL MIEMBRO
         async function cargarPerfilMiembro(uid, datosUsuario) {
             document.getElementById('mi-nombre').textContent = datosUsuario.nombre || 'N/A';
             document.getElementById('mi-estado').textContent = datosUsuario.estado || 'N/A';
             
-            // 1. Mostrar Avance de Formación
             const completadas = datosUsuario.etapasCompletadas || [];
             const total = window.catalogoEtapas.length;
             const pct = total > 0 ? Math.round((completadas.length / total) * 100) : 0;
@@ -258,14 +253,13 @@
             listaEtapas.innerHTML = "";
             window.catalogoEtapas.forEach(etapa => {
                 const check = completadas.includes(etapa) ? "✅" : "⏳";
-                const color = completadas.includes(etapa) ? "green" : "gray";
-                listaEtapas.innerHTML += `<li style="list-style: none; margin-left: -20px; color: ${color}; margin-bottom: 5px;">${check} ${etapa}</li>`;
+                const color = completadas.includes(etapa) ? "#155724" : "#6c757d";
+                // Corrección visual: Uso de flexbox para alinear perfectamente el icono y el texto
+                listaEtapas.innerHTML += `<li style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: ${color};"><span>${check}</span> <span>${etapa}</span></li>`;
             });
 
-            // 2. Extraer Historial Personal de Asistencia
             const tabla = document.getElementById('mi-tabla-asistencia');
             try {
-                // Primero traemos todos los eventos al diccionario para cruzar los nombres
                 const eventosSnap = await getDocs(collection(db, "eventos"));
                 const dicEventos = {};
                 eventosSnap.forEach(d => dicEventos[d.id] = d.data());
@@ -279,27 +273,21 @@
                 } else {
                     let asistenciasArr = [];
                     snap.forEach(d => asistenciasArr.push(d.data()));
-                    asistenciasArr.sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora)); // Ordenar por fecha reciente
+                    asistenciasArr.sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora)); 
                     
                     asistenciasArr.forEach(a => {
                         const ev = dicEventos[a.eventoID];
                         const titulo = ev ? ev.titulo : "Evento desconocido";
-                        // Formateamos la fecha para que se lea como "27/09/2026 16:52"
                         const fechaObj = new Date(a.fechaHora);
                         const fechaLegible = `${fechaObj.getDate().toString().padStart(2,'0')}/${(fechaObj.getMonth()+1).toString().padStart(2,'0')}/${fechaObj.getFullYear()} ${fechaObj.getHours().toString().padStart(2,'0')}:${fechaObj.getMinutes().toString().padStart(2,'0')}`;
                         
                         tabla.innerHTML += `<tr><td><strong>${titulo}</strong></td><td>${fechaLegible}</td><td>${a.metodo}</td></tr>`;
                     });
                 }
-            } catch (e) {
-                console.error("Error historial:", e);
-                tabla.innerHTML = "<tr><td colspan='3'>Error al cargar historial.</td></tr>";
-            }
+            } catch (e) { tabla.innerHTML = "<tr><td colspan='3'>Error al cargar historial.</td></tr>"; }
         }
 
-        // ==========================================
         // FUNCIONES ADMINISTRATIVAS EXISTENTES
-        // ==========================================
         async function cargarCatalogoEtapas() { try { const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); if (d.exists()) { window.catalogoEtapas = d.data().lista || []; } } catch (e) {} }
         async function cargarTablaUsuarios() { try { const q = await getDocs(collection(db, "usuarios")); const t = document.getElementById('tabla-usuarios'); t.innerHTML = ""; const tot = window.catalogoEtapas.length; q.forEach((d) => { const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot} (${Math.round((c/tot)*100)}%)` : "N/A"; t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td>${u.estado||''}</td><td><strong>${r}</strong></td><td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; }); } catch (e) {} }
         window.abrirEditorUsuario = function(uid) { const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="etapas-check" value="${e}" ${ch}> ${e}</label>`; }); };

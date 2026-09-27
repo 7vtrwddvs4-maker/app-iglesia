@@ -88,265 +88,6 @@
             </div>
             <p id="manual-mensaje" style="font-size: 12px; font-weight: bold; margin-bottom: 0;"></p>
         </div>
-        
-        <!-- BOTÓN DESCARGA CSV (ASISTENCIA) -->
-        <button class="btn-admin" style="margin-bottom: 10px; background-color: #17a2b8;" onclick="exportarTablaCSV('tabla-asistencias-completa', 'Reporte_Asistencia.csv')">📥 Exportar Asistencia (CSV)</button>
-        
-        <div style="overflow-x:auto;">
-            <table id="tabla-asistencias-completa">
-                <thead><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
-                <tbody id="tabla-asistentes"><tr><td colspan="3">Cargando...</td></tr></tbody>
-            </table>
-        </div>
-        <button class="btn-rojo" onclick="cerrarModal('asistencia')" style="margin-top: 20px;">Cerrar Reporte</button>
-    </div>
-
-    <!-- LOGIN -->
-    <div class="card" id="login-container">
-        <h2>Iniciar Sesión</h2>
-        <form id="login-form">
-            <input type="email" id="email" placeholder="Correo electrónico" required>
-            <input type="password" id="password" placeholder="Contraseña" required>
-            <button type="submit">Ingresar</button>
-        </form>
-        <p id="login-error" class="error"></p>
-    </div>
-
-    <!-- SISTEMA INTERNO -->
-    <div id="dashboard-container">
-        <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
-
-        <!-- PORTAL DEL MIEMBRO -->
-        <div class="card" id="modulo-mi-perfil" style="display: none; border-top: 4px solid #007bff;">
-            <h2>👤 Mi Perfil</h2>
-            <p style="margin: 5px 0;"><strong>Nombre:</strong> <span id="mi-nombre"></span></p>
-            <p style="margin: 5px 0;"><strong>Estado en la Iglesia:</strong> <span id="mi-estado"></span></p>
-            
-            <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Ruta de Formación</h3>
-            <div style="background: #e9ecef; border-radius: 4px; padding: 15px; border: 1px solid #ced4da;">
-                <p id="mi-avance-texto" style="margin: 0; font-weight: bold; color: #495057; border-bottom: 1px solid #ccc; padding-bottom: 8px;"></p>
-                <ul id="mi-lista-etapas" style="margin-top: 12px; margin-bottom: 0; padding-left: 5px; list-style: none;"></ul>
-            </div>
-
-            <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Historial de Asistencia</h3>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead>
-                    <tbody id="mi-tabla-asistencia"><tr><td colspan="3">Cargando historial...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- PANEL ADMINISTRADOR -->
-        <div class="card admin-panel" id="admin-panel">
-            <h2>⚙️ Panel de Administración</h2>
-            <div class="botones-admin">
-                <button class="btn-admin" id="btn-tab-usuarios">Usuarios</button>
-                <button class="btn-admin" id="btn-tab-eventos">Eventos</button>
-                <button class="btn-admin" id="btn-tab-ministerios">Ministerios</button>
-                <button class="btn-admin" id="btn-tab-catalogos">Catálogos</button>
-                <button class="btn-admin tab-finanzas" id="btn-tab-finanzas">💰 Finanzas</button>
-            </div>
-
-            <div class="seccion-gestion" id="sec-usuarios">
-                <h3>Directorio de Personas</h3>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead><tr><th>Nombre</th><th>Perfil</th><th>Cargo</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead>
-                        <tbody id="tabla-usuarios"></tbody>
-                    </table>
-                </div>
-                
-                <div id="editor-usuario" style="display:none; background:#f9f9f9; padding:15px; margin-top:15px; border-left: 4px solid #007bff; border-radius: 4px;">
-                    <h4>Editando a: <span id="edit-nombre-display"></span></h4>
-                    <form id="form-editar-usuario">
-                        <input type="hidden" id="edit-uid">
-                        <label>Perfil:</label><select id="edit-perfil"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option></select>
-                        <label>Cargo:</label><select id="edit-cargo"><option>Pastor general</option><option>Pastor</option><option>Miembro</option></select>
-                        <label>Estado:</label><select id="edit-estado"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option></select>
-                        <label><strong>Ruta Completada:</strong></label>
-                        <div class="checklist-formacion" id="contenedor-checkboxes-formacion"></div>
-                        <button type="submit" style="background-color:#007bff; margin-top:10px;">Guardar</button>
-                        <button type="button" class="btn-rojo" onclick="document.getElementById('editor-usuario').style.display='none'" style="margin-top:10px;">Cancelar</button>
-                        <p id="edit-mensaje"></p>
-                    </form>
-                </div>
-            </div>
-
-            <div class="seccion-gestion" id="sec-eventos">
-                <h3>Crear Nuevo Evento</h3>
-                <form id="form-nuevo-evento"><input type="text" id="evento-titulo" placeholder="Título" required><label>Tipo:</label><select id="evento-tipo" required></select><label>Fecha:</label><input type="datetime-local" id="evento-fecha" required><input type="text" id="evento-lugar" placeholder="Lugar" required><button type="submit">Publicar</button></form>
-            </div>
-            
-            <div class="seccion-gestion seccion-finanzas" id="sec-finanzas">
-                <h3 style="color: #28a745; margin-bottom: 20px;">Bóveda Financiera</h3>
-                <div class="fin-dashboard"><div class="fin-card fin-ingreso"><strong>Ingresos</strong><br><span id="total-ingresos" style="color:green;font-size:1.5em;font-weight:bold;">$0</span></div><div class="fin-card fin-egreso"><strong>Egresos</strong><br><span id="total-egresos" style="color:red;font-size:1.5em;font-weight:bold;">$0</span></div><div class="fin-card fin-saldo"><strong>Saldo</strong><br><span id="total-saldo" style="font-size:1.5em;font-weight:bold;">$0</span></div></div>
-                <form id="form-finanzas" style="background:#f9f9f9;padding:15px;border-radius:5px;border:1px solid #ddd;margin-bottom:20px;">
-                    <div style="display:flex;gap:10px;flex-wrap:wrap;"><select id="fin-tipo" required style="flex:1;"><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select><input type="number" id="fin-monto" placeholder="Monto ($)" required style="flex:1;" min="1"><input type="date" id="fin-fecha" required style="flex:1;"></div>
-                    <input type="text" id="fin-concepto" placeholder="Concepto" required><button type="submit" class="btn-verde">Guardar Transacción</button>
-                </form>
-                
-                <h4 style="display: flex; justify-content: space-between; align-items: center;">
-                    Libro Mayor (Auditoría)
-                    <!-- BOTÓN DESCARGA CSV (FINANZAS) -->
-                    <button class="btn-admin" style="background-color: #17a2b8; font-size: 14px;" onclick="exportarTablaCSV('tabla-finanzas-completa', 'Libro_Mayor.csv')">📥 Exportar CSV</button>
-                </h4>
-                
-                <div style="overflow-x:auto;">
-                    <table id="tabla-finanzas-completa">
-                        <thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead>
-                        <tbody id="tabla-finanzas"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="seccion-gestion" id="sec-ministerios">
-                <h3>Agregar Ministerio</h3><form id="form-nuevo-ministerio"><input type="text" id="min-nombre" placeholder="Nombre" required><textarea id="min-descripcion" placeholder="Descripción" required></textarea><button type="submit">Guardar</button></form>
-            </div>
-            <div class="seccion-gestion" id="sec-catalogos">
-                <h3>Agregar Etapa</h3><form id="form-nueva-etapa"><input type="text" id="etapa-nombre" placeholder="Nueva Etapa" required><button type="submit">Agregar</button></form>
-            </div>
-        </div>
-
-        <div class="card" id="modulo-eventos"><h2>Cartelera General</h2><ul id="lista-eventos"></ul></div>
-        <div class="card" id="modulo-ministerios"><h2>Ministerios</h2><ul id="lista-ministerios"></ul></div>
-    </div>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-        const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
-        const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
-
-        const estado = document.getElementById('estado');
-        const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos'), document.getElementById('btn-tab-finanzas')];
-        const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-finanzas')];
-        btnTabs.forEach((btn, idx) => btn.addEventListener('click', () => secs.forEach((sec, i) => i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'))));
-
-        window.usuariosData = {}; window.perfilUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.catalogoEtapas = []; 
-        const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
-
-        // EXPORTADOR CSV
-        window.exportarTablaCSV = function(tablaID, filename) {
-            const tabla = document.getElementById(tablaID);
-            let csv = [];
-            for (let i = 0; i < tabla.rows.length; i++) {
-                let fila = [], cols = tabla.rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length; j++) {
-                    // Evitar que el texto de los botones pase al CSV
-                    let clone = cols[j].cloneNode(true);
-                    let botones = clone.querySelectorAll('button');
-                    botones.forEach(b => b.remove());
-                    let data = clone.innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""');
-                    fila.push('"' + data + '"');
-                }
-                csv.push(fila.join(";")); // Separador estándar para Excel en español
-            }
-            const csvFile = new Blob(["\ufeff" + csv.join("\n")], { type: "text/csv;charset=utf-8;" });
-            const downloadLink = document.createElement("a");
-            downloadLink.download = filename;
-            downloadLink.href = window.URL.createObjectURL(csvFile);
-            downloadLink.styleEsta funcionalidad es el puente perfecto entre tu aplicación web y tus herramientas de análisis. Al exportar a CSV, podrás llevar los datos a Google Sheets y aplicar las mismas fórmulas logísticas que usas en la farmacia hospitalaria para cruzar métricas, proyectar presupuestos o auditar asistencias.
-
-Para que Excel y Google Sheets lean los caracteres especiales (como las tildes y las "ñ") sin romper el formato, el código incluye una codificación especial (`UTF-8 con BOM`) y utiliza el punto y coma (`;`) como separador estándar para nuestra región.
-
-### Actualización del código en GitHub
-
-Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta versión. He agregado los botones verdes de **"📥 Descargar CSV"** tanto en el Reporte de Asistencia como en el Libro Mayor de Finanzas.
-
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El Arca - App Iglesia</title>
-    <script src="[https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js](https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js)"></script>
-    <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9;}
-        h1, h2, h3, h4 { color: #333; margin-top: 0; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,00,0.1); margin-bottom: 20px; }
-        .success { color: #0f5132; background-color: #d1e7dd; padding: 10px; border-radius: 4px; font-weight: bold; border: 1px solid #badbcc;}
-        .error { color: red; font-weight: bold;}
-        ul, ol { padding-left: 20px; }
-        li { margin-bottom: 5px; }
-        
-        #login-container { max-width: 400px; margin: 0 auto; }
-        input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;}
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;}
-        button:hover { background-color: #0056b3; }
-        .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
-        .btn-rojo:hover { background-color: #c82333; }
-        .btn-verde { background-color: #28a745; width: auto;} 
-        .btn-verde:hover { background-color: #218838; }
-        
-        /* Panel Administrador */
-        .admin-panel { border: 2px solid #ff9800; background-color: #fff8e1; display: none; }
-        .botones-admin { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; margin-bottom: 20px;}
-        .btn-admin { background-color: #ff9800; width: auto; flex: 1; min-width: 100px; }
-        .btn-admin:hover { background-color: #e68a00; }
-        .btn-admin.tab-finanzas { background-color: #28a745; color: white; }
-        .btn-admin.tab-finanzas:hover { background-color: #218838; }
-        .btn-pequeno { padding: 5px 10px; width: auto; font-size: 12px; display: inline-block; margin-left: 5px; }
-
-        /* Pestañas de Gestión */
-        .seccion-gestion { display: none; background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ffcc80; margin-top: 15px;}
-        .seccion-gestion.activa { display: block; }
-        .seccion-finanzas { border-color: #28a745; }
-
-        /* Tablas */
-        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; font-size: 14px;}
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; }
-        th { border-bottom: 2px solid #ff9800; }
-        
-        /* Finanzas */
-        .fin-dashboard { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .fin-card { flex: 1; padding: 15px; border-radius: 5px; text-align: center; min-width: 120px; }
-        .fin-ingreso { background: #d4edda; border: 1px solid #c3e6cb; }
-        .fin-egreso { background: #f8d7da; border: 1px solid #f5c6cb; }
-        .fin-saldo { background: #e2e3e5; border: 1px solid #d6d8db; }
-        .estado-anulado { text-decoration: line-through; color: gray; }
-
-        /* Formación Checkboxes */
-        .checklist-formacion { background: #f0f4f8; padding: 10px 15px; border-radius: 6px; margin: 10px 0; border: 1px solid #d0dbe5; }
-        .checkbox-item { display: flex; align-items: center; gap: 8px; margin: 8px 0; cursor: pointer; }
-        .checkbox-item input[type="checkbox"] { width: auto; margin: 0; }
-
-        #dashboard-container { display: none; }
-
-        /* Modales */
-        .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
-        .modal-caja { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border: 3px solid #ff9800; border-radius: 8px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; width: 90%; max-width: 600px;}
-    </style>
-</head>
-<body>
-    
-    <h1>Sistema El Arca</h1>
-    <p id="estado" style="color: orange; font-weight: bold;">Verificando seguridad...</p>
-
-    <!-- MODALES QR Y ASISTENCIA -->
-    <div id="qr-fondo" class="modal-fondo"></div>
-    <div id="qr-modal" class="modal-caja" style="text-align: center;">
-        <h2>Escanear Asistencia</h2>
-        <h3 id="qr-evento-titulo" style="color: #555;"></h3>
-        <div id="qrcode" style="margin: 20px auto; width: 250px; height: 250px; display: flex; justify-content: center;"></div>
-        <button class="btn-rojo" onclick="cerrarModal('qr')" style="margin-top: 15px;">Cerrar</button>
-    </div>
-
-    <div id="asistencia-fondo" class="modal-fondo"></div>
-    <div id="asistencia-modal" class="modal-caja">
-        <h2 style="margin-bottom: 5px;">Reporte de Asistencia</h2>
-        <h3 id="asistencia-evento-titulo" style="color: #007bff; margin-top:0;"></h3>
-        <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; border: 1px solid #cce5ff; margin-bottom: 15px;">
-            <h4 style="margin-top: 0; margin-bottom: 10px;">Añadir Registro Manual</h4>
-            <div style="display: flex; gap: 10px;">
-                <select id="select-usuario-manual" style="margin: 0; flex: 1;"><option value="">Seleccione...</option></select>
-                <button class="btn-verde" style="margin: 0;" onclick="registrarAsistenciaManual()">Agregar</button>
-            </div>
-            <p id="manual-mensaje" style="font-size: 12px; font-weight: bold; margin-bottom: 0;"></p>
-        </div>
         <div style="overflow-x:auto;">
             <table id="tabla-exportar-asistencia">
                 <thead><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
@@ -435,18 +176,27 @@ Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta ve
                 <h3>Crear Nuevo Evento</h3>
                 <form id="form-nuevo-evento"><input type="text" id="evento-titulo" placeholder="Título" required><label>Tipo:</label><select id="evento-tipo" required></select><label>Fecha:</label><input type="datetime-local" id="evento-fecha" required><input type="text" id="evento-lugar" placeholder="Lugar" required><button type="submit">Publicar</button></form>
             </div>
+            
             <div class="seccion-gestion seccion-finanzas" id="sec-finanzas">
                 <h3 style="color: #28a745; margin-bottom: 20px;">Bóveda Financiera</h3>
-                <div class="fin-dashboard"><div class="fin-card fin-ingreso"><strong>Ingresos</strong><br><span id="total-ingresos" style="color:green;font-size:1.5em;font-weight:bold;">$0</span></div><div class="fin-card fin-egreso"><strong>Egresos</strong><br><span id="total-egresos" style="color:red;font-size:1.5em;font-weight:bold;">$0</span></div><div class="fin-card fin-saldo"><strong>Saldo</strong><br><span id="total-saldo" style="font-size:1.5em;font-weight:bold;">$0</span></div></div>
+                <div class="fin-dashboard">
+                    <div class="fin-card fin-ingreso"><strong>Ingresos</strong><br><span id="total-ingresos" style="color:green;font-size:1.5em;font-weight:bold;">$0</span></div>
+                    <div class="fin-card fin-egreso"><strong>Egresos</strong><br><span id="total-egresos" style="color:red;font-size:1.5em;font-weight:bold;">$0</span></div>
+                    <div class="fin-card fin-saldo"><strong>Saldo</strong><br><span id="total-saldo" style="font-size:1.5em;font-weight:bold;">$0</span></div>
+                </div>
                 <form id="form-finanzas" style="background:#f9f9f9;padding:15px;border-radius:5px;border:1px solid #ddd;margin-bottom:20px;">
-                    <div style="display:flex;gap:10px;flex-wrap:wrap;"><select id="fin-tipo" required style="flex:1;"><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select><input type="number" id="fin-monto" placeholder="Monto ($)" required style="flex:1;" min="1"><input type="date" id="fin-fecha" required style="flex:1;"></div>
-                    <input type="text" id="fin-concepto" placeholder="Concepto" required><button type="submit" class="btn-verde">Guardar Transacción</button>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <select id="fin-tipo" required style="flex:1;"><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select>
+                        <input type="number" id="fin-monto" placeholder="Monto ($)" required style="flex:1;" min="1">
+                        <input type="date" id="fin-fecha" required style="flex:1;">
+                    </div>
+                    <input type="text" id="fin-concepto" placeholder="Concepto" required>
+                    <button type="submit" class="btn-verde">Guardar Transacción</button>
                 </form>
                 
-                <!-- Botón de exportación Finanzas -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
                     <h4 style="margin: 0;">Libro Mayor (Auditoría)</h4>
-                    <button class="btn-verde btn-pequeno" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor_Finanzas.csv')">📥 Descargar CSV</button>
+                    <button class="btn-admin" style="background-color: #17a2b8; font-size: 14px;" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor_Finanzas.csv')">📥 Descargar CSV</button>
                 </div>
                 
                 <div style="overflow-x:auto;">
@@ -456,11 +206,14 @@ Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta ve
                     </table>
                 </div>
             </div>
+
             <div class="seccion-gestion" id="sec-ministerios">
-                <h3>Agregar Ministerio</h3><form id="form-nuevo-ministerio"><input type="text" id="min-nombre" placeholder="Nombre" required><textarea id="min-descripcion" placeholder="Descripción" required></textarea><button type="submit">Guardar</button></form>
+                <h3>Agregar Ministerio</h3>
+                <form id="form-nuevo-ministerio"><input type="text" id="min-nombre" placeholder="Nombre" required><textarea id="min-descripcion" placeholder="Descripción" required></textarea><button type="submit">Guardar</button></form>
             </div>
             <div class="seccion-gestion" id="sec-catalogos">
-                <h3>Agregar Etapa</h3><form id="form-nueva-etapa"><input type="text" id="etapa-nombre" placeholder="Nueva Etapa" required><button type="submit">Agregar</button></form>
+                <h3>Agregar Etapa</h3>
+                <form id="form-nueva-etapa"><input type="text" id="etapa-nombre" placeholder="Nueva Etapa" required><button type="submit">Agregar</button></form>
             </div>
         </div>
 
@@ -469,9 +222,9 @@ Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta ve
     </div>
 
     <script type="module">
-        import { initializeApp } from "[https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js](https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js)";
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayUnion, query, where } from "[https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js](https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js)";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "[https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js](https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js)";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
@@ -479,9 +232,20 @@ Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta ve
         const estado = document.getElementById('estado');
         const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos'), document.getElementById('btn-tab-finanzas')];
         const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-finanzas')];
-        btnTabs.forEach((btn, idx) => btn.addEventListener('click', () => secs.forEach((sec, i) => i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'))));
+        
+        btnTabs.forEach((btn, idx) => {
+            btn.addEventListener('click', () => {
+                secs.forEach((sec, i) => {
+                    if (i === idx) sec.classList.add('activa');
+                    else sec.classList.remove('activa');
+                });
+            });
+        });
 
-        window.usuariosData = {}; window.perfilUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.catalogoEtapas = []; 
+        window.usuariosData = {}; 
+        window.perfilUsuarioActual = ""; 
+        window.eventoActualAsistenciaID = ""; 
+        window.catalogoEtapas = []; 
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
         onAuthStateChanged(auth, async (user) => {
@@ -499,19 +263,41 @@ Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta ve
 
                         if (datosUsuario.perfilAcceso === "Administrador") {
                             document.getElementById('admin-panel').style.display = "block"; 
-                            await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas();
-                        } else { document.getElementById('admin-panel').style.display = "none"; }
+                            await cargarTablaUsuarios(); 
+                            cargarTiposEventosSelect(); 
+                            cargarFinanzas();
+                        } else { 
+                            document.getElementById('admin-panel').style.display = "none"; 
+                        }
                     }
                 } catch (e) { console.error(e); }
-                estado.className = "success"; document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
+                estado.className = "success"; 
+                document.getElementById('login-container').style.display = "none"; 
+                document.getElementById('dashboard-container').style.display = "block"; 
+                cargarDatosGenerales();
             } else {
-                estado.textContent = "Por favor, inicia sesión."; estado.className = ""; document.getElementById('login-container').style.display = "block"; document.getElementById('dashboard-container').style.display = "none"; document.getElementById('admin-panel').style.display = "none"; document.getElementById('modulo-mi-perfil').style.display = "none";
+                estado.textContent = "Por favor, inicia sesión."; 
+                estado.className = ""; 
+                document.getElementById('login-container').style.display = "block"; 
+                document.getElementById('dashboard-container').style.display = "none"; 
+                document.getElementById('admin-panel').style.display = "none"; 
+                document.getElementById('modulo-mi-perfil').style.display = "none";
             }
         });
 
-        document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => { document.getElementById('login-error').textContent = "Error."; }); });
+        document.getElementById('login-form').addEventListener('submit', (e) => { 
+            e.preventDefault(); 
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => { 
+                document.getElementById('login-error').textContent = "Credenciales incorrectas."; 
+            }); 
+        });
+        
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
-        window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; }
+        
+        window.cerrarModal = function(tipo) { 
+            document.getElementById(`${tipo}-fondo`).style.display = 'none'; 
+            document.getElementById(`${tipo}-modal`).style.display = 'none'; 
+        }
 
         // ==========================================
         // EXPORTACIÓN A CSV
@@ -522,17 +308,18 @@ Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta ve
             let rows = table.querySelectorAll("tr");
             
             for (let i = 0; i < rows.length; i++) {
-                let row = [], cols = rows[i].querySelectorAll("td, th");
+                let row = [];
+                let cols = rows[i].querySelectorAll("td, th");
                 for (let j = 0; j < cols.length; j++) {
-                    // Limpiamos saltos de línea y escapamos comillas para evitar errores en Excel
-                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""');
+                    let clone = cols[j].cloneNode(true);
+                    let botones = clone.querySelectorAll('button');
+                    botones.forEach(b => b.remove());
+                    let data = clone.innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""');
                     row.push('"' + data + '"');
                 }
-                // Usamos punto y coma para compatibilidad con Excel en español
                 csv.push(row.join(";")); 
             }
 
-            // Agregamos BOM (\uFEFF) para forzar la lectura correcta de tildes y ñ en Excel
             let csvFile = new Blob(["\uFEFF" + csv.join("\n")], {type: "text/csv;charset=utf-8;"});
             let downloadLink = document.createElement("a");
             downloadLink.download = filename;
@@ -543,49 +330,303 @@ Abre tu archivo `index.html`, borra todo el contenido y reemplázalo por esta ve
             document.body.removeChild(downloadLink);
         }
 
-        // PORTAL DEL MIEMBRO
+        // ==========================================
+        // FUNCIONES GENERALES Y PORTAL
+        // ==========================================
         async function cargarPerfilMiembro(uid, datosUsuario) {
             document.getElementById('mi-nombre').textContent = datosUsuario.nombre || 'N/A';
             document.getElementById('mi-estado').textContent = datosUsuario.estado || 'N/A';
-            const completadas = datosUsuario.etapasCompletadas || []; const total = window.catalogoEtapas.length; const pct = total > 0 ? Math.round((completadas.length / total) * 100) : 0;
+            
+            const completadas = datosUsuario.etapasCompletadas || []; 
+            const total = window.catalogoEtapas.length; 
+            const pct = total > 0 ? Math.round((completadas.length / total) * 100) : 0;
             document.getElementById('mi-avance-texto').textContent = `${completadas.length} de ${total} etapas completadas (${pct}%)`;
-            const listaEtapas = document.getElementById('mi-lista-etapas'); listaEtapas.innerHTML = "";
+            
+            const listaEtapas = document.getElementById('mi-lista-etapas'); 
+            listaEtapas.innerHTML = "";
             window.catalogoEtapas.forEach(etapa => {
-                const check = completadas.includes(etapa) ? "✅" : "⏳"; const color = completadas.includes(etapa) ? "#155724" : "#6c757d";
+                const check = completadas.includes(etapa) ? "✅" : "⏳"; 
+                const color = completadas.includes(etapa) ? "#155724" : "#6c757d";
                 listaEtapas.innerHTML += `<li style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: ${color};"><span>${check}</span> <span>${etapa}</span></li>`;
             });
+            
             const tabla = document.getElementById('mi-tabla-asistencia');
             try {
-                const eventosSnap = await getDocs(collection(db, "eventos")); const dicEventos = {}; eventosSnap.forEach(d => dicEventos[d.id] = d.data());
-                const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); const snap = await getDocs(q);
-                tabla.innerHTML = ""; if (snap.empty) { tabla.innerHTML = "<tr><td colspan='3'>Aún no tienes asistencias.</td></tr>"; } else {
-                    let asistenciasArr = []; snap.forEach(d => asistenciasArr.push(d.data())); asistenciasArr.sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora)); 
+                const eventosSnap = await getDocs(collection(db, "eventos")); 
+                const dicEventos = {}; 
+                eventosSnap.forEach(d => dicEventos[d.id] = d.data());
+                
+                const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); 
+                const snap = await getDocs(q);
+                
+                tabla.innerHTML = ""; 
+                if (snap.empty) { 
+                    tabla.innerHTML = "<tr><td colspan='3'>Aún no tienes asistencias.</td></tr>"; 
+                } else {
+                    let asistenciasArr = []; 
+                    snap.forEach(d => asistenciasArr.push(d.data())); 
+                    asistenciasArr.sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora)); 
+                    
                     asistenciasArr.forEach(a => {
-                        const ev = dicEventos[a.eventoID]; const titulo = ev ? ev.titulo : "Evento desconocido";
-                        const fechaObj = new Date(a.fechaHora); const fechaLegible = `${fechaObj.getDate().toString().padStart(2,'0')}/${(fechaObj.getMonth()+1).toString().padStart(2,'0')}/${fechaObj.getFullYear()} ${fechaObj.getHours().toString().padStart(2,'0')}:${fechaObj.getMinutes().toString().padStart(2,'0')}`;
+                        const ev = dicEventos[a.eventoID]; 
+                        const titulo = ev ? ev.titulo : "Evento desconocido";
+                        const fechaObj = new Date(a.fechaHora); 
+                        const fechaLegible = `${fechaObj.getDate().toString().padStart(2,'0')}/${(fechaObj.getMonth()+1).toString().padStart(2,'0')}/${fechaObj.getFullYear()} ${fechaObj.getHours().toString().padStart(2,'0')}:${fechaObj.getMinutes().toString().padStart(2,'0')}`;
                         tabla.innerHTML += `<tr><td><strong>${titulo}</strong></td><td>${fechaLegible}</td><td>${a.metodo}</td></tr>`;
                     });
                 }
-            } catch (e) { tabla.innerHTML = "<tr><td colspan='3'>Error.</td></tr>"; }
+            } catch (e) { tabla.innerHTML = "<tr><td colspan='3'>Error al cargar historial.</td></tr>"; }
         }
 
-        // FUNCIONES ADMINISTRATIVAS EXISTENTES
-        async function cargarCatalogoEtapas() { try { const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); if (d.exists()) { window.catalogoEtapas = d.data().lista || []; } } catch (e) {} }
-        async function cargarTablaUsuarios() { try { const q = await getDocs(collection(db, "usuarios")); const t = document.getElementById('tabla-usuarios'); t.innerHTML = ""; const tot = window.catalogoEtapas.length; q.forEach((d) => { const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot} (${Math.round((c/tot)*100)}%)` : "N/A"; t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td>${u.estado||''}</td><td><strong>${r}</strong></td><td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; }); } catch (e) {} }
-        window.abrirEditorUsuario = function(uid) { const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="etapas-check" value="${e}" ${ch}> ${e}</label>`; }); };
-        document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { e.preventDefault(); const uid = document.getElementById('edit-uid').value; const m = document.getElementById('edit-mensaje'); m.textContent = "Guardando..."; m.style.color = "orange"; const ch = document.querySelectorAll('input[name="etapas-check"]:checked'); const et = Array.from(ch).map(c => c.value); try { await updateDoc(doc(db, "usuarios", uid), { perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, etapasCompletadas: et }); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); m.textContent = "Guardado."; m.style.color = "green"; setTimeout(() => { m.textContent = ""; document.getElementById('editor-usuario').style.display = 'none'; }, 1500); } catch (err) { m.textContent = "Error."; m.style.color = "red"; } });
+        async function cargarCatalogoEtapas() { 
+            try { 
+                const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); 
+                if (d.exists()) { window.catalogoEtapas = d.data().lista || []; } 
+            } catch (e) { console.error(e); } 
+        }
+
+        async function cargarTablaUsuarios() { 
+            try { 
+                const q = await getDocs(collection(db, "usuarios")); 
+                const t = document.getElementById('tabla-usuarios'); 
+                t.innerHTML = ""; 
+                const tot = window.catalogoEtapas.length; 
+                
+                q.forEach((d) => { 
+                    const u = d.data(); 
+                    window.usuariosData[d.id] = u; 
+                    const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; 
+                    const r = tot > 0 ? `${c}/${tot} (${Math.round((c/tot)*100)}%)` : "N/A"; 
+                    t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td>${u.estado||''}</td><td><strong>${r}</strong></td><td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; 
+                }); 
+            } catch (e) { console.error(e); } 
+        }
+
+        window.abrirEditorUsuario = function(uid) { 
+            const u = window.usuariosData[uid]; 
+            document.getElementById('editor-usuario').style.display = 'block'; 
+            document.getElementById('edit-uid').value = uid; 
+            document.getElementById('edit-nombre-display').textContent = u.nombre; 
+            document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; 
+            document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; 
+            document.getElementById('edit-estado').value = u.estado || 'En consolidación'; 
+            
+            const c = document.getElementById('contenedor-checkboxes-formacion'); 
+            c.innerHTML = ""; 
+            const comp = u.etapasCompletadas || []; 
+            window.catalogoEtapas.forEach((e) => { 
+                const ch = comp.includes(e) ? "checked" : ""; 
+                c.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="etapas-check" value="${e}" ${ch}> ${e}</label>`; 
+            }); 
+        };
+
+        document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { 
+            e.preventDefault(); 
+            const uid = document.getElementById('edit-uid').value; 
+            const m = document.getElementById('edit-mensaje'); 
+            m.textContent = "Guardando..."; m.style.color = "orange"; 
+            
+            const ch = document.querySelectorAll('input[name="etapas-check"]:checked'); 
+            const et = Array.from(ch).map(c => c.value); 
+            
+            try { 
+                await updateDoc(doc(db, "usuarios", uid), { 
+                    perfilAcceso: document.getElementById('edit-perfil').value, 
+                    cargo: document.getElementById('edit-cargo').value, 
+                    estado: document.getElementById('edit-estado').value, 
+                    etapasCompletadas: et 
+                }); 
+                await cargarTablaUsuarios(); 
+                await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); 
+                m.textContent = "Guardado."; m.style.color = "green"; 
+                setTimeout(() => { m.textContent = ""; document.getElementById('editor-usuario').style.display = 'none'; }, 1500); 
+            } catch (err) { m.textContent = "Error."; m.style.color = "red"; } 
+        });
         
-        async function cargarFinanzas() { const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; try { const f = await getDocs(collection(db, "finanzas")); f.forEach((d) => aT.push({ id: d.id, ...d.data() })); aT.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); t.innerHTML = ""; aT.forEach((tr) => { const an = tr.estado === "Anulado"; if (!an) { if (tr.tipo === "Ingreso") sI += tr.monto; else sE += tr.monto; } const cM = an ? "gray" : (tr.tipo === "Ingreso" ? "green" : "red"); const bA = an ? `Anulado` : `<button class="btn-rojo btn-pequeno" onclick="anularTransaccion('${tr.id}')">Anular</button>`; t.innerHTML += `<tr class="${an ? 'estado-anulado' : ''}"><td>${tr.fecha}</td><td>${tr.concepto}</td><td>${tr.tipo}</td><td style="color:${cM};font-weight:bold;">${formatoMoneda.format(tr.monto)}</td><td>${tr.estado}</td><td>${bA}</td></tr>`; }); document.getElementById('total-ingresos').textContent = formatoMoneda.format(sI); document.getElementById('total-egresos').textContent = formatoMoneda.format(sE); document.getElementById('total-saldo').textContent = formatoMoneda.format(sI - sE); } catch (e) {} }
-        document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
-        window.anularTransaccion = async function(id) { if (confirm("¿Anular?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
-        window.abrirQR = function(id, tit) { document.getElementById('qr-fondo').style.display = 'block'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; new QRCode(document.getElementById("qrcode"), { text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, width: 250, height: 250 }); };
-        window.abrirAsistencia = async function(id, tit) { window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; for (const [uid, u] of Object.entries(window.usuariosData)) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let c=0; snap.forEach((d) => { const a=d.data(); const f=new Date(a.fechaHora); tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td>${a.metodo}</td></tr>`; c++; }); document.getElementById('asistencia-evento-titulo').textContent += ` (${c} presentes)`; } catch(e){} };
-        window.registrarAsistenciaManual = async function() { const v=document.getElementById('select-usuario-manual').value; if(!v)return; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); const snap = await getDocs(q); if(snap.empty){ await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual" }); document.getElementById('select-usuario-manual').value=""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); } } catch(e){} };
-        async function cargarDatosGenerales() { try { const eS=await getDocs(collection(db,"eventos")); const lE=document.getElementById('lista-eventos'); lE.innerHTML=""; eS.forEach((d)=>{ const ev=d.data(); let b=""; if(["Administrador","Pastor","Líder"].includes(window.perfilUsuarioActual)){ b=`<button class="btn-admin btn-pequeno" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn-verde btn-pequeno" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; } lE.innerHTML+=`<li style="margin-bottom:10px; display:flex; justify-content:space-between;"><div><strong>${ev.titulo}</strong></div><div>${b}</div></li>`; }); const mS=await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML=""; mS.forEach((d)=>{if(d.data().estado)document.getElementById('lista-ministerios').innerHTML+=`<li>${d.data().nombre}</li>`;}); } catch(e){} }
-        async function cargarTiposEventosSelect(){ try{ const dS=await getDoc(doc(db,"configuracion","tipos_eventos")); if(dS.exists()){ const s=document.getElementById('evento-tipo'); s.innerHTML=""; dS.data().lista.forEach(t=>s.innerHTML+=`<option value="${t}">${t}</option>`); } }catch(e){} }
-        document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ e.preventDefault(); await addDoc(collection(db,"eventos"),{titulo:document.getElementById('evento-titulo').value,tipo:document.getElementById('evento-tipo').value,fecha:document.getElementById('evento-fecha').value,lugar:document.getElementById('evento-lugar').value,estado:"publicado"}); document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); });
-        document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); cargarDatosGenerales(); } catch (e) {} });
-        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); } catch (e) {} });
+        async function cargarFinanzas() { 
+            const t = document.getElementById('tabla-finanzas'); 
+            let sI = 0, sE = 0, aT = []; 
+            try { 
+                const f = await getDocs(collection(db, "finanzas")); 
+                f.forEach((d) => aT.push({ id: d.id, ...d.data() })); 
+                aT.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); 
+                t.innerHTML = ""; 
+                
+                aT.forEach((tr) => { 
+                    const an = tr.estado === "Anulado"; 
+                    if (!an) { 
+                        if (tr.tipo === "Ingreso") sI += tr.monto; 
+                        else sE += tr.monto; 
+                    } 
+                    const cM = an ? "gray" : (tr.tipo === "Ingreso" ? "green" : "red"); 
+                    const bA = an ? `Anulado` : `<button class="btn-rojo btn-pequeno" onclick="anularTransaccion('${tr.id}')">Anular</button>`; 
+                    t.innerHTML += `<tr class="${an ? 'estado-anulado' : ''}"><td>${tr.fecha}</td><td>${tr.concepto}</td><td>${tr.tipo}</td><td style="color:${cM};font-weight:bold;">${formatoMoneda.format(tr.monto)}</td><td>${tr.estado}</td><td>${bA}</td></tr>`; 
+                }); 
+                
+                document.getElementById('total-ingresos').textContent = formatoMoneda.format(sI); 
+                document.getElementById('total-egresos').textContent = formatoMoneda.format(sE); 
+                document.getElementById('total-saldo').textContent = formatoMoneda.format(sI - sE); 
+            } catch (e) { console.error(e); } 
+        }
+
+        document.getElementById('form-finanzas').addEventListener('submit', async (e) => { 
+            e.preventDefault(); 
+            try { 
+                await addDoc(collection(db, "finanzas"), { 
+                    tipo: document.getElementById('fin-tipo').value, 
+                    monto: Number(document.getElementById('fin-monto').value), 
+                    fecha: document.getElementById('fin-fecha').value, 
+                    concepto: document.getElementById('fin-concepto').value, 
+                    estado: "Activo", 
+                    registradoPor: auth.currentUser.uid, 
+                    timestamp: new Date().toISOString() 
+                }); 
+                document.getElementById('form-finanzas').reset(); 
+                cargarFinanzas(); 
+            } catch (e) { console.error(e); } 
+        });
+
+        window.anularTransaccion = async function(id) { 
+            if (confirm("¿Anular?")) { 
+                await updateDoc(doc(db, "finanzas", id), { 
+                    estado: "Anulado", 
+                    anuladoPor: auth.currentUser.uid, 
+                    fechaAnulacion: new Date().toISOString() 
+                }); 
+                cargarFinanzas(); 
+            } 
+        };
+
+        window.abrirQR = function(id, tit) { 
+            document.getElementById('qr-fondo').style.display = 'block'; 
+            document.getElementById('qr-modal').style.display = 'block'; 
+            document.getElementById('qr-evento-titulo').textContent = tit; 
+            document.getElementById('qrcode').innerHTML = ""; 
+            new QRCode(document.getElementById("qrcode"), { 
+                text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, 
+                width: 250, 
+                height: 250 
+            }); 
+        };
+
+        window.abrirAsistencia = async function(id, tit) { 
+            window.eventoActualAsistenciaID = id; 
+            document.getElementById('asistencia-fondo').style.display='block'; 
+            document.getElementById('asistencia-modal').style.display='block'; 
+            document.getElementById('asistencia-evento-titulo').textContent = tit; 
+            
+            const sel = document.getElementById('select-usuario-manual'); 
+            sel.innerHTML = '<option value="">Seleccione...</option>'; 
+            for (const [uid, u] of Object.entries(window.usuariosData)) { 
+                sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; 
+            } 
+            
+            const tab = document.getElementById('tabla-asistentes'); 
+            tab.innerHTML = ""; 
+            try { 
+                const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); 
+                const snap = await getDocs(q); 
+                let c = 0; 
+                snap.forEach((d) => { 
+                    const a = d.data(); 
+                    const f = new Date(a.fechaHora); 
+                    tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td>${a.metodo}</td></tr>`; 
+                    c++; 
+                }); 
+                document.getElementById('asistencia-evento-titulo').textContent += ` (${c} presentes)`; 
+            } catch(e) { console.error(e); } 
+        };
+
+        window.registrarAsistenciaManual = async function() { 
+            const v = document.getElementById('select-usuario-manual').value; 
+            if (!v) return; 
+            try { 
+                const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); 
+                const snap = await getDocs(q); 
+                if (snap.empty) { 
+                    await addDoc(collection(db, "asistencias"), { 
+                        eventoID: window.eventoActualAsistenciaID, 
+                        usuarioID: v, 
+                        fechaHora: new Date().toISOString(), 
+                        metodo: "Manual" 
+                    }); 
+                    document.getElementById('select-usuario-manual').value=""; 
+                    window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
+                } 
+            } catch(e) { console.error(e); } 
+        };
+
+        async function cargarDatosGenerales() { 
+            try { 
+                const eS = await getDocs(collection(db,"eventos")); 
+                const lE = document.getElementById('lista-eventos'); 
+                lE.innerHTML = ""; 
+                eS.forEach((d) => { 
+                    const ev = d.data(); 
+                    let b = ""; 
+                    if (["Administrador","Pastor","Líder"].includes(window.perfilUsuarioActual)) { 
+                        b = `<button class="btn-admin btn-pequeno" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn-verde btn-pequeno" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; 
+                    } 
+                    lE.innerHTML += `<li style="margin-bottom:10px; display:flex; justify-content:space-between;"><div><strong>${ev.titulo}</strong></div><div>${b}</div></li>`; 
+                }); 
+                
+                const mS = await getDocs(collection(db,"ministerios")); 
+                document.getElementById('lista-ministerios').innerHTML = ""; 
+                mS.forEach((d) => { 
+                    if (d.data().estado) document.getElementById('lista-ministerios').innerHTML += `<li>${d.data().nombre}</li>`; 
+                }); 
+            } catch(e) { console.error(e); } 
+        }
+
+        async function cargarTiposEventosSelect(){ 
+            try { 
+                const dS = await getDoc(doc(db,"configuracion","tipos_eventos")); 
+                if (dS.exists()) { 
+                    const s = document.getElementById('evento-tipo'); 
+                    s.innerHTML = ""; 
+                    dS.data().lista.forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`); 
+                } 
+            } catch(e) { console.error(e); } 
+        }
+
+        document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ 
+            e.preventDefault(); 
+            await addDoc(collection(db,"eventos"),{
+                titulo: document.getElementById('evento-titulo').value,
+                tipo: document.getElementById('evento-tipo').value,
+                fecha: document.getElementById('evento-fecha').value,
+                lugar: document.getElementById('evento-lugar').value,
+                estado: "publicado"
+            }); 
+            document.getElementById('form-nuevo-evento').reset(); 
+            cargarDatosGenerales(); 
+        });
+
+        document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { 
+            e.preventDefault(); 
+            try { 
+                await addDoc(collection(db, "ministerios"), { 
+                    nombre: document.getElementById('min-nombre').value, 
+                    descripcion: document.getElementById('min-descripcion').value, 
+                    estado: true 
+                }); 
+                document.getElementById('form-nuevo-ministerio').reset(); 
+                cargarDatosGenerales(); 
+            } catch (e) { console.error(e); } 
+        });
+
+        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { 
+            e.preventDefault(); 
+            try { 
+                await updateDoc(doc(db, "configuracion", "etapas_formacion"), { 
+                    lista: arrayUnion(document.getElementById('etapa-nombre').value) 
+                }); 
+                document.getElementById('form-nueva-etapa').reset(); 
+                await cargarCatalogoEtapas(); 
+                await cargarTablaUsuarios(); 
+                await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); 
+            } catch (e) { console.error(e); } 
+        });
     </script>
 </body>
 </html>

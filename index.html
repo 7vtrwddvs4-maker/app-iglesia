@@ -67,7 +67,7 @@
     <h1>Sistema El Arca</h1>
     <p id="estado" style="color: orange; font-weight: bold;">Verificando seguridad...</p>
 
-    <!-- MODAL 1: CÓDIGO QR -->
+    <!-- MODALES QR Y ASISTENCIA -->
     <div id="qr-fondo" class="modal-fondo"></div>
     <div id="qr-modal" class="modal-caja" style="text-align: center;">
         <h2>Escanear Asistencia</h2>
@@ -76,12 +76,10 @@
         <button class="btn-rojo" onclick="cerrarModal('qr')" style="margin-top: 15px;">Cerrar</button>
     </div>
 
-    <!-- MODAL 2: VISOR DE ASISTENCIA -->
     <div id="asistencia-fondo" class="modal-fondo"></div>
     <div id="asistencia-modal" class="modal-caja">
         <h2 style="margin-bottom: 5px;">Reporte de Asistencia</h2>
         <h3 id="asistencia-evento-titulo" style="color: #007bff; margin-top:0;"></h3>
-        
         <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; border: 1px solid #cce5ff; margin-bottom: 15px;">
             <h4 style="margin-top: 0; margin-bottom: 10px;">Añadir Registro Manual</h4>
             <div style="display: flex; gap: 10px;">
@@ -90,7 +88,6 @@
             </div>
             <p id="manual-mensaje" style="font-size: 12px; font-weight: bold; margin-bottom: 0;"></p>
         </div>
-
         <div style="overflow-x:auto;">
             <table>
                 <thead><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
@@ -115,6 +112,27 @@
     <div id="dashboard-container">
         <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
 
+        <!-- PORTAL DEL MIEMBRO (Visible para todos) -->
+        <div class="card" id="modulo-mi-perfil" style="display: none; border-top: 4px solid #007bff;">
+            <h2>👤 Mi Perfil</h2>
+            <p style="margin: 5px 0;"><strong>Nombre:</strong> <span id="mi-nombre"></span></p>
+            <p style="margin: 5px 0;"><strong>Estado en la Iglesia:</strong> <span id="mi-estado"></span></p>
+            
+            <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Ruta de Formación</h3>
+            <div style="background: #e9ecef; border-radius: 4px; padding: 10px; border: 1px solid #ced4da;">
+                <p id="mi-avance-texto" style="margin: 0; font-weight: bold; color: #495057;"></p>
+                <ul id="mi-lista-etapas" style="margin-top: 10px; margin-bottom: 0; padding-left: 0;"></ul>
+            </div>
+
+            <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Historial de Asistencia</h3>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead>
+                    <tbody id="mi-tabla-asistencia"><tr><td colspan="3">Cargando historial...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- PANEL ADMINISTRADOR -->
         <div class="card admin-panel" id="admin-panel">
             <h2>⚙️ Panel de Administración</h2>
@@ -126,61 +144,25 @@
                 <button class="btn-admin tab-finanzas" id="btn-tab-finanzas">💰 Finanzas</button>
             </div>
 
-            <!-- DIRECTORIO DE PERSONAS -->
             <div class="seccion-gestion" id="sec-usuarios">
                 <h3>Directorio de Personas</h3>
                 <div style="overflow-x:auto;">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Perfil</th>
-                                <th>Cargo</th>
-                                <th>Estado</th>
-                                <th>Avance Formación</th>
-                                <th>Acción</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Nombre</th><th>Perfil</th><th>Cargo</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead>
                         <tbody id="tabla-usuarios"></tbody>
                     </table>
                 </div>
                 
-                <!-- EDITOR DE USUARIO CON FORMACIÓN -->
                 <div id="editor-usuario" style="display:none; background:#f9f9f9; padding:15px; margin-top:15px; border-left: 4px solid #007bff; border-radius: 4px;">
                     <h4>Editando a: <span id="edit-nombre-display"></span></h4>
                     <form id="form-editar-usuario">
                         <input type="hidden" id="edit-uid">
-                        
-                        <label>Perfil de Acceso (Seguridad):</label>
-                        <select id="edit-perfil">
-                            <option value="Administrador">Administrador</option>
-                            <option value="Pastor">Pastor</option>
-                            <option value="Líder">Líder</option>
-                            <option value="Miembro">Miembro</option>
-                        </select>
-                        
-                        <label>Cargo Eclesiástico:</label>
-                        <select id="edit-cargo">
-                            <option value="Pastor general">Pastor general</option>
-                            <option value="Pastor">Pastor</option>
-                            <option value="Miembro">Miembro</option>
-                        </select>
-
-                        <label>Estado en la Iglesia:</label>
-                        <select id="edit-estado">
-                            <option value="Miembro activo">Miembro activo</option>
-                            <option value="En consolidación">En consolidación</option>
-                            <option value="Miembro inactivo">Miembro inactivo</option>
-                            <option value="Kids">Kids</option>
-                        </select>
-
-                        <!-- CHECKLIST DE ETAPAS DE FORMACIÓN -->
-                        <label><strong>Ruta de Formación Completada:</strong></label>
-                        <div class="checklist-formacion" id="contenedor-checkboxes-formacion">
-                            Cargando etapas...
-                        </div>
-                        
-                        <button type="submit" style="background-color:#007bff; margin-top:10px;">Guardar Cambios</button>
+                        <label>Perfil:</label><select id="edit-perfil"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option></select>
+                        <label>Cargo:</label><select id="edit-cargo"><option>Pastor general</option><option>Pastor</option><option>Miembro</option></select>
+                        <label>Estado:</label><select id="edit-estado"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option></select>
+                        <label><strong>Ruta Completada:</strong></label>
+                        <div class="checklist-formacion" id="contenedor-checkboxes-formacion"></div>
+                        <button type="submit" style="background-color:#007bff; margin-top:10px;">Guardar</button>
                         <button type="button" class="btn-rojo" onclick="document.getElementById('editor-usuario').style.display='none'" style="margin-top:10px;">Cancelar</button>
                         <p id="edit-mensaje"></p>
                     </form>
@@ -189,53 +171,27 @@
 
             <div class="seccion-gestion" id="sec-eventos">
                 <h3>Crear Nuevo Evento</h3>
-                <form id="form-nuevo-evento">
-                    <input type="text" id="evento-titulo" placeholder="Título" required>
-                    <label>Tipo:</label><select id="evento-tipo" required></select>
-                    <label>Fecha:</label><input type="datetime-local" id="evento-fecha" required>
-                    <input type="text" id="evento-lugar" placeholder="Lugar" required>
-                    <button type="submit">Publicar</button>
-                </form>
+                <form id="form-nuevo-evento"><input type="text" id="evento-titulo" placeholder="Título" required><label>Tipo:</label><select id="evento-tipo" required></select><label>Fecha:</label><input type="datetime-local" id="evento-fecha" required><input type="text" id="evento-lugar" placeholder="Lugar" required><button type="submit">Publicar</button></form>
             </div>
-
             <div class="seccion-gestion seccion-finanzas" id="sec-finanzas">
                 <h3 style="color: #28a745; margin-bottom: 20px;">Bóveda Financiera</h3>
-                <div class="fin-dashboard">
-                    <div class="fin-card fin-ingreso"><strong>Ingresos Totales</strong><br><span id="total-ingresos" style="color: green; font-size: 1.5em; font-weight: bold;">$0</span></div>
-                    <div class="fin-card fin-egreso"><strong>Egresos Totales</strong><br><span id="total-egresos" style="color: red; font-size: 1.5em; font-weight: bold;">$0</span></div>
-                    <div class="fin-card fin-saldo"><strong>Saldo Actual</strong><br><span id="total-saldo" style="font-size: 1.5em; font-weight: bold;">$0</span></div>
-                </div>
-                <form id="form-finanzas" style="background: #f9f9f9; padding: 15px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 20px;">
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <select id="fin-tipo" required style="flex: 1; min-width: 150px;"><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select>
-                        <input type="number" id="fin-monto" placeholder="Monto ($)" required style="flex: 1; min-width: 150px;" min="1">
-                        <input type="date" id="fin-fecha" required style="flex: 1; min-width: 150px;">
-                    </div>
-                    <input type="text" id="fin-concepto" placeholder="Concepto" required>
-                    <button type="submit" class="btn-verde">Guardar Transacción</button>
-                    <p id="fin-mensaje"></p>
+                <div class="fin-dashboard"><div class="fin-card fin-ingreso"><strong>Ingresos</strong><br><span id="total-ingresos" style="color:green;font-size:1.5em;font-weight:bold;">$0</span></div><div class="fin-card fin-egreso"><strong>Egresos</strong><br><span id="total-egresos" style="color:red;font-size:1.5em;font-weight:bold;">$0</span></div><div class="fin-card fin-saldo"><strong>Saldo</strong><br><span id="total-saldo" style="font-size:1.5em;font-weight:bold;">$0</span></div></div>
+                <form id="form-finanzas" style="background:#f9f9f9;padding:15px;border-radius:5px;border:1px solid #ddd;margin-bottom:20px;">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;"><select id="fin-tipo" required style="flex:1;"><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select><input type="number" id="fin-monto" placeholder="Monto ($)" required style="flex:1;" min="1"><input type="date" id="fin-fecha" required style="flex:1;"></div>
+                    <input type="text" id="fin-concepto" placeholder="Concepto" required><button type="submit" class="btn-verde">Guardar Transacción</button>
                 </form>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead>
-                        <tbody id="tabla-finanzas"></tbody>
-                    </table>
-                </div>
+                <div style="overflow-x:auto;"><table><thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead><tbody id="tabla-finanzas"></tbody></table></div>
             </div>
-
             <div class="seccion-gestion" id="sec-ministerios">
-                <h3>Agregar Ministerio</h3>
-                <form id="form-nuevo-ministerio"><input type="text" id="min-nombre" placeholder="Nombre" required><textarea id="min-descripcion" placeholder="Descripción" required></textarea><button type="submit">Guardar</button></form>
+                <h3>Agregar Ministerio</h3><form id="form-nuevo-ministerio"><input type="text" id="min-nombre" placeholder="Nombre" required><textarea id="min-descripcion" placeholder="Descripción" required></textarea><button type="submit">Guardar</button></form>
             </div>
             <div class="seccion-gestion" id="sec-catalogos">
-                <h3>Agregar Etapa a Ruta de Formación</h3>
-                <form id="form-nueva-etapa"><input type="text" id="etapa-nombre" placeholder="Nueva Etapa" required><button type="submit">Agregar</button></form>
+                <h3>Agregar Etapa</h3><form id="form-nueva-etapa"><input type="text" id="etapa-nombre" placeholder="Nueva Etapa" required><button type="submit">Agregar</button></form>
             </div>
         </div>
 
-        <div class="card" id="modulo-eventos"><h2>Eventos</h2><ul id="lista-eventos"></ul></div>
+        <div class="card" id="modulo-eventos"><h2>Cartelera General</h2><ul id="lista-eventos"></ul></div>
         <div class="card" id="modulo-ministerios"><h2>Ministerios</h2><ul id="lista-ministerios"></ul></div>
-        <div class="card" id="modulo-formacion"><h2>Ruta Formación</h2><ol id="lista-formacion"></ol></div>
     </div>
 
     <script type="module">
@@ -251,32 +207,33 @@
         const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-finanzas')];
         btnTabs.forEach((btn, idx) => btn.addEventListener('click', () => secs.forEach((sec, i) => i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'))));
 
-        window.usuariosData = {}; 
-        window.perfilUsuarioActual = ""; 
-        window.eventoActualAsistenciaID = "";
-        window.catalogoEtapas = []; // Guardará las etapas de formación activas en el sistema
+        window.usuariosData = {}; window.perfilUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.catalogoEtapas = []; 
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
+                    await cargarCatalogoEtapas(); // Cargar catálogo primero
                     const userDoc = await getDoc(doc(db, "usuarios", user.uid));
                     if (userDoc.exists()) {
                         const datosUsuario = userDoc.data(); 
                         window.perfilUsuarioActual = datosUsuario.perfilAcceso;
                         estado.textContent = `Bienvenido(a), ${datosUsuario.nombre} | Perfil: ${datosUsuario.perfilAcceso}`;
+                        
+                        // Habilitar Portal del Miembro para TODOS
+                        document.getElementById('modulo-mi-perfil').style.display = "block";
+                        await cargarPerfilMiembro(user.uid, datosUsuario);
+
+                        // Habilitar Panel Admin solo para Administradores
                         if (datosUsuario.perfilAcceso === "Administrador") {
                             document.getElementById('admin-panel').style.display = "block"; 
-                            await cargarCatalogoEtapas(); // Cargar catálogo de etapas primero
-                            await cargarTablaUsuarios(); 
-                            cargarTiposEventosSelect();
-                            cargarFinanzas();
+                            await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas();
                         } else { document.getElementById('admin-panel').style.display = "none"; }
                     }
                 } catch (e) { console.error(e); }
                 estado.className = "success"; document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
             } else {
-                estado.textContent = "Por favor, inicia sesión."; estado.className = ""; document.getElementById('login-container').style.display = "block"; document.getElementById('dashboard-container').style.display = "none"; document.getElementById('admin-panel').style.display = "none"; 
+                estado.textContent = "Por favor, inicia sesión."; estado.className = ""; document.getElementById('login-container').style.display = "block"; document.getElementById('dashboard-container').style.display = "none"; document.getElementById('admin-panel').style.display = "none"; document.getElementById('modulo-mi-perfil').style.display = "none";
             }
         });
 
@@ -284,161 +241,81 @@
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
         window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; }
 
-        // CARGA DEL CATÁLOGO DE ETAPAS
-        async function cargarCatalogoEtapas() {
+        // ==========================================
+        // PORTAL DEL MIEMBRO (NUEVO)
+        // ==========================================
+        async function cargarPerfilMiembro(uid, datosUsuario) {
+            document.getElementById('mi-nombre').textContent = datosUsuario.nombre || 'N/A';
+            document.getElementById('mi-estado').textContent = datosUsuario.estado || 'N/A';
+            
+            // 1. Mostrar Avance de Formación
+            const completadas = datosUsuario.etapasCompletadas || [];
+            const total = window.catalogoEtapas.length;
+            const pct = total > 0 ? Math.round((completadas.length / total) * 100) : 0;
+            document.getElementById('mi-avance-texto').textContent = `${completadas.length} de ${total} etapas completadas (${pct}%)`;
+            
+            const listaEtapas = document.getElementById('mi-lista-etapas');
+            listaEtapas.innerHTML = "";
+            window.catalogoEtapas.forEach(etapa => {
+                const check = completadas.includes(etapa) ? "✅" : "⏳";
+                const color = completadas.includes(etapa) ? "green" : "gray";
+                listaEtapas.innerHTML += `<li style="list-style: none; margin-left: -20px; color: ${color}; margin-bottom: 5px;">${check} ${etapa}</li>`;
+            });
+
+            // 2. Extraer Historial Personal de Asistencia
+            const tabla = document.getElementById('mi-tabla-asistencia');
             try {
-                const docSnap = await getDoc(doc(db, "configuracion", "etapas_formacion"));
-                if (docSnap.exists()) {
-                    window.catalogoEtapas = docSnap.data().lista || [];
+                // Primero traemos todos los eventos al diccionario para cruzar los nombres
+                const eventosSnap = await getDocs(collection(db, "eventos"));
+                const dicEventos = {};
+                eventosSnap.forEach(d => dicEventos[d.id] = d.data());
+
+                const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid));
+                const snap = await getDocs(q);
+                
+                tabla.innerHTML = "";
+                if (snap.empty) {
+                    tabla.innerHTML = "<tr><td colspan='3'>Aún no tienes asistencias registradas.</td></tr>";
+                } else {
+                    let asistenciasArr = [];
+                    snap.forEach(d => asistenciasArr.push(d.data()));
+                    asistenciasArr.sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora)); // Ordenar por fecha reciente
+                    
+                    asistenciasArr.forEach(a => {
+                        const ev = dicEventos[a.eventoID];
+                        const titulo = ev ? ev.titulo : "Evento desconocido";
+                        // Formateamos la fecha para que se lea como "27/09/2026 16:52"
+                        const fechaObj = new Date(a.fechaHora);
+                        const fechaLegible = `${fechaObj.getDate().toString().padStart(2,'0')}/${(fechaObj.getMonth()+1).toString().padStart(2,'0')}/${fechaObj.getFullYear()} ${fechaObj.getHours().toString().padStart(2,'0')}:${fechaObj.getMinutes().toString().padStart(2,'0')}`;
+                        
+                        tabla.innerHTML += `<tr><td><strong>${titulo}</strong></td><td>${fechaLegible}</td><td>${a.metodo}</td></tr>`;
+                    });
                 }
-            } catch (e) { console.error("Error cargando etapas:", e); }
-        }
-
-        // CARGAR TABLA DE USUARIOS CON SEGUIMIENTO DE FORMACIÓN
-        async function cargarTablaUsuarios() {
-            try {
-                const qSnap = await getDocs(collection(db, "usuarios")); 
-                const tabla = document.getElementById('tabla-usuarios');
-                tabla.innerHTML = "";
-                const totalEtapas = window.catalogoEtapas.length;
-
-                qSnap.forEach((d) => {
-                    const u = d.data(); 
-                    window.usuariosData[d.id] = u;
-                    const completadas = u.etapasCompletadas ? u.etapasCompletadas.length : 0;
-                    const resumenFormacion = totalEtapas > 0 ? `${completadas} de ${totalEtapas} (${Math.round((completadas/totalEtapas)*100)}%)` : "Sin catálogo";
-
-                    tabla.innerHTML += `
-                        <tr>
-                            <td>${u.nombre||''}</td>
-                            <td>${u.perfilAcceso||''}</td>
-                            <td>${u.cargo||''}</td>
-                            <td>${u.estado||''}</td>
-                            <td><strong>${resumenFormacion}</strong></td>
-                            <td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td>
-                        </tr>`;
-                });
-            } catch (e) { console.error(e); }
-        }
-
-        // ABRIR EDITOR CON CHECKBOXES DINÁMICOS
-        window.abrirEditorUsuario = function(uid) {
-            const u = window.usuariosData[uid]; 
-            document.getElementById('editor-usuario').style.display = 'block';
-            document.getElementById('edit-uid').value = uid; 
-            document.getElementById('edit-nombre-display').textContent = u.nombre;
-            document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; 
-            document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; 
-            document.getElementById('edit-estado').value = u.estado || 'En consolidación';
-
-            // Dibujar checkboxes de las etapas
-            const contenedorCheckboxes = document.getElementById('contenedor-checkboxes-formacion');
-            contenedorCheckboxes.innerHTML = "";
-            const completadas = u.etapasCompletadas || [];
-
-            if (window.catalogoEtapas.length === 0) {
-                contenedorCheckboxes.innerHTML = "<small>No hay etapas configuradas en el catálogo.</small>";
-            } else {
-                window.catalogoEtapas.forEach((etapa) => {
-                    const checked = completadas.includes(etapa) ? "checked" : "";
-                    contenedorCheckboxes.innerHTML += `
-                        <label class="checkbox-item">
-                            <input type="checkbox" name="etapas-check" value="${etapa}" ${checked}>
-                            ${etapa}
-                        </label>
-                    `;
-                });
+            } catch (e) {
+                console.error("Error historial:", e);
+                tabla.innerHTML = "<tr><td colspan='3'>Error al cargar historial.</td></tr>";
             }
-        };
-
-        // GUARDAR EDICIÓN (INCLUYENDO ETAPAS COMPLETADAS)
-        document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => {
-            e.preventDefault(); 
-            const uid = document.getElementById('edit-uid').value; 
-            const msg = document.getElementById('edit-mensaje');
-            msg.textContent = "Guardando cambios..."; msg.style.color = "orange";
-
-            // Capturar checkboxes seleccionados
-            const checkboxes = document.querySelectorAll('input[name="etapas-check"]:checked');
-            const etapasSeleccionadas = Array.from(checkboxes).map(cb => cb.value);
-
-            try { 
-                await updateDoc(doc(db, "usuarios", uid), { 
-                    perfilAcceso: document.getElementById('edit-perfil').value, 
-                    cargo: document.getElementById('edit-cargo').value, 
-                    estado: document.getElementById('edit-estado').value,
-                    etapasCompletadas: etapasSeleccionadas
-                });
-                msg.textContent = "¡Datos y progreso guardados!"; msg.style.color = "green";
-                await cargarTablaUsuarios(); 
-                setTimeout(() => { 
-                    msg.textContent = ""; 
-                    document.getElementById('editor-usuario').style.display = 'none'; 
-                }, 1500);
-            } catch (err) { 
-                console.error(err);
-                msg.textContent = "Error al actualizar."; msg.style.color = "red"; 
-            }
-        });
-
-        // BÓVEDA FINANCIERA
-        async function cargarFinanzas() {
-            const tabla = document.getElementById('tabla-finanzas');
-            let sumaIngresos = 0, sumaEgresos = 0, arrayTransacciones = [];
-            try {
-                const finSnap = await getDocs(collection(db, "finanzas"));
-                finSnap.forEach((d) => arrayTransacciones.push({ id: d.id, ...d.data() }));
-                arrayTransacciones.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-                tabla.innerHTML = "";
-                arrayTransacciones.forEach((t) => {
-                    const esAnulado = t.estado === "Anulado";
-                    if (!esAnulado) { if (t.tipo === "Ingreso") sumaIngresos += t.monto; else sumaEgresos += t.monto; }
-                    const colorMonto = esAnulado ? "gray" : (t.tipo === "Ingreso" ? "green" : "red");
-                    const botonAnular = esAnulado ? `Anulado` : `<button class="btn-rojo btn-pequeno" onclick="anularTransaccion('${t.id}')">Anular</button>`;
-                    tabla.innerHTML += `<tr class="${esAnulado ? 'estado-anulado' : ''}"><td>${t.fecha}</td><td>${t.concepto}</td><td>${t.tipo}</td><td style="color:${colorMonto};font-weight:bold;">${formatoMoneda.format(t.monto)}</td><td>${t.estado}</td><td>${botonAnular}</td></tr>`;
-                });
-                document.getElementById('total-ingresos').textContent = formatoMoneda.format(sumaIngresos);
-                document.getElementById('total-egresos').textContent = formatoMoneda.format(sumaEgresos);
-                document.getElementById('total-saldo').textContent = formatoMoneda.format(sumaIngresos - sumaEgresos);
-            } catch (e) { console.error(e); }
         }
 
-        document.getElementById('form-finanzas').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            try {
-                await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() });
-                document.getElementById('form-finanzas').reset(); cargarFinanzas();
-            } catch (e) {}
-        });
-
-        window.anularTransaccion = async function(id) {
-            if (confirm("¿Anular transacción? No se borrará físicamente para mantener la auditoría.")) {
-                await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() });
-                cargarFinanzas();
-            }
-        };
-
-        // EVENTOS Y ASISTENCIA
-        window.abrirQR = function(id, tit) { document.getElementById('qr-fondo').style.display = 'block'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; new QRCode(document.getElementById("qrcode"), { text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, width: 250, height: 250, colorDark : "#000", colorLight : "#fff" }); };
-        window.abrirAsistencia = async function(id, tit) { window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; for (const [uid, u] of Object.entries(window.usuariosData)) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; }
-            const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = "";
-            try { const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let c=0; snap.forEach((d) => { const a=d.data(); const f=new Date(a.fechaHora); tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td>${a.metodo}</td></tr>`; c++; }); document.getElementById('asistencia-evento-titulo').textContent += ` (${c} presentes)`; } catch(e){}
-        };
-        window.registrarAsistenciaManual = async function() { const v=document.getElementById('select-usuario-manual').value; if(!v)return; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); const snap = await getDocs(q); if(snap.empty){ await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual" }); document.getElementById('select-usuario-manual').value=""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); } else { alert("Ya registrado."); } } catch(e){} };
-
-        // CARGA GENERAL
-        async function cargarDatosGenerales() {
-            try {
-                const eS=await getDocs(collection(db,"eventos")); const lE=document.getElementById('lista-eventos'); lE.innerHTML=""; eS.forEach((d)=>{ const ev=d.data(); let b=""; if(["Administrador","Pastor","Líder"].includes(window.perfilUsuarioActual)){ b=`<button class="btn-admin btn-pequeno" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn-verde btn-pequeno" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; } lE.innerHTML+=`<li style="margin-bottom:10px; display:flex; justify-content:space-between;"><div><strong>${ev.titulo}</strong></div><div>${b}</div></li>`; });
-                const mS=await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML=""; mS.forEach((d)=>{if(d.data().estado)document.getElementById('lista-ministerios').innerHTML+=`<li>${d.data().nombre}</li>`;});
-                const fS=await getDoc(doc(db,"configuracion","etapas_formacion")); document.getElementById('lista-formacion').innerHTML=""; if(fS.exists())fS.data().lista.forEach(e=>document.getElementById('lista-formacion').innerHTML+=`<li>${e}</li>`);
-            } catch(e){}
-        }
-
+        // ==========================================
+        // FUNCIONES ADMINISTRATIVAS EXISTENTES
+        // ==========================================
+        async function cargarCatalogoEtapas() { try { const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); if (d.exists()) { window.catalogoEtapas = d.data().lista || []; } } catch (e) {} }
+        async function cargarTablaUsuarios() { try { const q = await getDocs(collection(db, "usuarios")); const t = document.getElementById('tabla-usuarios'); t.innerHTML = ""; const tot = window.catalogoEtapas.length; q.forEach((d) => { const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot} (${Math.round((c/tot)*100)}%)` : "N/A"; t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td>${u.estado||''}</td><td><strong>${r}</strong></td><td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; }); } catch (e) {} }
+        window.abrirEditorUsuario = function(uid) { const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="etapas-check" value="${e}" ${ch}> ${e}</label>`; }); };
+        document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { e.preventDefault(); const uid = document.getElementById('edit-uid').value; const m = document.getElementById('edit-mensaje'); m.textContent = "Guardando..."; m.style.color = "orange"; const ch = document.querySelectorAll('input[name="etapas-check"]:checked'); const et = Array.from(ch).map(c => c.value); try { await updateDoc(doc(db, "usuarios", uid), { perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, etapasCompletadas: et }); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); m.textContent = "Guardado."; m.style.color = "green"; setTimeout(() => { m.textContent = ""; document.getElementById('editor-usuario').style.display = 'none'; }, 1500); } catch (err) { m.textContent = "Error."; m.style.color = "red"; } });
+        
+        async function cargarFinanzas() { const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; try { const f = await getDocs(collection(db, "finanzas")); f.forEach((d) => aT.push({ id: d.id, ...d.data() })); aT.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); t.innerHTML = ""; aT.forEach((tr) => { const an = tr.estado === "Anulado"; if (!an) { if (tr.tipo === "Ingreso") sI += tr.monto; else sE += tr.monto; } const cM = an ? "gray" : (tr.tipo === "Ingreso" ? "green" : "red"); const bA = an ? `Anulado` : `<button class="btn-rojo btn-pequeno" onclick="anularTransaccion('${tr.id}')">Anular</button>`; t.innerHTML += `<tr class="${an ? 'estado-anulado' : ''}"><td>${tr.fecha}</td><td>${tr.concepto}</td><td>${tr.tipo}</td><td style="color:${cM};font-weight:bold;">${formatoMoneda.format(tr.monto)}</td><td>${tr.estado}</td><td>${bA}</td></tr>`; }); document.getElementById('total-ingresos').textContent = formatoMoneda.format(sI); document.getElementById('total-egresos').textContent = formatoMoneda.format(sE); document.getElementById('total-saldo').textContent = formatoMoneda.format(sI - sE); } catch (e) {} }
+        document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
+        window.anularTransaccion = async function(id) { if (confirm("¿Anular?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
+        window.abrirQR = function(id, tit) { document.getElementById('qr-fondo').style.display = 'block'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; new QRCode(document.getElementById("qrcode"), { text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, width: 250, height: 250 }); };
+        window.abrirAsistencia = async function(id, tit) { window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; for (const [uid, u] of Object.entries(window.usuariosData)) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let c=0; snap.forEach((d) => { const a=d.data(); const f=new Date(a.fechaHora); tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td>${a.metodo}</td></tr>`; c++; }); document.getElementById('asistencia-evento-titulo').textContent += ` (${c} presentes)`; } catch(e){} };
+        window.registrarAsistenciaManual = async function() { const v=document.getElementById('select-usuario-manual').value; if(!v)return; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); const snap = await getDocs(q); if(snap.empty){ await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual" }); document.getElementById('select-usuario-manual').value=""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); } } catch(e){} };
+        async function cargarDatosGenerales() { try { const eS=await getDocs(collection(db,"eventos")); const lE=document.getElementById('lista-eventos'); lE.innerHTML=""; eS.forEach((d)=>{ const ev=d.data(); let b=""; if(["Administrador","Pastor","Líder"].includes(window.perfilUsuarioActual)){ b=`<button class="btn-admin btn-pequeno" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn-verde btn-pequeno" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; } lE.innerHTML+=`<li style="margin-bottom:10px; display:flex; justify-content:space-between;"><div><strong>${ev.titulo}</strong></div><div>${b}</div></li>`; }); const mS=await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML=""; mS.forEach((d)=>{if(d.data().estado)document.getElementById('lista-ministerios').innerHTML+=`<li>${d.data().nombre}</li>`;}); } catch(e){} }
         async function cargarTiposEventosSelect(){ try{ const dS=await getDoc(doc(db,"configuracion","tipos_eventos")); if(dS.exists()){ const s=document.getElementById('evento-tipo'); s.innerHTML=""; dS.data().lista.forEach(t=>s.innerHTML+=`<option value="${t}">${t}</option>`); } }catch(e){} }
         document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ e.preventDefault(); await addDoc(collection(db,"eventos"),{titulo:document.getElementById('evento-titulo').value,tipo:document.getElementById('evento-tipo').value,fecha:document.getElementById('evento-fecha').value,lugar:document.getElementById('evento-lugar').value,estado:"publicado"}); document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); });
         document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); cargarDatosGenerales(); } catch (e) {} });
-        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); cargarDatosGenerales(); cargarTablaUsuarios(); } catch (e) {} });
+        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); } catch (e) {} });
     </script>
 </body>
 </html>

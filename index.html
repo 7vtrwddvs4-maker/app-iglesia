@@ -46,7 +46,7 @@
         </div>
     </nav>
 
-    <!-- Modales QR y Asistencia (Se mantienen igual) -->
+    <!-- Modales QR y Asistencia -->
     <div id="qr-fondo" class="modal-fondo"></div>
     <div id="qr-modal" class="modal-caja text-center">
         <h3 class="text-arca fw-bold">Escanear Asistencia</h3><h5 id="qr-evento-titulo" class="text-muted mb-3"></h5><div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-3"></div><button class="btn btn-danger w-100" onclick="cerrarModal('qr')">Cerrar</button>
@@ -70,7 +70,6 @@
                     <div class="card-body p-4 text-center">
                         <img src="IMG_1140.jpg" alt="Logo" class="logo-arca mb-3" style="width: 80px; height: 80px;" onerror="this.style.display='none'">
                         
-                        <!-- Formulario de Login -->
                         <div id="caja-login">
                             <h4 class="fw-bold mb-4">Iniciar Sesión</h4>
                             <form id="login-form">
@@ -81,7 +80,6 @@
                             <p class="mt-3 mb-0">¿No tienes cuenta? <a href="#" id="link-registrar" class="text-arca fw-bold">Regístrate aquí</a></p>
                         </div>
 
-                        <!-- Formulario de Registro (NUEVO) -->
                         <div id="caja-registro" style="display: none;">
                             <h4 class="fw-bold mb-4">Crear Cuenta</h4>
                             <form id="registro-form">
@@ -141,7 +139,6 @@
                         <h5 class="fw-bold text-arca">Directorio de Personas</h5>
                         <div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-light"><tr><th>Nombre</th><th>Perfil</th><th>Ministerio Asignado</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead><tbody id="tabla-usuarios"></tbody></table></div>
                         
-                        <!-- Editor Usuario (AHORA CON SELECTOR DE MINISTERIO) -->
                         <div id="editor-usuario" class="card mt-3 border-primary" style="display:none;">
                             <div class="card-body bg-light">
                                 <h6 class="card-title text-primary fw-bold">Editando a: <span id="edit-nombre-display"></span></h6>
@@ -151,7 +148,6 @@
                                         <div class="col-md-3"><label class="form-label small text-muted">Perfil</label><select id="edit-perfil" class="form-select"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option></select></div>
                                         <div class="col-md-3"><label class="form-label small text-muted">Cargo</label><select id="edit-cargo" class="form-select"><option>Pastor general</option><option>Pastor</option><option>Miembro</option></select></div>
                                         <div class="col-md-3"><label class="form-label small text-muted">Estado</label><select id="edit-estado" class="form-select"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option></select></div>
-                                        <!-- NUEVO CAMPO -->
                                         <div class="col-md-3"><label class="form-label small text-muted fw-bold text-success">Ministerio a Cargo</label><select id="edit-ministerio" class="form-select"><option value="">Ninguno</option></select></div>
                                     </div>
                                     <label class="form-label small text-muted fw-bold">Ruta Completada:</label>
@@ -164,16 +160,13 @@
                         </div>
                     </div>
 
-                    <!-- Pestaña Eventos (NUEVA LÓGICA DE MINISTERIO) -->
                     <div class="seccion-gestion" id="sec-eventos">
                         <h5 class="fw-bold text-arca">Crear Nuevo Evento</h5>
                         <p id="aviso-lider" class="text-danger fw-bold" style="display:none;">⚠️ Al ser Líder, solo puedes crear eventos para tu ministerio asignado.</p>
                         <form id="form-nuevo-evento" class="row g-3">
                             <div class="col-md-4"><input type="text" id="evento-titulo" class="form-control" placeholder="Título del Evento" required></div>
                             <div class="col-md-4"><select id="evento-tipo" class="form-select" required></select></div>
-                            <!-- Selector dinámico de ministerio del evento -->
                             <div class="col-md-4"><select id="evento-ministerio-select" class="form-select" required><option value="General">General (Toda la iglesia)</option></select></div>
-                            
                             <div class="col-md-6"><input type="datetime-local" id="evento-fecha" class="form-control" required></div>
                             <div class="col-md-6"><input type="text" id="evento-lugar" class="form-control" placeholder="Lugar" required></div>
                             <div class="col-12"><button type="submit" class="btn btn-arca">Publicar Evento</button></div>
@@ -207,15 +200,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // Importamos setDoc para crear el perfil del nuevo usuario
         import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        // Importamos createUserWithEmailAndPassword para el registro
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
 
-        // Variables Globales
         window.usuariosData = {}; 
         window.perfilUsuarioActual = ""; 
         window.ministerioUsuarioActual = ""; 
@@ -230,11 +220,9 @@
         
         btnTabs.forEach((btn, idx) => { btn.addEventListener('click', () => { btnTabs.forEach(b => b.classList.remove('active', 'btn-primary')); if(btn.id !== 'btn-tab-finanzas') btn.classList.add('active'); secs.forEach((sec, i) => { i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'); }); }); });
 
-        // Toggles de Login/Registro
         document.getElementById('link-registrar').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-login').style.display = 'none'; document.getElementById('caja-registro').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
         document.getElementById('link-login').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-registro').style.display = 'none'; document.getElementById('caja-login').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
 
-        // VIGILANTE DE SESIÓN
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -252,7 +240,6 @@
                         document.getElementById('modulo-mi-perfil').style.display = "block";
                         await cargarPerfilMiembro(user.uid, dU);
 
-                        // Lógica de Permisos (Admin, Pastor, Líder)
                         if (dU.perfilAcceso === "Administrador") {
                             document.getElementById('admin-panel').style.display = "block";
                             document.getElementById('btn-tab-usuarios').style.display = "inline-block";
@@ -262,20 +249,21 @@
                             await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas(); prepararSelectoresEventos();
                         } else if (dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder") {
                             document.getElementById('admin-panel').style.display = "block";
-                            // Ocultar pestañas sensibles a Líderes/Pastores
                             document.getElementById('btn-tab-usuarios').style.display = "none";
                             document.getElementById('btn-tab-finanzas').style.display = "none";
                             document.getElementById('btn-tab-ministerios').style.display = "none";
                             document.getElementById('btn-tab-catalogos').style.display = "none";
-                            
-                            // Forzar vista a Eventos
                             btnTabs[1].click(); 
                             cargarTiposEventosSelect(); prepararSelectoresEventos();
+                            
+                            // LA SOLUCIÓN AL BUG: Cargar nombres en memoria ocultamente para que funcione el select manual y la tabla
+                            await cargarTablaUsuarios(); 
                         } else { 
                             document.getElementById('admin-panel').style.display = "none"; 
+                            await cargarTablaUsuarios(); // Cargamos memoria para el Miembro también
                         }
                     }
-                } catch (e) { console.error(e); }
+                } catch (e) {}
                 document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
             } else {
                 estado.textContent = "Inicia Sesión"; estado.className = "badge bg-warning text-dark me-3 py-2"; 
@@ -283,36 +271,21 @@
             }
         });
 
-        // INICIAR SESIÓN
         document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => { document.getElementById('auth-error').textContent = "Credenciales incorrectas."; }); });
         
-        // CREAR CUENTA (NUEVO)
         document.getElementById('registro-form').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            const errorP = document.getElementById('auth-error'); errorP.textContent = "Creando cuenta..."; errorP.className = "text-warning mt-3 fw-bold";
-            const nombre = document.getElementById('reg-nombre').value; const email = document.getElementById('reg-email').value; const pass = document.getElementById('reg-password').value;
+            e.preventDefault(); const errorP = document.getElementById('auth-error'); errorP.textContent = "Creando cuenta..."; errorP.className = "text-warning mt-3 fw-bold";
+            const n = document.getElementById('reg-nombre').value; const em = document.getElementById('reg-email').value; const pass = document.getElementById('reg-password').value;
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                const user = userCredential.user;
-                // Escribir el perfil básico en Firestore
-                await setDoc(doc(db, "usuarios", user.uid), {
-                    nombre: nombre,
-                    email: email,
-                    perfilAcceso: "Miembro", // Perfil base seguro
-                    cargo: "Miembro",
-                    estado: "En consolidación",
-                    ministerioAsignado: "Ninguno",
-                    etapasCompletadas: [],
-                    fechaRegistro: new Date().toISOString()
-                });
-                errorP.textContent = "¡Cuenta creada con éxito! Entrando..."; errorP.className = "text-success mt-3 fw-bold";
-            } catch (error) { errorP.textContent = "Error: El correo ya existe o la contraseña es muy débil."; errorP.className = "text-danger mt-3 fw-bold"; }
+                const uc = await createUserWithEmailAndPassword(auth, em, pass);
+                await setDoc(doc(db, "usuarios", uc.user.uid), { nombre: n, email: em, perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() });
+                errorP.textContent = "¡Cuenta creada! Entrando..."; errorP.className = "text-success mt-3 fw-bold";
+            } catch (err) { errorP.textContent = "Error."; errorP.className = "text-danger mt-3 fw-bold"; }
         });
 
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
         window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; }
 
-        // EXPORTACIÓN A CSV
         window.exportarTablaCSV = function(tablaId, filename) {
             let csv = []; let table = document.getElementById(tablaId); let rows = table.querySelectorAll("tr");
             for (let i = 0; i < rows.length; i++) { let row = []; let cols = rows[i].querySelectorAll("td, th"); for (let j = 0; j < cols.length; j++) { let clone = cols[j].cloneNode(true); clone.querySelectorAll('button').forEach(b => b.remove()); row.push('"' + clone.innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""') + '"'); } csv.push(row.join(";")); }
@@ -320,44 +293,25 @@
             let downloadLink = document.createElement("a"); downloadLink.download = filename; downloadLink.href = window.URL.createObjectURL(csvFile); downloadLink.style.display = "none"; document.body.appendChild(downloadLink); downloadLink.click(); document.body.removeChild(downloadLink);
         }
 
-        async function cargarMinisteriosGbl() { 
-            window.catalogoMinisterios = [];
-            const snap = await getDocs(collection(db, "ministerios"));
-            snap.forEach(d => { if(d.data().estado) window.catalogoMinisterios.push(d.data().nombre); });
-        }
+        async function cargarMinisteriosGbl() { window.catalogoMinisterios = []; const snap = await getDocs(collection(db, "ministerios")); snap.forEach(d => { if(d.data().estado) window.catalogoMinisterios.push(d.data().nombre); }); }
 
-        // PREPARAR SELECTORES DE EVENTOS SEGÚN ROL (NUEVO)
         function prepararSelectoresEventos() {
-            const selectMinEvento = document.getElementById('evento-ministerio-select');
-            selectMinEvento.innerHTML = '<option value="General">General (Toda la iglesia)</option>';
-            
+            const s = document.getElementById('evento-ministerio-select'); s.innerHTML = '<option value="General">General (Toda la iglesia)</option>';
             if (window.perfilUsuarioActual === "Líder") {
-                // Si es Líder, bloqueamos su creación al ministerio que tiene asignado
                 document.getElementById('aviso-lider').style.display = "block";
-                selectMinEvento.innerHTML = `<option value="${window.ministerioUsuarioActual}">${window.ministerioUsuarioActual}</option>`;
-                selectMinEvento.setAttribute("disabled", "true"); // Lo bloqueamos para que no lo cambie
+                s.innerHTML = `<option value="${window.ministerioUsuarioActual}">${window.ministerioUsuarioActual}</option>`; s.setAttribute("disabled", "true");
             } else {
-                // Admin o Pastor ven todos los ministerios
-                document.getElementById('aviso-lider').style.display = "none";
-                selectMinEvento.removeAttribute("disabled");
-                window.catalogoMinisterios.forEach(m => {
-                    selectMinEvento.innerHTML += `<option value="${m}">${m}</option>`;
-                });
+                document.getElementById('aviso-lider').style.display = "none"; s.removeAttribute("disabled");
+                window.catalogoMinisterios.forEach(m => { s.innerHTML += `<option value="${m}">${m}</option>`; });
             }
         }
 
         async function cargarPerfilMiembro(uid, dU) {
-            document.getElementById('mi-nombre').textContent = dU.nombre || 'N/A'; document.getElementById('mi-estado').textContent = dU.estado || 'N/A';
-            document.getElementById('mi-ministerio-asignado').textContent = dU.ministerioAsignado || 'Ninguno';
-            
-            const c = dU.etapasCompletadas || []; const t = window.catalogoEtapas.length; const pct = t > 0 ? Math.round((c.length / t) * 100) : 0;
-            document.getElementById('mi-avance-texto').textContent = `${c.length} de ${t} etapas (${pct}%)`;
-            const lst = document.getElementById('mi-lista-etapas'); lst.innerHTML = "";
-            window.catalogoEtapas.forEach(e => { const ch = c.includes(e) ? "✅" : "⏳"; const col = c.includes(e) ? "text-success" : "text-muted"; lst.innerHTML += `<li class="${col} mb-2 d-flex align-items-center gap-2"><span>${ch}</span> <span>${e}</span></li>`; });
+            document.getElementById('mi-nombre').textContent = dU.nombre || 'N/A'; document.getElementById('mi-estado').textContent = dU.estado || 'N/A'; document.getElementById('mi-ministerio-asignado').textContent = dU.ministerioAsignado || 'Ninguno';
+            const c = dU.etapasCompletadas || []; const t = window.catalogoEtapas.length; const pct = t > 0 ? Math.round((c.length / t) * 100) : 0; document.getElementById('mi-avance-texto').textContent = `${c.length} de ${t} etapas (${pct}%)`;
+            const lst = document.getElementById('mi-lista-etapas'); lst.innerHTML = ""; window.catalogoEtapas.forEach(e => { const ch = c.includes(e) ? "✅" : "⏳"; const col = c.includes(e) ? "text-success" : "text-muted"; lst.innerHTML += `<li class="${col} mb-2 d-flex align-items-center gap-2"><span>${ch}</span> <span>${e}</span></li>`; });
             try {
-                const eS = await getDocs(collection(db, "eventos")); const dic = {}; eS.forEach(d => dic[d.id] = d.data());
-                const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); const s = await getDocs(q);
-                const tab = document.getElementById('mi-tabla-asistencia'); tab.innerHTML = ""; 
+                const eS = await getDocs(collection(db, "eventos")); const dic = {}; eS.forEach(d => dic[d.id] = d.data()); const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); const s = await getDocs(q); const tab = document.getElementById('mi-tabla-asistencia'); tab.innerHTML = ""; 
                 if (s.empty) { tab.innerHTML = "<tr><td colspan='3'>Sin asistencias.</td></tr>"; } else {
                     let a = []; s.forEach(d => a.push(d.data())); a.sort((x,y) => new Date(y.fechaHora) - new Date(x.fechaHora)); 
                     a.forEach(i => { const f = new Date(i.fechaHora); tab.innerHTML += `<tr><td><strong>${dic[i.eventoID]?.titulo || "?"}</strong> <span class="badge bg-light text-dark">${dic[i.eventoID]?.ministerio || "General"}</span></td><td>${f.toLocaleDateString()} ${f.getHours()}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${i.metodo}</span></td></tr>`; });
@@ -370,33 +324,24 @@
         async function cargarTablaUsuarios() { 
             try { 
                 const q = await getDocs(collection(db, "usuarios")); const t = document.getElementById('tabla-usuarios'); t.innerHTML = ""; const tot = window.catalogoEtapas.length; 
-                q.forEach((d) => { const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot}` : "N/A"; 
-                t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td><span class="badge bg-secondary">${u.ministerioAsignado||'Ninguno'}</span></td><td><span class="badge bg-info text-dark">${u.estado||''}</span></td><td><strong>${r}</strong></td><td><button class="btn btn-sm btn-primary" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; }); 
+                q.forEach((d) => { 
+                    const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot}` : "N/A"; 
+                    t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td><span class="badge bg-secondary">${u.ministerioAsignado||'Ninguno'}</span></td><td><span class="badge bg-info text-dark">${u.estado||''}</span></td><td><strong>${r}</strong></td><td><button class="btn btn-sm btn-primary" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; 
+                }); 
             } catch (e) {} 
         }
         
         window.abrirEditorUsuario = function(uid) { 
             const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; 
             document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; 
-            
-            // Cargar selector de ministerios en el editor
-            const selMin = document.getElementById('edit-ministerio');
-            selMin.innerHTML = '<option value="Ninguno">Ninguno</option>';
-            window.catalogoMinisterios.forEach(m => { selMin.innerHTML += `<option value="${m}">${m}</option>`; });
-            selMin.value = u.ministerioAsignado || 'Ninguno';
-
-            const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; 
-            window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="etapas-check" value="${e}" ${ch} id="chk-${e}"><label class="form-check-label" for="chk-${e}">${e}</label></div>`; }); 
+            const selMin = document.getElementById('edit-ministerio'); selMin.innerHTML = '<option value="Ninguno">Ninguno</option>'; window.catalogoMinisterios.forEach(m => { selMin.innerHTML += `<option value="${m}">${m}</option>`; }); selMin.value = u.ministerioAsignado || 'Ninguno';
+            const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="etapas-check" value="${e}" ${ch} id="chk-${e}"><label class="form-check-label" for="chk-${e}">${e}</label></div>`; }); 
         };
 
         document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { 
-            e.preventDefault(); const uid = document.getElementById('edit-uid').value; const m = document.getElementById('edit-mensaje'); m.textContent = "Guardando..."; m.className = "text-warning ms-2 fw-bold"; 
-            const ch = document.querySelectorAll('input[name="etapas-check"]:checked'); const et = Array.from(ch).map(c => c.value); 
+            e.preventDefault(); const uid = document.getElementById('edit-uid').value; const m = document.getElementById('edit-mensaje'); m.textContent = "Guardando..."; m.className = "text-warning ms-2 fw-bold"; const ch = document.querySelectorAll('input[name="etapas-check"]:checked'); const et = Array.from(ch).map(c => c.value); 
             try { 
-                await updateDoc(doc(db, "usuarios", uid), { 
-                    perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, 
-                    ministerioAsignado: document.getElementById('edit-ministerio').value, etapasCompletadas: et 
-                }); 
+                await updateDoc(doc(db, "usuarios", uid), { perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, ministerioAsignado: document.getElementById('edit-ministerio').value, etapasCompletadas: et }); 
                 await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); m.textContent = "Guardado."; m.className = "text-success ms-2 fw-bold"; setTimeout(() => { m.textContent = ""; document.getElementById('editor-usuario').style.display = 'none'; }, 1500); 
             } catch (err) { m.textContent = "Error."; m.className = "text-danger ms-2 fw-bold"; } 
         });
@@ -406,7 +351,16 @@
         window.anularTransaccion = async function(id) { if (confirm("¿Anular?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
         
         window.abrirQR = function(id, tit) { document.getElementById('qr-fondo').style.display = 'block'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; new QRCode(document.getElementById("qrcode"), { text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, width: 220, height: 220 }); };
-        window.abrirAsistencia = async function(id, tit) { window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; for (const [uid, u] of Object.entries(window.usuariosData)) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let c=0; snap.forEach((d) => { const a=d.data(); const f=new Date(a.fechaHora); tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; c++; }); document.getElementById('asistencia-evento-titulo').textContent = `${tit} (${c} presentes)`; } catch(e){} };
+        window.abrirAsistencia = async function(id, tit) { 
+            window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; 
+            const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; for (const [uid, u] of Object.entries(window.usuariosData)) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } 
+            const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; 
+            try { 
+                const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let c=0; 
+                snap.forEach((d) => { const a=d.data(); const f=new Date(a.fechaHora); tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; c++; }); 
+                document.getElementById('asistencia-evento-titulo').textContent = `${tit} (${c} presentes)`; 
+            } catch(e){} 
+        };
         window.registrarAsistenciaManual = async function() { const v = document.getElementById('select-usuario-manual').value; if(!v)return; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); const snap = await getDocs(q); if(snap.empty){ await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual" }); document.getElementById('select-usuario-manual').value=""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); } } catch(e){} };
         
         async function cargarDatosGenerales() { 
@@ -414,11 +368,9 @@
                 const eS = await getDocs(collection(db,"eventos")); const lE = document.getElementById('lista-eventos'); lE.innerHTML = ""; 
                 eS.forEach((d) => { 
                     const ev = d.data(); let b = ""; 
-                    // Regla: Admin/Pastor ven todo. Líder solo ve botones de su ministerio o General.
                     let puedeOperar = false;
                     if(window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor") puedeOperar = true;
                     if(window.perfilUsuarioActual === "Líder" && (ev.ministerio === window.ministerioUsuarioActual || ev.ministerio === "General")) puedeOperar = true;
-
                     if (puedeOperar) { b = `<div class="btn-group mt-2 w-100"><button class="btn btn-sm btn-outline-primary" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button><button class="btn btn-sm btn-success" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button></div>`; } 
                     lE.innerHTML += `<li class="list-group-item d-flex flex-column gap-1"><div><h6 class="mb-0 fw-bold">${ev.titulo} <span class="badge bg-light text-dark border">${ev.ministerio || 'General'}</span></h6><small class="text-muted">${ev.tipo} • ${ev.fecha.replace('T', ' ')}</small></div>${b}</li>`; 
                 }); 
@@ -429,19 +381,9 @@
         
         document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ 
             e.preventDefault(); 
-            // Si el select está deshabilitado (es Lider), toma su valor de ministerioUsuarioActual, sino toma el del select
             const minEvento = document.getElementById('evento-ministerio-select').disabled ? window.ministerioUsuarioActual : document.getElementById('evento-ministerio-select').value;
-            
-            await addDoc(collection(db,"eventos"),{
-                titulo: document.getElementById('evento-titulo').value,
-                tipo: document.getElementById('evento-tipo').value,
-                ministerio: minEvento,
-                fecha: document.getElementById('evento-fecha').value,
-                lugar: document.getElementById('evento-lugar').value,
-                estado: "publicado"
-            }); 
-            document.getElementById('form-nuevo-evento').reset(); 
-            cargarDatosGenerales(); 
+            await addDoc(collection(db,"eventos"),{ titulo: document.getElementById('evento-titulo').value, tipo: document.getElementById('evento-tipo').value, ministerio: minEvento, fecha: document.getElementById('evento-fecha').value, lugar: document.getElementById('evento-lugar').value, estado: "publicado" }); 
+            document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); 
         });
 
         document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); await cargarMinisteriosGbl(); cargarDatosGenerales(); prepararSelectoresEventos(); });

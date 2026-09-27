@@ -6,7 +6,7 @@
     <title>El Arca - App Iglesia</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9;}
-        h1, h2 { color: #333; }
+        h1, h2, h3 { color: #333; margin-top: 0; }
         .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,00,0.1); margin-bottom: 20px; }
         .success { color: #0f5132; background-color: #d1e7dd; padding: 10px; border-radius: 4px; font-weight: bold; border: 1px solid #badbcc;}
         .error { color: red; font-weight: bold;}
@@ -14,7 +14,7 @@
         li { margin-bottom: 5px; }
         
         #login-container { max-width: 400px; margin: 0 auto; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
+        input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;}
         button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;}
         button:hover { background-color: #0056b3; }
         .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
@@ -22,11 +22,16 @@
         
         /* Estilos específicos para el Panel de Administrador */
         .admin-panel { border: 2px solid #ff9800; background-color: #fff8e1; display: none; }
-        .botones-admin { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+        .botones-admin { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; margin-bottom: 20px;}
         .btn-admin { background-color: #ff9800; width: auto; flex: 1; min-width: 150px; }
         .btn-admin:hover { background-color: #e68a00; }
         .btn-finanzas { background-color: #28a745; }
         .btn-finanzas:hover { background-color: #218838; }
+
+        /* Estilos para formularios de gestión */
+        .gestion-form { background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ffcc80; margin-top: 15px;}
+        .gestion-form button { background-color: #ff9800; }
+        .gestion-form button:hover { background-color: #e68a00; }
 
         #dashboard-container { display: none; }
     </style>
@@ -51,14 +56,26 @@
     <div id="dashboard-container">
         <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
 
-        <!-- PANEL EXCLUSIVO PARA ADMINISTRADORES (Oculto por defecto) -->
+        <!-- PANEL EXCLUSIVO PARA ADMINISTRADORES -->
         <div class="card admin-panel" id="admin-panel">
             <h2>⚙️ Panel de Administración</h2>
-            <p>Opciones exclusivas de configuración y control financiero.</p>
+            <p>Opciones exclusivas de configuración y control.</p>
+            
             <div class="botones-admin">
                 <button class="btn-admin" id="btn-gestion-usuarios">Gestionar Usuarios</button>
                 <button class="btn-admin" id="btn-config-catalogos">Configurar Catálogos</button>
                 <button class="btn-admin btn-finanzas" id="btn-modulo-finanzas">💰 Módulo Finanzas</button>
+            </div>
+
+            <!-- FORMULARIO PARA AGREGAR MINISTERIO -->
+            <div class="gestion-form">
+                <h3>Agregar Nuevo Ministerio</h3>
+                <form id="form-nuevo-ministerio">
+                    <input type="text" id="min-nombre" placeholder="Nombre del Ministerio (ej. Jóvenes)" required>
+                    <textarea id="min-descripcion" rows="2" placeholder="Descripción breve" required></textarea>
+                    <button type="submit">Guardar Ministerio</button>
+                    <p id="min-mensaje"></p>
+                </form>
             </div>
         </div>
 
@@ -79,7 +96,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importamos addDoc para poder escribir datos nuevos
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -104,8 +122,12 @@
         const btnLogout = document.getElementById('btn-logout');
         const listaMinisterios = document.getElementById('lista-ministerios');
         const listaFormacion = document.getElementById('lista-formacion');
+        
+        // Elementos del nuevo formulario
+        const formNuevoMinisterio = document.getElementById('form-nuevo-ministerio');
+        const minMensaje = document.getElementById('min-mensaje');
 
-        // 1. EL VIGILANTE: Conectando Auth con Firestore y aplicando permisos
+        // 1. EL VIGILANTE
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -116,13 +138,11 @@
                         const datosUsuario = userDoc.data();
                         estado.textContent = `Bienvenido(a), ${datosUsuario.nombre} | Perfil: ${datosUsuario.perfilAcceso}`;
                         
-                        // LÓGICA DE PERMISOS (RBAC)
                         if (datosUsuario.perfilAcceso === "Administrador") {
-                            adminPanel.style.display = "block"; // Revela el panel secreto
+                            adminPanel.style.display = "block"; 
                         } else {
-                            adminPanel.style.display = "none";  // Lo mantiene oculto
+                            adminPanel.style.display = "none";  
                         }
-
                     } else {
                         estado.textContent = `Sesión iniciada: ${user.email} (Perfil no configurado)`;
                         adminPanel.style.display = "none";
@@ -143,7 +163,7 @@
                 estado.style.color = "black";
                 loginContainer.style.display = "block";
                 dashboardContainer.style.display = "none";
-                adminPanel.style.display = "none"; // Seguridad extra al cerrar sesión
+                adminPanel.style.display = "none"; 
             }
         });
 
@@ -205,6 +225,42 @@
                 estado.className = "error";
             }
         }
+
+        // 5. ACCIÓN: CREAR NUEVO MINISTERIO
+        formNuevoMinisterio.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita que la página se recargue
+            
+            const nombre = document.getElementById('min-nombre').value;
+            const descripcion = document.getElementById('min-descripcion').value;
+            
+            minMensaje.textContent = "Guardando...";
+            minMensaje.style.color = "orange";
+
+            try {
+                // Escribimos en Firestore
+                await addDoc(collection(db, "ministerios"), {
+                    nombre: nombre,
+                    descripcion: descripcion,
+                    estado: true // Por defecto lo creamos activo
+                });
+                
+                minMensaje.textContent = "¡Ministerio guardado con éxito!";
+                minMensaje.style.color = "green";
+                formNuevoMinisterio.reset(); // Limpiamos el formulario
+                
+                // Recargamos la lista visualmente
+                cargarDatosBaseDeDatos(); 
+                
+                // Borramos el mensaje de éxito después de 3 segundos
+                setTimeout(() => { minMensaje.textContent = ""; }, 3000);
+
+            } catch (error) {
+                console.error("Error al crear ministerio:", error);
+                minMensaje.textContent = "Error al guardar. Revisa tus permisos.";
+                minMensaje.style.color = "red";
+            }
+        });
+
     </script>
 </body>
 </html>

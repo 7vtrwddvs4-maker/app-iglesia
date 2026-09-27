@@ -4,223 +4,295 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Arca - App Iglesia</title>
+    <!-- Framework Bootstrap 5 para diseño moderno -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Librería para Códigos QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9;}
-        h1, h2, h3, h4 { color: #333; margin-top: 0; }
-        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,00,0.1); margin-bottom: 20px; }
-        .success { color: #0f5132; background-color: #d1e7dd; padding: 10px; border-radius: 4px; font-weight: bold; border: 1px solid #badbcc;}
-        .error { color: red; font-weight: bold;}
-        ul, ol { padding-left: 20px; }
-        li { margin-bottom: 5px; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        #login-container { max-width: 400px; margin: 0 auto; }
-        input, textarea, select { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit;}
-        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;}
-        button:hover { background-color: #0056b3; }
-        .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
-        .btn-rojo:hover { background-color: #c82333; }
-        .btn-verde { background-color: #28a745; width: auto;} 
-        .btn-verde:hover { background-color: #218838; }
-        
-        /* Panel Administrador */
-        .admin-panel { border: 2px solid #ff9800; background-color: #fff8e1; display: none; }
-        .botones-admin { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; margin-bottom: 20px;}
-        .btn-admin { background-color: #ff9800; width: auto; flex: 1; min-width: 100px; }
-        .btn-admin:hover { background-color: #e68a00; }
-        .btn-admin.tab-finanzas { background-color: #28a745; color: white; }
-        .btn-admin.tab-finanzas:hover { background-color: #218838; }
-        .btn-pequeno { padding: 5px 10px; width: auto; font-size: 12px; display: inline-block; margin-left: 5px; }
+        /* Tema El Arca (Basado en el logo) */
+        :root { --azul-arca: #0d3b66; --dorado-arca: #f4a261; }
+        .text-arca { color: var(--azul-arca); }
+        .bg-arca { background-color: var(--azul-arca); color: white; }
+        .btn-arca { background-color: var(--azul-arca); color: white; border: none; }
+        .btn-arca:hover { background-color: #08294a; color: white; }
+        .border-arca { border-top: 4px solid var(--azul-arca) !important; }
 
-        /* Pestañas de Gestión */
-        .seccion-gestion { display: none; background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ffcc80; margin-top: 15px;}
+        /* Estilos de Modales y Utilidades (Mantenidos para compatibilidad) */
+        .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1040; }
+        .modal-caja { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 12px; z-index: 1050; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; width: 95%; max-width: 600px; border-top: 5px solid var(--dorado-arca);}
+        .seccion-gestion { display: none; animation: fadeIn 0.3s; }
         .seccion-gestion.activa { display: block; }
-        .seccion-finanzas { border-color: #28a745; }
+        .estado-anulado { text-decoration: line-through; color: #6c757d; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Tablas */
-        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; font-size: 14px;}
-        th, td { padding: 10px; border-bottom: 1px solid #ddd; }
-        th { border-bottom: 2px solid #ff9800; }
+        /* Ícono del Logo (hace que la imagen cuadrada/negra se vea circular y prolija) */
+        .logo-arca { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         
-        /* Finanzas */
-        .fin-dashboard { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .fin-card { flex: 1; padding: 15px; border-radius: 5px; text-align: center; min-width: 120px; }
-        .fin-ingreso { background: #d4edda; border: 1px solid #c3e6cb; }
-        .fin-egreso { background: #f8d7da; border: 1px solid #f5c6cb; }
-        .fin-saldo { background: #e2e3e5; border: 1px solid #d6d8db; }
-        .estado-anulado { text-decoration: line-through; color: gray; }
-
-        /* Formación Checkboxes */
-        .checklist-formacion { background: #f0f4f8; padding: 10px 15px; border-radius: 6px; margin: 10px 0; border: 1px solid #d0dbe5; }
-        .checkbox-item { display: flex; align-items: center; gap: 8px; margin: 8px 0; cursor: pointer; }
-        .checkbox-item input[type="checkbox"] { width: auto; margin: 0; }
-
-        #dashboard-container { display: none; }
-
-        /* Modales */
-        .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
-        .modal-caja { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border: 3px solid #ff9800; border-radius: 8px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; width: 90%; max-width: 600px;}
+        /* Ocultar elementos al inicio */
+        #dashboard-container, #admin-panel, #modulo-mi-perfil { display: none; }
     </style>
 </head>
 <body>
-    
-    <h1>Sistema El Arca</h1>
-    <p id="estado" style="color: orange; font-weight: bold;">Verificando seguridad...</p>
 
-    <!-- MODALES QR Y ASISTENCIA -->
+    <!-- NAVBAR (Cabecera de la App) -->
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm mb-4 sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="IMG_1140.jpg" alt="Logo El Arca" class="logo-arca me-2">
+                <div>
+                    <h5 class="mb-0 fw-bold text-arca" style="line-height: 1.2;">El Arca</h5>
+                    <small class="text-muted" style="font-size: 0.7rem; font-style: italic;">El amor en personas</small>
+                </div>
+            </a>
+            <div class="d-flex align-items-center">
+                <span id="estado" class="badge bg-warning text-dark me-3 py-2">Verificando...</span>
+                <button id="btn-logout" class="btn btn-outline-danger btn-sm" style="display:none;">Cerrar Sesión</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MODALES -->
     <div id="qr-fondo" class="modal-fondo"></div>
-    <div id="qr-modal" class="modal-caja" style="text-align: center;">
-        <h2>Escanear Asistencia</h2>
-        <h3 id="qr-evento-titulo" style="color: #555;"></h3>
-        <div id="qrcode" style="margin: 20px auto; width: 250px; height: 250px; display: flex; justify-content: center;"></div>
-        <button class="btn-rojo" onclick="cerrarModal('qr')" style="margin-top: 15px;">Cerrar</button>
+    <div id="qr-modal" class="modal-caja text-center">
+        <h3 class="text-arca fw-bold">Escanear Asistencia</h3>
+        <h5 id="qr-evento-titulo" class="text-muted mb-3"></h5>
+        <div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-3"></div>
+        <button class="btn btn-danger w-100" onclick="cerrarModal('qr')">Cerrar</button>
     </div>
 
     <div id="asistencia-fondo" class="modal-fondo"></div>
     <div id="asistencia-modal" class="modal-caja">
-        <h2 style="margin-bottom: 5px;">Reporte de Asistencia</h2>
-        <h3 id="asistencia-evento-titulo" style="color: #007bff; margin-top:0;"></h3>
-        <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; border: 1px solid #cce5ff; margin-bottom: 15px;">
-            <h4 style="margin-top: 0; margin-bottom: 10px;">Añadir Registro Manual</h4>
-            <div style="display: flex; gap: 10px;">
-                <select id="select-usuario-manual" style="margin: 0; flex: 1;"><option value="">Seleccione...</option></select>
-                <button class="btn-verde" style="margin: 0;" onclick="registrarAsistenciaManual()">Agregar</button>
+        <h3 class="text-arca fw-bold">Reporte de Asistencia</h3>
+        <h5 id="asistencia-evento-titulo" class="text-primary mb-3"></h5>
+        
+        <div class="card bg-light border-0 mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Añadir Registro Manual</h6>
+                <div class="input-group">
+                    <select id="select-usuario-manual" class="form-select"><option value="">Seleccione un miembro...</option></select>
+                    <button class="btn btn-success" onclick="registrarAsistenciaManual()">Agregar</button>
+                </div>
+                <small id="manual-mensaje" class="d-block mt-2 fw-bold"></small>
             </div>
-            <p id="manual-mensaje" style="font-size: 12px; font-weight: bold; margin-bottom: 0;"></p>
         </div>
-        <div style="overflow-x:auto;">
-            <table id="tabla-exportar-asistencia">
-                <thead><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
+
+        <div class="d-flex justify-content-between mb-2">
+            <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Descargar CSV</button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle" id="tabla-exportar-asistencia">
+                <thead class="table-dark"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
                 <tbody id="tabla-asistentes"><tr><td colspan="3">Cargando...</td></tr></tbody>
             </table>
         </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-            <button class="btn-rojo" onclick="cerrarModal('asistencia')">Cerrar Reporte</button>
-            <button class="btn-verde" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Descargar CSV</button>
-        </div>
+        <button class="btn btn-secondary w-100 mt-2" onclick="cerrarModal('asistencia')">Cerrar Reporte</button>
     </div>
 
-    <!-- LOGIN -->
-    <div class="card" id="login-container">
-        <h2>Iniciar Sesión</h2>
-        <form id="login-form">
-            <input type="email" id="email" placeholder="Correo electrónico" required>
-            <input type="password" id="password" placeholder="Contraseña" required>
-            <button type="submit">Ingresar</button>
-        </form>
-        <p id="login-error" class="error"></p>
-    </div>
-
-    <!-- SISTEMA INTERNO -->
-    <div id="dashboard-container">
-        <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
-
-        <!-- PORTAL DEL MIEMBRO -->
-        <div class="card" id="modulo-mi-perfil" style="display: none; border-top: 4px solid #007bff;">
-            <h2>👤 Mi Perfil</h2>
-            <p style="margin: 5px 0;"><strong>Nombre:</strong> <span id="mi-nombre"></span></p>
-            <p style="margin: 5px 0;"><strong>Estado en la Iglesia:</strong> <span id="mi-estado"></span></p>
-            
-            <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Ruta de Formación</h3>
-            <div style="background: #e9ecef; border-radius: 4px; padding: 15px; border: 1px solid #ced4da;">
-                <p id="mi-avance-texto" style="margin: 0; font-weight: bold; color: #495057; border-bottom: 1px solid #ccc; padding-bottom: 8px;"></p>
-                <ul id="mi-lista-etapas" style="margin-top: 12px; margin-bottom: 0; padding-left: 5px; list-style: none;"></ul>
-            </div>
-
-            <h3 style="margin-top: 15px; margin-bottom: 10px;">Mi Historial de Asistencia</h3>
-            <div style="overflow-x:auto;">
-                <table>
-                    <thead><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead>
-                    <tbody id="mi-tabla-asistencia"><tr><td colspan="3">Cargando historial...</td></tr></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- PANEL ADMINISTRADOR -->
-        <div class="card admin-panel" id="admin-panel">
-            <h2>⚙️ Panel de Administración</h2>
-            <div class="botones-admin">
-                <button class="btn-admin" id="btn-tab-usuarios">Usuarios</button>
-                <button class="btn-admin" id="btn-tab-eventos">Eventos</button>
-                <button class="btn-admin" id="btn-tab-ministerios">Ministerios</button>
-                <button class="btn-admin" id="btn-tab-catalogos">Catálogos</button>
-                <button class="btn-admin tab-finanzas" id="btn-tab-finanzas">💰 Finanzas</button>
-            </div>
-
-            <div class="seccion-gestion" id="sec-usuarios">
-                <h3>Directorio de Personas</h3>
-                <div style="overflow-x:auto;">
-                    <table>
-                        <thead><tr><th>Nombre</th><th>Perfil</th><th>Cargo</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead>
-                        <tbody id="tabla-usuarios"></tbody>
-                    </table>
-                </div>
-                
-                <div id="editor-usuario" style="display:none; background:#f9f9f9; padding:15px; margin-top:15px; border-left: 4px solid #007bff; border-radius: 4px;">
-                    <h4>Editando a: <span id="edit-nombre-display"></span></h4>
-                    <form id="form-editar-usuario">
-                        <input type="hidden" id="edit-uid">
-                        <label>Perfil:</label><select id="edit-perfil"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option></select>
-                        <label>Cargo:</label><select id="edit-cargo"><option>Pastor general</option><option>Pastor</option><option>Miembro</option></select>
-                        <label>Estado:</label><select id="edit-estado"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option></select>
-                        <label><strong>Ruta Completada:</strong></label>
-                        <div class="checklist-formacion" id="contenedor-checkboxes-formacion"></div>
-                        <button type="submit" style="background-color:#007bff; margin-top:10px;">Guardar</button>
-                        <button type="button" class="btn-rojo" onclick="document.getElementById('editor-usuario').style.display='none'" style="margin-top:10px;">Cancelar</button>
-                        <p id="edit-mensaje"></p>
-                    </form>
-                </div>
-            </div>
-
-            <div class="seccion-gestion" id="sec-eventos">
-                <h3>Crear Nuevo Evento</h3>
-                <form id="form-nuevo-evento"><input type="text" id="evento-titulo" placeholder="Título" required><label>Tipo:</label><select id="evento-tipo" required></select><label>Fecha:</label><input type="datetime-local" id="evento-fecha" required><input type="text" id="evento-lugar" placeholder="Lugar" required><button type="submit">Publicar</button></form>
-            </div>
-            
-            <div class="seccion-gestion seccion-finanzas" id="sec-finanzas">
-                <h3 style="color: #28a745; margin-bottom: 20px;">Bóveda Financiera</h3>
-                <div class="fin-dashboard">
-                    <div class="fin-card fin-ingreso"><strong>Ingresos</strong><br><span id="total-ingresos" style="color:green;font-size:1.5em;font-weight:bold;">$0</span></div>
-                    <div class="fin-card fin-egreso"><strong>Egresos</strong><br><span id="total-egresos" style="color:red;font-size:1.5em;font-weight:bold;">$0</span></div>
-                    <div class="fin-card fin-saldo"><strong>Saldo</strong><br><span id="total-saldo" style="font-size:1.5em;font-weight:bold;">$0</span></div>
-                </div>
-                <form id="form-finanzas" style="background:#f9f9f9;padding:15px;border-radius:5px;border:1px solid #ddd;margin-bottom:20px;">
-                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                        <select id="fin-tipo" required style="flex:1;"><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select>
-                        <input type="number" id="fin-monto" placeholder="Monto ($)" required style="flex:1;" min="1">
-                        <input type="date" id="fin-fecha" required style="flex:1;">
+    <div class="container pb-5">
+        
+        <!-- PANTALLA LOGIN -->
+        <div class="row justify-content-center" id="login-container">
+            <div class="col-md-5">
+                <div class="card shadow-sm border-0 border-arca">
+                    <div class="card-body p-4 text-center">
+                        <img src="IMG_1140.jpg" alt="Logo" class="logo-arca mb-3" style="width: 80px; height: 80px;">
+                        <h4 class="fw-bold mb-4">Iniciar Sesión</h4>
+                        <form id="login-form">
+                            <div class="mb-3">
+                                <input type="email" id="email" class="form-control form-control-lg" placeholder="Correo electrónico" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="password" id="password" class="form-control form-control-lg" placeholder="Contraseña" required>
+                            </div>
+                            <button type="submit" class="btn btn-arca btn-lg w-100">Ingresar al Sistema</button>
+                        </form>
+                        <p id="login-error" class="text-danger mt-3 fw-bold"></p>
                     </div>
-                    <input type="text" id="fin-concepto" placeholder="Concepto" required>
-                    <button type="submit" class="btn-verde">Guardar Transacción</button>
-                </form>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <h4 style="margin: 0;">Libro Mayor (Auditoría)</h4>
-                    <button class="btn-admin" style="background-color: #17a2b8; font-size: 14px;" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor_Finanzas.csv')">📥 Descargar CSV</button>
                 </div>
-                
-                <div style="overflow-x:auto;">
-                    <table id="tabla-exportar-finanzas">
-                        <thead><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead>
-                        <tbody id="tabla-finanzas"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="seccion-gestion" id="sec-ministerios">
-                <h3>Agregar Ministerio</h3>
-                <form id="form-nuevo-ministerio"><input type="text" id="min-nombre" placeholder="Nombre" required><textarea id="min-descripcion" placeholder="Descripción" required></textarea><button type="submit">Guardar</button></form>
-            </div>
-            <div class="seccion-gestion" id="sec-catalogos">
-                <h3>Agregar Etapa</h3>
-                <form id="form-nueva-etapa"><input type="text" id="etapa-nombre" placeholder="Nueva Etapa" required><button type="submit">Agregar</button></form>
             </div>
         </div>
 
-        <div class="card" id="modulo-eventos"><h2>Cartelera General</h2><ul id="lista-eventos"></ul></div>
-        <div class="card" id="modulo-ministerios"><h2>Ministerios</h2><ul id="lista-ministerios"></ul></div>
+        <!-- SISTEMA INTERNO -->
+        <div id="dashboard-container">
+            
+            <!-- PORTAL DEL MIEMBRO -->
+            <div class="card shadow-sm border-0 border-arca mb-4" id="modulo-mi-perfil">
+                <div class="card-body p-4">
+                    <h4 class="text-arca fw-bold mb-3">👤 Mi Perfil</h4>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Nombre</p>
+                            <h5 id="mi-nombre" class="fw-bold"></h5>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Estado en la Iglesia</p>
+                            <h5 id="mi-estado"></h5>
+                        </div>
+                    </div>
+                    
+                    <h5 class="fw-bold mt-4">Mi Ruta de Formación</h5>
+                    <div class="bg-light p-3 rounded border mb-4">
+                        <h6 id="mi-avance-texto" class="text-primary fw-bold border-bottom pb-2"></h6>
+                        <ul id="mi-lista-etapas" class="list-unstyled mb-0 mt-2"></ul>
+                    </div>
+
+                    <h5 class="fw-bold">Mi Historial de Asistencia</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead class="table-light"><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead>
+                            <tbody id="mi-tabla-asistencia"><tr><td colspan="3">Cargando historial...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL ADMINISTRATIVO -->
+            <div class="card shadow border-0 mb-4" id="admin-panel" style="border-top: 4px solid var(--dorado-arca) !important;">
+                <div class="card-body p-4">
+                    <h4 class="fw-bold mb-3">⚙️ Panel de Administración</h4>
+                    
+                    <!-- Botones de Navegación Bootstrap -->
+                    <div class="btn-group w-100 mb-4 flex-wrap" role="group">
+                        <button type="button" class="btn btn-outline-primary active" id="btn-tab-usuarios">Usuarios</button>
+                        <button type="button" class="btn btn-outline-primary" id="btn-tab-eventos">Eventos</button>
+                        <button type="button" class="btn btn-outline-primary" id="btn-tab-ministerios">Ministerios</button>
+                        <button type="button" class="btn btn-outline-primary" id="btn-tab-catalogos">Catálogos</button>
+                        <button type="button" class="btn btn-success" id="btn-tab-finanzas">💰 Finanzas</button>
+                    </div>
+
+                    <!-- Pestaña Usuarios -->
+                    <div class="seccion-gestion activa" id="sec-usuarios">
+                        <h5 class="fw-bold text-arca">Directorio de Personas</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light"><tr><th>Nombre</th><th>Perfil</th><th>Cargo</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead>
+                                <tbody id="tabla-usuarios"></tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Editor Usuario -->
+                        <div id="editor-usuario" class="card mt-3 border-primary" style="display:none;">
+                            <div class="card-body bg-light">
+                                <h6 class="card-title text-primary fw-bold">Editando a: <span id="edit-nombre-display"></span></h6>
+                                <form id="form-editar-usuario">
+                                    <input type="hidden" id="edit-uid">
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">Perfil</label>
+                                            <select id="edit-perfil" class="form-select"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option></select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">Cargo</label>
+                                            <select id="edit-cargo" class="form-select"><option>Pastor general</option><option>Pastor</option><option>Miembro</option></select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small text-muted">Estado</label>
+                                            <select id="edit-estado" class="form-select"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option></select>
+                                        </div>
+                                    </div>
+                                    <label class="form-label small text-muted fw-bold">Ruta Completada:</label>
+                                    <div class="p-2 border rounded bg-white mb-3" id="contenedor-checkboxes-formacion"></div>
+                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('editor-usuario').style.display='none'">Cancelar</button>
+                                    <span id="edit-mensaje" class="ms-2 fw-bold"></span>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Eventos -->
+                    <div class="seccion-gestion" id="sec-eventos">
+                        <h5 class="fw-bold text-arca">Crear Nuevo Evento</h5>
+                        <form id="form-nuevo-evento" class="row g-3">
+                            <div class="col-md-6"><input type="text" id="evento-titulo" class="form-control" placeholder="Título del Evento" required></div>
+                            <div class="col-md-6"><select id="evento-tipo" class="form-select" required></select></div>
+                            <div class="col-md-6"><input type="datetime-local" id="evento-fecha" class="form-control" required></div>
+                            <div class="col-md-6"><input type="text" id="evento-lugar" class="form-control" placeholder="Lugar" required></div>
+                            <div class="col-12"><button type="submit" class="btn btn-arca">Publicar Evento</button></div>
+                        </form>
+                    </div>
+
+                    <!-- Pestaña Finanzas -->
+                    <div class="seccion-gestion" id="sec-finanzas">
+                        <h5 class="fw-bold text-success mb-3">Bóveda Financiera</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4"><div class="card text-bg-light border-success text-center h-100"><div class="card-body"><h6 class="text-muted">Ingresos Totales</h6><h3 class="text-success mb-0" id="total-ingresos">$0</h3></div></div></div>
+                            <div class="col-md-4"><div class="card text-bg-light border-danger text-center h-100"><div class="card-body"><h6 class="text-muted">Egresos Totales</h6><h3 class="text-danger mb-0" id="total-egresos">$0</h3></div></div></div>
+                            <div class="col-md-4"><div class="card text-bg-light border-secondary text-center h-100"><div class="card-body"><h6 class="text-muted">Saldo Actual</h6><h3 class="text-dark mb-0 fw-bold" id="total-saldo">$0</h3></div></div></div>
+                        </div>
+                        
+                        <div class="card bg-light border-0 mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title fw-bold">Registrar Movimiento</h6>
+                                <form id="form-finanzas" class="row g-2 align-items-center">
+                                    <div class="col-md-3"><select id="fin-tipo" class="form-select" required><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select></div>
+                                    <div class="col-md-3"><input type="number" id="fin-monto" class="form-control" placeholder="Monto ($)" min="1" required></div>
+                                    <div class="col-md-3"><input type="date" id="fin-fecha" class="form-control" required></div>
+                                    <div class="col-md-3"><input type="text" id="fin-concepto" class="form-control" placeholder="Concepto" required></div>
+                                    <div class="col-12"><button type="submit" class="btn btn-success w-100">Guardar Transacción</button></div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-end mb-2">
+                            <h6 class="fw-bold mb-0">Libro Mayor (Auditoría)</h6>
+                            <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor_Finanzas.csv')">📥 Exportar CSV</button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle" id="tabla-exportar-finanzas">
+                                <thead class="table-dark"><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead>
+                                <tbody id="tabla-finanzas"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña Ministerios y Catálogos -->
+                    <div class="seccion-gestion" id="sec-ministerios">
+                        <h5 class="fw-bold text-arca">Agregar Ministerio</h5>
+                        <form id="form-nuevo-ministerio" class="row g-2">
+                            <div class="col-md-4"><input type="text" id="min-nombre" class="form-control" placeholder="Nombre" required></div>
+                            <div class="col-md-6"><input type="text" id="min-descripcion" class="form-control" placeholder="Descripción" required></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-arca w-100">Guardar</button></div>
+                        </form>
+                    </div>
+                    <div class="seccion-gestion" id="sec-catalogos">
+                        <h5 class="fw-bold text-arca">Agregar Etapa Formación</h5>
+                        <form id="form-nueva-etapa" class="row g-2">
+                            <div class="col-md-9"><input type="text" id="etapa-nombre" class="form-control" placeholder="Nueva Etapa" required></div>
+                            <div class="col-md-3"><button type="submit" class="btn btn-arca w-100">Agregar</button></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARTELERAS PÚBLICAS -->
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body">
+                            <h5 class="fw-bold text-arca border-bottom pb-2">📅 Cartelera de Eventos</h5>
+                            <ul class="list-group list-group-flush" id="lista-eventos"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <h5 class="fw-bold text-arca border-bottom pb-2">🏛️ Ministerios Activos</h5>
+                            <ul class="list-group list-group-flush" id="lista-ministerios"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- Fin Dashboard -->
     </div>
 
+    <!-- Scripts de Bootstrap y Lógica -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -235,17 +307,13 @@
         
         btnTabs.forEach((btn, idx) => {
             btn.addEventListener('click', () => {
-                secs.forEach((sec, i) => {
-                    if (i === idx) sec.classList.add('activa');
-                    else sec.classList.remove('activa');
-                });
+                btnTabs.forEach(b => b.classList.remove('active', 'btn-primary'));
+                if(btn.id !== 'btn-tab-finanzas') btn.classList.add('active');
+                secs.forEach((sec, i) => { i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'); });
             });
         });
 
-        window.usuariosData = {}; 
-        window.perfilUsuarioActual = ""; 
-        window.eventoActualAsistenciaID = ""; 
-        window.catalogoEtapas = []; 
+        window.usuariosData = {}; window.perfilUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.catalogoEtapas = []; 
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
         onAuthStateChanged(auth, async (user) => {
@@ -256,377 +324,92 @@
                     if (userDoc.exists()) {
                         const datosUsuario = userDoc.data(); 
                         window.perfilUsuarioActual = datosUsuario.perfilAcceso;
-                        estado.textContent = `Bienvenido(a), ${datosUsuario.nombre} | Perfil: ${datosUsuario.perfilAcceso}`;
+                        estado.textContent = `${datosUsuario.nombre} (${datosUsuario.perfilAcceso})`;
+                        estado.className = "badge bg-success me-3 py-2";
+                        document.getElementById('btn-logout').style.display = "block";
                         
                         document.getElementById('modulo-mi-perfil').style.display = "block";
                         await cargarPerfilMiembro(user.uid, datosUsuario);
 
                         if (datosUsuario.perfilAcceso === "Administrador") {
                             document.getElementById('admin-panel').style.display = "block"; 
-                            await cargarTablaUsuarios(); 
-                            cargarTiposEventosSelect(); 
-                            cargarFinanzas();
-                        } else { 
-                            document.getElementById('admin-panel').style.display = "none"; 
-                        }
+                            await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas();
+                        } else { document.getElementById('admin-panel').style.display = "none"; }
                     }
                 } catch (e) { console.error(e); }
-                estado.className = "success"; 
                 document.getElementById('login-container').style.display = "none"; 
                 document.getElementById('dashboard-container').style.display = "block"; 
                 cargarDatosGenerales();
             } else {
-                estado.textContent = "Por favor, inicia sesión."; 
-                estado.className = ""; 
-                document.getElementById('login-container').style.display = "block"; 
+                estado.textContent = "Inicia Sesión"; estado.className = "badge bg-warning text-dark me-3 py-2"; 
+                document.getElementById('btn-logout').style.display = "none";
+                document.getElementById('login-container').style.display = "flex"; 
                 document.getElementById('dashboard-container').style.display = "none"; 
-                document.getElementById('admin-panel').style.display = "none"; 
-                document.getElementById('modulo-mi-perfil').style.display = "none";
             }
         });
 
-        document.getElementById('login-form').addEventListener('submit', (e) => { 
-            e.preventDefault(); 
-            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => { 
-                document.getElementById('login-error').textContent = "Credenciales incorrectas."; 
-            }); 
-        });
-        
+        document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => { document.getElementById('login-error').textContent = "Credenciales incorrectas."; }); });
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
-        
-        window.cerrarModal = function(tipo) { 
-            document.getElementById(`${tipo}-fondo`).style.display = 'none'; 
-            document.getElementById(`${tipo}-modal`).style.display = 'none'; 
-        }
+        window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; }
 
-        // ==========================================
-        // EXPORTACIÓN A CSV
-        // ==========================================
+        // CSV
         window.exportarTablaCSV = function(tablaId, filename) {
-            let csv = [];
-            let table = document.getElementById(tablaId);
-            let rows = table.querySelectorAll("tr");
-            
-            for (let i = 0; i < rows.length; i++) {
-                let row = [];
-                let cols = rows[i].querySelectorAll("td, th");
-                for (let j = 0; j < cols.length; j++) {
-                    let clone = cols[j].cloneNode(true);
-                    let botones = clone.querySelectorAll('button');
-                    botones.forEach(b => b.remove());
-                    let data = clone.innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""');
-                    row.push('"' + data + '"');
-                }
-                csv.push(row.join(";")); 
-            }
-
+            let csv = []; let table = document.getElementById(tablaId); let rows = table.querySelectorAll("tr");
+            for (let i = 0; i < rows.length; i++) { let row = []; let cols = rows[i].querySelectorAll("td, th"); for (let j = 0; j < cols.length; j++) { let clone = cols[j].cloneNode(true); clone.querySelectorAll('button').forEach(b => b.remove()); row.push('"' + clone.innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""') + '"'); } csv.push(row.join(";")); }
             let csvFile = new Blob(["\uFEFF" + csv.join("\n")], {type: "text/csv;charset=utf-8;"});
-            let downloadLink = document.createElement("a");
-            downloadLink.download = filename;
-            downloadLink.href = window.URL.createObjectURL(csvFile);
-            downloadLink.style.display = "none";
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
+            let downloadLink = document.createElement("a"); downloadLink.download = filename; downloadLink.href = window.URL.createObjectURL(csvFile); downloadLink.style.display = "none"; document.body.appendChild(downloadLink); downloadLink.click(); document.body.removeChild(downloadLink);
         }
 
-        // ==========================================
-        // FUNCIONES GENERALES Y PORTAL
-        // ==========================================
-        async function cargarPerfilMiembro(uid, datosUsuario) {
-            document.getElementById('mi-nombre').textContent = datosUsuario.nombre || 'N/A';
-            document.getElementById('mi-estado').textContent = datosUsuario.estado || 'N/A';
-            
-            const completadas = datosUsuario.etapasCompletadas || []; 
-            const total = window.catalogoEtapas.length; 
-            const pct = total > 0 ? Math.round((completadas.length / total) * 100) : 0;
-            document.getElementById('mi-avance-texto').textContent = `${completadas.length} de ${total} etapas completadas (${pct}%)`;
-            
-            const listaEtapas = document.getElementById('mi-lista-etapas'); 
-            listaEtapas.innerHTML = "";
-            window.catalogoEtapas.forEach(etapa => {
-                const check = completadas.includes(etapa) ? "✅" : "⏳"; 
-                const color = completadas.includes(etapa) ? "#155724" : "#6c757d";
-                listaEtapas.innerHTML += `<li style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; color: ${color};"><span>${check}</span> <span>${etapa}</span></li>`;
-            });
-            
-            const tabla = document.getElementById('mi-tabla-asistencia');
+        // FUNCIONES GENERALES
+        async function cargarPerfilMiembro(uid, dU) {
+            document.getElementById('mi-nombre').textContent = dU.nombre || 'N/A'; document.getElementById('mi-estado').textContent = dU.estado || 'N/A';
+            const c = dU.etapasCompletadas || []; const t = window.catalogoEtapas.length; const pct = t > 0 ? Math.round((c.length / t) * 100) : 0;
+            document.getElementById('mi-avance-texto').textContent = `${c.length} de ${t} etapas (${pct}%)`;
+            const lst = document.getElementById('mi-lista-etapas'); lst.innerHTML = "";
+            window.catalogoEtapas.forEach(e => { const ch = c.includes(e) ? "✅" : "⏳"; const col = c.includes(e) ? "text-success" : "text-muted"; lst.innerHTML += `<li class="${col} mb-2 d-flex align-items-center gap-2"><span>${ch}</span> <span>${e}</span></li>`; });
             try {
-                const eventosSnap = await getDocs(collection(db, "eventos")); 
-                const dicEventos = {}; 
-                eventosSnap.forEach(d => dicEventos[d.id] = d.data());
-                
-                const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); 
-                const snap = await getDocs(q);
-                
-                tabla.innerHTML = ""; 
-                if (snap.empty) { 
-                    tabla.innerHTML = "<tr><td colspan='3'>Aún no tienes asistencias.</td></tr>"; 
-                } else {
-                    let asistenciasArr = []; 
-                    snap.forEach(d => asistenciasArr.push(d.data())); 
-                    asistenciasArr.sort((a,b) => new Date(b.fechaHora) - new Date(a.fechaHora)); 
-                    
-                    asistenciasArr.forEach(a => {
-                        const ev = dicEventos[a.eventoID]; 
-                        const titulo = ev ? ev.titulo : "Evento desconocido";
-                        const fechaObj = new Date(a.fechaHora); 
-                        const fechaLegible = `${fechaObj.getDate().toString().padStart(2,'0')}/${(fechaObj.getMonth()+1).toString().padStart(2,'0')}/${fechaObj.getFullYear()} ${fechaObj.getHours().toString().padStart(2,'0')}:${fechaObj.getMinutes().toString().padStart(2,'0')}`;
-                        tabla.innerHTML += `<tr><td><strong>${titulo}</strong></td><td>${fechaLegible}</td><td>${a.metodo}</td></tr>`;
-                    });
+                const eS = await getDocs(collection(db, "eventos")); const dic = {}; eS.forEach(d => dic[d.id] = d.data());
+                const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); const s = await getDocs(q);
+                const tab = document.getElementById('mi-tabla-asistencia'); tab.innerHTML = ""; 
+                if (s.empty) { tab.innerHTML = "<tr><td colspan='3'>Sin asistencias.</td></tr>"; } else {
+                    let a = []; s.forEach(d => a.push(d.data())); a.sort((x,y) => new Date(y.fechaHora) - new Date(x.fechaHora)); 
+                    a.forEach(i => { const f = new Date(i.fechaHora); tab.innerHTML += `<tr><td><strong>${dic[i.eventoID]?.titulo || "?"}</strong></td><td>${f.toLocaleDateString()} ${f.getHours()}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${i.metodo}</span></td></tr>`; });
                 }
-            } catch (e) { tabla.innerHTML = "<tr><td colspan='3'>Error al cargar historial.</td></tr>"; }
+            } catch (e) {}
         }
 
-        async function cargarCatalogoEtapas() { 
-            try { 
-                const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); 
-                if (d.exists()) { window.catalogoEtapas = d.data().lista || []; } 
-            } catch (e) { console.error(e); } 
-        }
-
-        async function cargarTablaUsuarios() { 
-            try { 
-                const q = await getDocs(collection(db, "usuarios")); 
-                const t = document.getElementById('tabla-usuarios'); 
-                t.innerHTML = ""; 
-                const tot = window.catalogoEtapas.length; 
-                
-                q.forEach((d) => { 
-                    const u = d.data(); 
-                    window.usuariosData[d.id] = u; 
-                    const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; 
-                    const r = tot > 0 ? `${c}/${tot} (${Math.round((c/tot)*100)}%)` : "N/A"; 
-                    t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td>${u.estado||''}</td><td><strong>${r}</strong></td><td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; 
-                }); 
-            } catch (e) { console.error(e); } 
-        }
-
-        window.abrirEditorUsuario = function(uid) { 
-            const u = window.usuariosData[uid]; 
-            document.getElementById('editor-usuario').style.display = 'block'; 
-            document.getElementById('edit-uid').value = uid; 
-            document.getElementById('edit-nombre-display').textContent = u.nombre; 
-            document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; 
-            document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; 
-            document.getElementById('edit-estado').value = u.estado || 'En consolidación'; 
-            
-            const c = document.getElementById('contenedor-checkboxes-formacion'); 
-            c.innerHTML = ""; 
-            const comp = u.etapasCompletadas || []; 
-            window.catalogoEtapas.forEach((e) => { 
-                const ch = comp.includes(e) ? "checked" : ""; 
-                c.innerHTML += `<label class="checkbox-item"><input type="checkbox" name="etapas-check" value="${e}" ${ch}> ${e}</label>`; 
-            }); 
-        };
-
-        document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            const uid = document.getElementById('edit-uid').value; 
-            const m = document.getElementById('edit-mensaje'); 
-            m.textContent = "Guardando..."; m.style.color = "orange"; 
-            
-            const ch = document.querySelectorAll('input[name="etapas-check"]:checked'); 
-            const et = Array.from(ch).map(c => c.value); 
-            
-            try { 
-                await updateDoc(doc(db, "usuarios", uid), { 
-                    perfilAcceso: document.getElementById('edit-perfil').value, 
-                    cargo: document.getElementById('edit-cargo').value, 
-                    estado: document.getElementById('edit-estado').value, 
-                    etapasCompletadas: et 
-                }); 
-                await cargarTablaUsuarios(); 
-                await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); 
-                m.textContent = "Guardado."; m.style.color = "green"; 
-                setTimeout(() => { m.textContent = ""; document.getElementById('editor-usuario').style.display = 'none'; }, 1500); 
-            } catch (err) { m.textContent = "Error."; m.style.color = "red"; } 
-        });
+        async function cargarCatalogoEtapas() { try { const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); if (d.exists()) window.catalogoEtapas = d.data().lista || []; } catch (e) {} }
+        async function cargarTablaUsuarios() { try { const q = await getDocs(collection(db, "usuarios")); const t = document.getElementById('tabla-usuarios'); t.innerHTML = ""; const tot = window.catalogoEtapas.length; q.forEach((d) => { const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot}` : "N/A"; t.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td><span class="badge bg-info text-dark">${u.estado||''}</span></td><td><strong>${r}</strong></td><td><button class="btn btn-sm btn-primary" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; }); } catch (e) {} }
         
-        async function cargarFinanzas() { 
-            const t = document.getElementById('tabla-finanzas'); 
-            let sI = 0, sE = 0, aT = []; 
-            try { 
-                const f = await getDocs(collection(db, "finanzas")); 
-                f.forEach((d) => aT.push({ id: d.id, ...d.data() })); 
-                aT.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); 
-                t.innerHTML = ""; 
-                
-                aT.forEach((tr) => { 
-                    const an = tr.estado === "Anulado"; 
-                    if (!an) { 
-                        if (tr.tipo === "Ingreso") sI += tr.monto; 
-                        else sE += tr.monto; 
-                    } 
-                    const cM = an ? "gray" : (tr.tipo === "Ingreso" ? "green" : "red"); 
-                    const bA = an ? `Anulado` : `<button class="btn-rojo btn-pequeno" onclick="anularTransaccion('${tr.id}')">Anular</button>`; 
-                    t.innerHTML += `<tr class="${an ? 'estado-anulado' : ''}"><td>${tr.fecha}</td><td>${tr.concepto}</td><td>${tr.tipo}</td><td style="color:${cM};font-weight:bold;">${formatoMoneda.format(tr.monto)}</td><td>${tr.estado}</td><td>${bA}</td></tr>`; 
-                }); 
-                
-                document.getElementById('total-ingresos').textContent = formatoMoneda.format(sI); 
-                document.getElementById('total-egresos').textContent = formatoMoneda.format(sE); 
-                document.getElementById('total-saldo').textContent = formatoMoneda.format(sI - sE); 
-            } catch (e) { console.error(e); } 
-        }
-
-        document.getElementById('form-finanzas').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            try { 
-                await addDoc(collection(db, "finanzas"), { 
-                    tipo: document.getElementById('fin-tipo').value, 
-                    monto: Number(document.getElementById('fin-monto').value), 
-                    fecha: document.getElementById('fin-fecha').value, 
-                    concepto: document.getElementById('fin-concepto').value, 
-                    estado: "Activo", 
-                    registradoPor: auth.currentUser.uid, 
-                    timestamp: new Date().toISOString() 
-                }); 
-                document.getElementById('form-finanzas').reset(); 
-                cargarFinanzas(); 
-            } catch (e) { console.error(e); } 
-        });
-
-        window.anularTransaccion = async function(id) { 
-            if (confirm("¿Anular?")) { 
-                await updateDoc(doc(db, "finanzas", id), { 
-                    estado: "Anulado", 
-                    anuladoPor: auth.currentUser.uid, 
-                    fechaAnulacion: new Date().toISOString() 
-                }); 
-                cargarFinanzas(); 
-            } 
+        window.abrirEditorUsuario = function(uid) { 
+            const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; 
+            const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; 
+            window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="etapas-check" value="${e}" ${ch} id="chk-${e}"><label class="form-check-label" for="chk-${e}">${e}</label></div>`; }); 
         };
 
-        window.abrirQR = function(id, tit) { 
-            document.getElementById('qr-fondo').style.display = 'block'; 
-            document.getElementById('qr-modal').style.display = 'block'; 
-            document.getElementById('qr-evento-titulo').textContent = tit; 
-            document.getElementById('qrcode').innerHTML = ""; 
-            new QRCode(document.getElementById("qrcode"), { 
-                text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, 
-                width: 250, 
-                height: 250 
-            }); 
-        };
-
-        window.abrirAsistencia = async function(id, tit) { 
-            window.eventoActualAsistenciaID = id; 
-            document.getElementById('asistencia-fondo').style.display='block'; 
-            document.getElementById('asistencia-modal').style.display='block'; 
-            document.getElementById('asistencia-evento-titulo').textContent = tit; 
-            
-            const sel = document.getElementById('select-usuario-manual'); 
-            sel.innerHTML = '<option value="">Seleccione...</option>'; 
-            for (const [uid, u] of Object.entries(window.usuariosData)) { 
-                sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; 
-            } 
-            
-            const tab = document.getElementById('tabla-asistentes'); 
-            tab.innerHTML = ""; 
-            try { 
-                const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); 
-                const snap = await getDocs(q); 
-                let c = 0; 
-                snap.forEach((d) => { 
-                    const a = d.data(); 
-                    const f = new Date(a.fechaHora); 
-                    tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td>${a.metodo}</td></tr>`; 
-                    c++; 
-                }); 
-                document.getElementById('asistencia-evento-titulo').textContent += ` (${c} presentes)`; 
-            } catch(e) { console.error(e); } 
-        };
-
-        window.registrarAsistenciaManual = async function() { 
-            const v = document.getElementById('select-usuario-manual').value; 
-            if (!v) return; 
-            try { 
-                const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); 
-                const snap = await getDocs(q); 
-                if (snap.empty) { 
-                    await addDoc(collection(db, "asistencias"), { 
-                        eventoID: window.eventoActualAsistenciaID, 
-                        usuarioID: v, 
-                        fechaHora: new Date().toISOString(), 
-                        metodo: "Manual" 
-                    }); 
-                    document.getElementById('select-usuario-manual').value=""; 
-                    window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
-                } 
-            } catch(e) { console.error(e); } 
-        };
-
+        document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { e.preventDefault(); const uid = document.getElementById('edit-uid').value; const m = document.getElementById('edit-mensaje'); m.textContent = "Guardando..."; m.className = "text-warning ms-2 fw-bold"; const ch = document.querySelectorAll('input[name="etapas-check"]:checked'); const et = Array.from(ch).map(c => c.value); try { await updateDoc(doc(db, "usuarios", uid), { perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, etapasCompletadas: et }); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); m.textContent = "Guardado."; m.className = "text-success ms-2 fw-bold"; setTimeout(() => { m.textContent = ""; document.getElementById('editor-usuario').style.display = 'none'; }, 1500); } catch (err) { m.textContent = "Error."; m.className = "text-danger ms-2 fw-bold"; } });
+        
+        async function cargarFinanzas() { const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; try { const f = await getDocs(collection(db, "finanzas")); f.forEach((d) => aT.push({ id: d.id, ...d.data() })); aT.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); t.innerHTML = ""; aT.forEach((tr) => { const an = tr.estado === "Anulado"; if (!an) { if (tr.tipo === "Ingreso") sI += tr.monto; else sE += tr.monto; } const cM = an ? "text-secondary" : (tr.tipo === "Ingreso" ? "text-success" : "text-danger"); const bA = an ? `<span class="badge bg-secondary">Anulado</span>` : `<button class="btn btn-sm btn-outline-danger" onclick="anularTransaccion('${tr.id}')">Anular</button>`; t.innerHTML += `<tr class="${an ? 'estado-anulado' : ''}"><td>${tr.fecha}</td><td>${tr.concepto}</td><td>${tr.tipo}</td><td class="${cM} fw-bold">${formatoMoneda.format(tr.monto)}</td><td>${tr.estado}</td><td>${bA}</td></tr>`; }); document.getElementById('total-ingresos').textContent = formatoMoneda.format(sI); document.getElementById('total-egresos').textContent = formatoMoneda.format(sE); document.getElementById('total-saldo').textContent = formatoMoneda.format(sI - sE); } catch (e) {} }
+        document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
+        window.anularTransaccion = async function(id) { if (confirm("¿Anular?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
+        
+        window.abrirQR = function(id, tit) { document.getElementById('qr-fondo').style.display = 'block'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; new QRCode(document.getElementById("qrcode"), { text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, width: 220, height: 220 }); };
+        window.abrirAsistencia = async function(id, tit) { window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; for (const [uid, u] of Object.entries(window.usuariosData)) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let c=0; snap.forEach((d) => { const a=d.data(); const f=new Date(a.fechaHora); tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; c++; }); document.getElementById('asistencia-evento-titulo').textContent = `${tit} (${c} presentes)`; } catch(e){} };
+        window.registrarAsistenciaManual = async function() { const v = document.getElementById('select-usuario-manual').value; if(!v)return; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); const snap = await getDocs(q); if(snap.empty){ await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual" }); document.getElementById('select-usuario-manual').value=""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); } } catch(e){} };
+        
         async function cargarDatosGenerales() { 
             try { 
-                const eS = await getDocs(collection(db,"eventos")); 
-                const lE = document.getElementById('lista-eventos'); 
-                lE.innerHTML = ""; 
-                eS.forEach((d) => { 
-                    const ev = d.data(); 
-                    let b = ""; 
-                    if (["Administrador","Pastor","Líder"].includes(window.perfilUsuarioActual)) { 
-                        b = `<button class="btn-admin btn-pequeno" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn-verde btn-pequeno" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; 
-                    } 
-                    lE.innerHTML += `<li style="margin-bottom:10px; display:flex; justify-content:space-between;"><div><strong>${ev.titulo}</strong></div><div>${b}</div></li>`; 
-                }); 
-                
-                const mS = await getDocs(collection(db,"ministerios")); 
-                document.getElementById('lista-ministerios').innerHTML = ""; 
-                mS.forEach((d) => { 
-                    if (d.data().estado) document.getElementById('lista-ministerios').innerHTML += `<li>${d.data().nombre}</li>`; 
-                }); 
-            } catch(e) { console.error(e); } 
+                const eS = await getDocs(collection(db,"eventos")); const lE = document.getElementById('lista-eventos'); lE.innerHTML = ""; 
+                eS.forEach((d) => { const ev = d.data(); let b = ""; if (["Administrador","Pastor","Líder"].includes(window.perfilUsuarioActual)) { b = `<div class="btn-group"><button class="btn btn-sm btn-outline-primary" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button><button class="btn btn-sm btn-success" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button></div>`; } 
+                lE.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2"><div><h6 class="mb-0 fw-bold">${ev.titulo}</h6><small class="text-muted">${ev.tipo} • ${ev.fecha.replace('T', ' ')}</small></div>${b}</li>`; }); 
+                const mS = await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML = ""; mS.forEach((d) => { if (d.data().estado) document.getElementById('lista-ministerios').innerHTML += `<li class="list-group-item"><strong>${d.data().nombre}</strong></li>`; }); 
+            } catch(e) {} 
         }
-
-        async function cargarTiposEventosSelect(){ 
-            try { 
-                const dS = await getDoc(doc(db,"configuracion","tipos_eventos")); 
-                if (dS.exists()) { 
-                    const s = document.getElementById('evento-tipo'); 
-                    s.innerHTML = ""; 
-                    dS.data().lista.forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`); 
-                } 
-            } catch(e) { console.error(e); } 
-        }
-
-        document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ 
-            e.preventDefault(); 
-            await addDoc(collection(db,"eventos"),{
-                titulo: document.getElementById('evento-titulo').value,
-                tipo: document.getElementById('evento-tipo').value,
-                fecha: document.getElementById('evento-fecha').value,
-                lugar: document.getElementById('evento-lugar').value,
-                estado: "publicado"
-            }); 
-            document.getElementById('form-nuevo-evento').reset(); 
-            cargarDatosGenerales(); 
-        });
-
-        document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            try { 
-                await addDoc(collection(db, "ministerios"), { 
-                    nombre: document.getElementById('min-nombre').value, 
-                    descripcion: document.getElementById('min-descripcion').value, 
-                    estado: true 
-                }); 
-                document.getElementById('form-nuevo-ministerio').reset(); 
-                cargarDatosGenerales(); 
-            } catch (e) { console.error(e); } 
-        });
-
-        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { 
-            e.preventDefault(); 
-            try { 
-                await updateDoc(doc(db, "configuracion", "etapas_formacion"), { 
-                    lista: arrayUnion(document.getElementById('etapa-nombre').value) 
-                }); 
-                document.getElementById('form-nueva-etapa').reset(); 
-                await cargarCatalogoEtapas(); 
-                await cargarTablaUsuarios(); 
-                await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); 
-            } catch (e) { console.error(e); } 
-        });
+        async function cargarTiposEventosSelect(){ try { const dS = await getDoc(doc(db,"configuracion","tipos_eventos")); if (dS.exists()) { const s = document.getElementById('evento-tipo'); s.innerHTML = ""; dS.data().lista.forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`); } } catch(e) {} }
+        
+        document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ e.preventDefault(); await addDoc(collection(db,"eventos"),{titulo:document.getElementById('evento-titulo').value,tipo:document.getElementById('evento-tipo').value,fecha:document.getElementById('evento-fecha').value,lugar:document.getElementById('evento-lugar').value,estado:"publicado"}); document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); });
+        document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); cargarDatosGenerales(); });
+        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); });
     </script>
 </body>
 </html>

@@ -10,33 +10,62 @@
         .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,00,0.1); margin-bottom: 20px; }
         .success { color: green; font-weight: bold;}
         .error { color: red; font-weight: bold;}
-        ul { padding-left: 20px; }
+        ul, ol { padding-left: 20px; }
         li { margin-bottom: 5px; }
+        
+        /* Estilos para la barrera de seguridad (Login) */
+        #login-container { max-width: 400px; margin: 0 auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;}
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;}
+        button:hover { background-color: #0056b3; }
+        .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
+        .btn-rojo:hover { background-color: #c82333; }
+        
+        /* Ocultamos el contenido del sistema por defecto */
+        #dashboard-container { display: none; }
     </style>
 </head>
 <body>
     
     <h1>Sistema El Arca</h1>
-    <p id="estado" style="color: orange; font-weight: bold;">Conectando a los servidores...</p>
+    <p id="estado" style="color: orange; font-weight: bold;">Verificando seguridad...</p>
 
-    <div class="card" id="modulo-ministerios">
-        <h2>Ministerios Activos</h2>
-        <ul id="lista-ministerios">
-            <li>Cargando ministerios...</li>
-        </ul>
+    <!-- PANTALLA DE INICIO DE SESIÓN -->
+    <div class="card" id="login-container">
+        <h2>Iniciar Sesión</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Correo electrónico" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+        <p id="login-error" class="error"></p>
     </div>
 
-    <div class="card" id="modulo-formacion">
-        <h2>Ruta de Formación</h2>
-        <ol id="lista-formacion">
-            <li>Cargando etapas...</li>
-        </ol>
+    <!-- SISTEMA INTERNO (Oculto hasta validar credenciales) -->
+    <div id="dashboard-container">
+        <button id="btn-logout" class="btn-rojo">Cerrar Sesión</button>
+
+        <div class="card" id="modulo-ministerios">
+            <h2>Ministerios Activos</h2>
+            <ul id="lista-ministerios">
+                <li>Cargando ministerios...</li>
+            </ul>
+        </div>
+
+        <div class="card" id="modulo-formacion">
+            <h2>Ruta de Formación</h2>
+            <ol id="lista-formacion">
+                <li>Cargando etapas...</li>
+            </ol>
+        </div>
     </div>
 
-    <!-- Código unificado -->
+    <!-- Código principal unificado -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importamos los módulos de autenticación de Firebase
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ",
@@ -49,39 +78,84 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app); // Encendemos el motor de autenticación
 
-        document.addEventListener("DOMContentLoaded", async () => {
-            const estado = document.getElementById('estado');
-            const listaMinisterios = document.getElementById('lista-ministerios');
-            const listaFormacion = document.getElementById('lista-formacion');
-            
+        // Conexión con los elementos visuales (HTML)
+        const estado = document.getElementById('estado');
+        const loginContainer = document.getElementById('login-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const btnLogout = document.getElementById('btn-logout');
+        const listaMinisterios = document.getElementById('lista-ministerios');
+        const listaFormacion = document.getElementById('lista-formacion');
+
+        // 1. EL VIGILANTE: Escucha en tiempo real si hay una sesión activa o no
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Usuario validado -> Abrimos las puertas
+                estado.textContent = `Sesión iniciada: ${user.email}`;
+                estado.className = "success";
+                loginContainer.style.display = "none";
+                dashboardContainer.style.display = "block";
+                
+                // Solo si el usuario entró, leemos la base de datos
+                cargarDatosBaseDeDatos();
+            } else {
+                // Usuario bloqueado -> Mostramos la puerta de seguridad
+                estado.textContent = "Por favor, inicia sesión para acceder al sistema.";
+                estado.className = "";
+                estado.style.color = "black";
+                loginContainer.style.display = "block";
+                dashboardContainer.style.display = "none";
+            }
+        });
+
+        // 2. ACCIÓN DE LOGIN: Procesar el formulario
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            loginError.textContent = "Validando credenciales...";
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then(() => {
+                    loginError.textContent = "";
+                    loginForm.reset();
+                })
+                .catch((error) => {
+                    console.error("Error de login:", error);
+                    loginError.textContent = "Correo o contraseña incorrectos.";
+                });
+        });
+
+        // 3. ACCIÓN DE LOGOUT: Botón de salida
+        btnLogout.addEventListener('click', () => {
+            signOut(auth).catch((error) => console.error("Error al cerrar sesión:", error));
+        });
+
+        // 4. LECTURA DE DATOS: Encapsulado en una función segura
+        async function cargarDatosBaseDeDatos() {
             try {
-                // 1. Verificar conexión
-                if (db) {
-                    estado.textContent = "¡Conexión exitosa a la base de datos!";
-                    estado.className = "success";
-                }
-
-                // 2. Leer Colección de Ministerios
+                // Ministerios
                 const ministeriosSnapshot = await getDocs(collection(db, "ministerios"));
-                listaMinisterios.innerHTML = ""; // Limpiar el "Cargando..."
+                listaMinisterios.innerHTML = ""; 
                 
                 if (ministeriosSnapshot.empty) {
                      listaMinisterios.innerHTML = "<li>No hay ministerios registrados.</li>";
                 } else {
                      ministeriosSnapshot.forEach((doc) => {
                         const min = doc.data();
-                        // Solo mostramos si el estado es true (Activo)
                         if(min.estado) {
                             listaMinisterios.innerHTML += `<li><strong>${min.nombre}</strong>: ${min.descripcion}</li>`;
                         }
                     });
                 }
 
-                // 3. Leer Documento Específico de Formación
+                // Ruta de Formación
                 const docRef = doc(db, "configuracion", "etapas_formacion");
                 const docSnap = await getDoc(docRef);
-                listaFormacion.innerHTML = ""; // Limpiar el "Cargando..."
+                listaFormacion.innerHTML = ""; 
 
                 if (docSnap.exists()) {
                     const etapas = docSnap.data().lista;
@@ -91,13 +165,12 @@
                 } else {
                     listaFormacion.innerHTML = "<li>No se encontró configuración de formación.</li>";
                 }
-
             } catch (error) {
                 console.error("Error leyendo Firestore:", error);
-                estado.textContent = "Error de permisos o conexión. Revisa la consola (F12).";
+                estado.textContent = "Error al cargar los datos. Revisa la consola (F12).";
                 estado.className = "error";
             }
-        });
+        }
     </script>
 </body>
 </html>

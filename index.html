@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Arca - App Iglesia</title>
-    <!-- Librería para generar Códigos QR -->
+    <!-- Librería para Códigos QR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9;}
@@ -22,34 +22,28 @@
         .btn-rojo { background-color: #dc3545; width: auto; margin-bottom: 20px;}
         .btn-rojo:hover { background-color: #c82333; }
         
-        /* Panel de Administrador */
+        /* Panel Administrador */
         .admin-panel { border: 2px solid #ff9800; background-color: #fff8e1; display: none; }
         .botones-admin { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; margin-bottom: 20px;}
         .btn-admin { background-color: #ff9800; width: auto; flex: 1; min-width: 100px; }
         .btn-admin:hover { background-color: #e68a00; }
-        .btn-pequeno { padding: 5px 10px; width: auto; font-size: 12px; display: inline-block; }
+        .btn-pequeno { padding: 5px 10px; width: auto; font-size: 12px; display: inline-block; margin-left: 5px; }
+        .btn-verde { background-color: #28a745; } .btn-verde:hover { background-color: #218838; }
 
-        /* Formularios de gestión */
+        /* Pestañas de Gestión */
         .seccion-gestion { display: none; background-color: white; padding: 15px; border-radius: 5px; border: 1px solid #ffcc80; margin-top: 15px;}
         .seccion-gestion.activa { display: block; }
 
-        /* Estilos Tabla Usuarios */
-        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; }
+        /* Tablas */
+        table { width: 100%; border-collapse: collapse; text-align: left; margin-top: 10px; font-size: 14px;}
         th, td { padding: 10px; border-bottom: 1px solid #ddd; }
         th { border-bottom: 2px solid #ff9800; }
 
         #dashboard-container { display: none; }
 
-        /* Estilos para el Modal del QR */
-        #qr-modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: white; padding: 30px; border: 3px solid #ff9800; border-radius: 8px;
-            z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center;
-        }
-        #qr-fondo {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 999;
-        }
+        /* Estilos genéricos para Modales (QR y Asistencia) */
+        .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 999; }
+        .modal-caja { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border: 3px solid #ff9800; border-radius: 8px; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; width: 90%; max-width: 500px;}
     </style>
 </head>
 <body>
@@ -57,14 +51,44 @@
     <h1>Sistema El Arca</h1>
     <p id="estado" style="color: orange; font-weight: bold;">Verificando seguridad...</p>
 
-    <!-- VENTANA EMERGENTE PARA EL QR -->
-    <div id="qr-fondo"></div>
-    <div id="qr-modal">
+    <!-- MODAL 1: CÓDIGO QR -->
+    <div id="qr-fondo" class="modal-fondo"></div>
+    <div id="qr-modal" class="modal-caja" style="text-align: center;">
         <h2>Escanear Asistencia</h2>
         <h3 id="qr-evento-titulo" style="color: #555;"></h3>
         <div id="qrcode" style="margin: 20px auto; width: 250px; height: 250px; display: flex; justify-content: center;"></div>
         <p style="font-size: 12px; color: gray;">Apunta con la cámara de tu celular para registrarte.</p>
-        <button class="btn-rojo" onclick="cerrarQR()" style="margin-top: 15px;">Cerrar</button>
+        <button class="btn-rojo" onclick="cerrarModal('qr')" style="margin-top: 15px;">Cerrar</button>
+    </div>
+
+    <!-- MODAL 2: VISOR DE ASISTENCIA Y REGISTRO MANUAL -->
+    <div id="asistencia-fondo" class="modal-fondo"></div>
+    <div id="asistencia-modal" class="modal-caja">
+        <h2 style="margin-bottom: 5px;">Reporte de Asistencia</h2>
+        <h3 id="asistencia-evento-titulo" style="color: #007bff; margin-top:0;"></h3>
+        
+        <!-- Bloque de Registro Manual -->
+        <div style="background: #f0f8ff; padding: 15px; border-radius: 5px; border: 1px solid #cce5ff; margin-bottom: 15px;">
+            <h4 style="margin-top: 0; margin-bottom: 10px;">Añadir Registro Manual</h4>
+            <div style="display: flex; gap: 10px;">
+                <select id="select-usuario-manual" style="margin: 0; flex: 1;">
+                    <option value="">Seleccione un miembro...</option>
+                </select>
+                <button class="btn-verde" style="width: auto; margin: 0;" onclick="registrarAsistenciaManual()">Agregar</button>
+            </div>
+            <p id="manual-mensaje" style="font-size: 12px; font-weight: bold; margin-bottom: 0;"></p>
+        </div>
+
+        <!-- Tabla de Asistentes -->
+        <div style="overflow-x:auto;">
+            <table>
+                <thead><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
+                <tbody id="tabla-asistentes">
+                    <tr><td colspan="3">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn-rojo" onclick="cerrarModal('asistencia')" style="margin-top: 20px;">Cerrar Reporte</button>
     </div>
 
     <!-- PANTALLA DE INICIO DE SESIÓN -->
@@ -85,8 +109,6 @@
         <!-- PANEL EXCLUSIVO PARA ADMINISTRADORES -->
         <div class="card admin-panel" id="admin-panel">
             <h2>⚙️ Panel de Administración</h2>
-            <p>Opciones exclusivas de configuración y control.</p>
-            
             <div class="botones-admin">
                 <button class="btn-admin" id="btn-tab-usuarios">Usuarios</button>
                 <button class="btn-admin" id="btn-tab-eventos">Eventos</button>
@@ -98,13 +120,12 @@
                 <h3>Directorio de Personas</h3>
                 <div style="overflow-x:auto;">
                     <table>
-                        <thead>
-                            <tr><th>Nombre</th><th>Perfil</th><th>Cargo</th><th>Estado</th><th>Acción</th></tr>
-                        </thead>
+                        <thead><tr><th>Nombre</th><th>Perfil</th><th>Cargo</th><th>Estado</th><th>Acción</th></tr></thead>
                         <tbody id="tabla-usuarios"><tr><td colspan="5">Cargando...</td></tr></tbody>
                     </table>
                 </div>
 
+                <!-- Editor Usuario oculto (se mantiene igual) -->
                 <div id="editor-usuario" style="display:none; background:#f9f9f9; padding:15px; margin-top:15px; border-left: 4px solid #007bff;">
                     <h4>Editando a: <span id="edit-nombre-display"></span></h4>
                     <form id="form-editar-usuario">
@@ -113,7 +134,7 @@
                         <label>Cargo:</label><select id="edit-cargo"><option>Pastor general</option><option>Pastor</option><option>Miembro</option></select>
                         <label>Estado:</label><select id="edit-estado"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option></select>
                         <button type="submit" style="background-color:#007bff; margin-top:10px;">Guardar</button>
-                        <button type="button" id="btn-cancelar-edicion" class="btn-rojo" style="margin-top:10px;">Cancelar</button>
+                        <button type="button" class="btn-rojo" onclick="document.getElementById('editor-usuario').style.display='none'" style="margin-top:10px;">Cancelar</button>
                         <p id="edit-mensaje"></p>
                     </form>
                 </div>
@@ -137,7 +158,6 @@
                     <input type="text" id="min-nombre" placeholder="Nombre" required>
                     <textarea id="min-descripcion" rows="2" placeholder="Descripción" required></textarea>
                     <button type="submit">Guardar</button>
-                    <p id="min-mensaje"></p>
                 </form>
             </div>
 
@@ -146,7 +166,6 @@
                 <form id="form-nueva-etapa">
                     <input type="text" id="etapa-nombre" placeholder="Nueva etapa" required>
                     <button type="submit">Agregar</button>
-                    <p id="etapa-mensaje"></p>
                 </form>
             </div>
         </div>
@@ -154,16 +173,13 @@
         <!-- CARTELERA DE EVENTOS -->
         <div class="card" id="modulo-eventos">
             <h2>Próximos Eventos y Actividades</h2>
-            <ul id="lista-eventos">
-                <li>Cargando eventos...</li>
-            </ul>
+            <ul id="lista-eventos"><li>Cargando eventos...</li></ul>
         </div>
 
         <div class="card" id="modulo-ministerios">
             <h2>Ministerios Activos</h2>
             <ul id="lista-ministerios"><li>Cargando...</li></ul>
         </div>
-
         <div class="card" id="modulo-formacion">
             <h2>Ruta de Formación</h2>
             <ol id="lista-formacion"><li>Cargando...</li></ol>
@@ -172,7 +188,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importamos query y where para cruzar datos
+        import { getFirestore, collection, getDocs, doc, getDoc, addDoc, updateDoc, arrayUnion, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -192,15 +209,17 @@
         const loginContainer = document.getElementById('login-container');
         const dashboardContainer = document.getElementById('dashboard-container');
         const adminPanel = document.getElementById('admin-panel');
-        const loginForm = document.getElementById('login-form');
         
+        // Pestañas
         const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos')];
         const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos')];
         btnTabs.forEach((btn, idx) => btn.addEventListener('click', () => secs.forEach((sec, i) => i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'))));
 
-        window.usuariosData = {};
-        window.perfilUsuarioActual = ""; // Guardamos el perfil para reglas visuales
+        window.usuariosData = {}; // Diccionario en memoria de { uid: datosUsuario }
+        window.perfilUsuarioActual = ""; 
+        window.eventoActualAsistenciaID = ""; // Para saber en qué evento estamos haciendo registro manual
 
+        // 1. EL VIGILANTE
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -211,7 +230,8 @@
                         estado.textContent = `Bienvenido(a), ${datosUsuario.nombre} | Perfil: ${datosUsuario.perfilAcceso}`;
                         if (datosUsuario.perfilAcceso === "Administrador") {
                             adminPanel.style.display = "block"; 
-                            cargarTablaUsuarios(); cargarTiposEventosSelect();
+                            await cargarTablaUsuarios(); // Esperamos que cargue el diccionario de usuarios
+                            cargarTiposEventosSelect();
                         } else { adminPanel.style.display = "none"; }
                     }
                 } catch (error) { console.error("Error perfil", error); }
@@ -225,109 +245,193 @@
             }
         });
 
-        loginForm.addEventListener('submit', (e) => {
+        document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
-                .then(() => { document.getElementById('login-error').textContent = ""; loginForm.reset(); })
                 .catch(() => { document.getElementById('login-error').textContent = "Credenciales incorrectas."; });
         });
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
 
-        // GENERACIÓN DE CÓDIGO QR
+        // 2. MODALES GENÉRICOS
+        window.cerrarModal = function(tipo) {
+            document.getElementById(`${tipo}-fondo`).style.display = 'none';
+            document.getElementById(`${tipo}-modal`).style.display = 'none';
+        }
+
+        // 3. GENERACIÓN DE CÓDIGO QR
         window.abrirQR = function(eventoID, titulo) {
             document.getElementById('qr-fondo').style.display = 'block';
             document.getElementById('qr-modal').style.display = 'block';
             document.getElementById('qr-evento-titulo').textContent = titulo;
-            
-            // Limpiamos el QR anterior y generamos el nuevo usando el ID del documento
             document.getElementById('qrcode').innerHTML = "";
+            
+            const baseURL = window.location.href.split('index.html')[0].replace(/\/$/, "");
             new QRCode(document.getElementById("qrcode"), {
-                // Genera la URL dinámica basada en dónde está alojada tu página
-                text: window.location.href.split('index.html')[0].replace(/\/$/, "") + "/asistencia.html?evento=" + eventoID,
-                width: 250,
-                height: 250,
-                colorDark : "#000000",
-                colorLight : "#ffffff",
-                correctLevel : QRCode.CorrectLevel.H
+                text: `${baseURL}/asistencia.html?evento=${eventoID}`,
+                width: 250, height: 250, colorDark : "#000", colorLight : "#fff", correctLevel : QRCode.CorrectLevel.H
             });
         }
-        window.cerrarQR = function() {
-            document.getElementById('qr-fondo').style.display = 'none';
-            document.getElementById('qr-modal').style.display = 'none';
+
+        // 4. VISOR DE ASISTENCIA Y REGISTRO MANUAL (NUEVO)
+        window.abrirAsistencia = async function(eventoID, titulo) {
+            window.eventoActualAsistenciaID = eventoID; // Guardamos el ID en memoria
+            document.getElementById('asistencia-fondo').style.display = 'block';
+            document.getElementById('asistencia-modal').style.display = 'block';
+            document.getElementById('asistencia-evento-titulo').textContent = titulo;
+            
+            // Llenar el selector manual con todos los usuarios
+            const selectManual = document.getElementById('select-usuario-manual');
+            selectManual.innerHTML = '<option value="">Seleccione un miembro...</option>';
+            for (const [uid, user] of Object.entries(window.usuariosData)) {
+                selectManual.innerHTML += `<option value="${uid}">${user.nombre}</option>`;
+            }
+
+            cargarTablaAsistencia(eventoID);
         }
 
+        async function cargarTablaAsistencia(eventoID) {
+            const tabla = document.getElementById('tabla-asistentes');
+            tabla.innerHTML = "<tr><td colspan='3'>Consultando registros...</td></tr>";
+            try {
+                const q = query(collection(db, "asistencias"), where("eventoID", "==", eventoID));
+                const querySnapshot = await getDocs(q);
+                
+                tabla.innerHTML = "";
+                if (querySnapshot.empty) {
+                    tabla.innerHTML = "<tr><td colspan='3'>Nadie ha registrado asistencia aún.</td></tr>";
+                    return;
+                }
+
+                let conteo = 0;
+                querySnapshot.forEach((docSnap) => {
+                    const asis = docSnap.data();
+                    // Cruzamos el UID con nuestro diccionario en memoria
+                    const nombreUsuario = window.usuariosData[asis.usuarioID] ? window.usuariosData[asis.usuarioID].nombre : "Usuario desconocido";
+                    
+                    // Formateamos la hora para que sea legible
+                    const fechaObj = new Date(asis.fechaHora);
+                    const horaLegible = `${fechaObj.getHours().toString().padStart(2, '0')}:${fechaObj.getMinutes().toString().padStart(2, '0')}`;
+
+                    tabla.innerHTML += `
+                        <tr>
+                            <td>${nombreUsuario}</td>
+                            <td>${horaLegible}</td>
+                            <td>${asis.metodo}</td>
+                        </tr>
+                    `;
+                    conteo++;
+                });
+                // Actualizamos el título con el total
+                document.getElementById('asistencia-evento-titulo').textContent += ` (${conteo} presentes)`;
+
+            } catch (error) {
+                console.error(error);
+                tabla.innerHTML = "<tr><td colspan='3' style='color:red'>Error al cargar datos.</td></tr>";
+            }
+        }
+
+        window.registrarAsistenciaManual = async function() {
+            const select = document.getElementById('select-usuario-manual');
+            const uidSeleccionado = select.value;
+            const mensaje = document.getElementById('manual-mensaje');
+            
+            if (!uidSeleccionado) {
+                mensaje.textContent = "Por favor selecciona un usuario."; mensaje.style.color = "red"; return;
+            }
+
+            mensaje.textContent = "Verificando..."; mensaje.style.color = "orange";
+            
+            try {
+                // Verificamos regla de negocio clínica: NO DUPLICADOS
+                const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", uidSeleccionado));
+                const querySnapshot = await getDocs(q);
+
+                if (!querySnapshot.empty) {
+                    mensaje.textContent = "Error: El usuario ya está registrado en este evento."; mensaje.style.color = "red";
+                } else {
+                    await addDoc(collection(db, "asistencias"), {
+                        eventoID: window.eventoActualAsistenciaID,
+                        usuarioID: uidSeleccionado,
+                        fechaHora: new Date().toISOString(),
+                        metodo: "Manual"
+                    });
+                    mensaje.textContent = "Agregado exitosamente."; mensaje.style.color = "green";
+                    select.value = ""; // Limpiar selector
+                    cargarTablaAsistencia(window.eventoActualAsistenciaID); // Recargar la tabla
+                }
+                setTimeout(() => { mensaje.textContent = ""; }, 3000);
+            } catch (error) {
+                mensaje.textContent = "Error de red."; mensaje.style.color = "red";
+            }
+        }
+
+        // 5. CARGA GENERAL DE DATOS (Módulos anteriores)
         async function cargarDatosGenerales() {
             try {
-                // Eventos
                 const eventSnap = await getDocs(collection(db, "eventos"));
                 const listaEventos = document.getElementById('lista-eventos');
                 listaEventos.innerHTML = "";
-                if (eventSnap.empty) {
-                    listaEventos.innerHTML = "<li>No hay eventos programados.</li>";
-                } else {
+                if (eventSnap.empty) { listaEventos.innerHTML = "<li>No hay eventos programados.</li>"; } 
+                else {
                     eventSnap.forEach((doc) => {
                         const ev = doc.data();
-                        let botonQR = "";
-                        // Solo los roles administrativos pueden ver el botón de Generar QR
+                        let botones = "";
                         if(window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder"){
-                            botonQR = `<button class="btn-admin btn-pequeno" style="margin-left: 10px;" onclick="abrirQR('${doc.id}', '${ev.titulo}')">Generar QR</button>`;
+                            botones = `
+                                <button class="btn-admin btn-pequeno" onclick="abrirQR('${doc.id}', '${ev.titulo}')">Generar QR</button>
+                                <button class="btn-verde btn-pequeno" onclick="abrirAsistencia('${doc.id}', '${ev.titulo}')">Ver Asistencia</button>
+                            `;
                         }
-                        listaEventos.innerHTML += `<li style="margin-bottom: 10px; display: flex; align-items: center;">
-                            <div><strong>${ev.titulo}</strong> (${ev.tipo}) - Fecha: ${ev.fecha.replace('T', ' ')} | Lugar: ${ev.lugar}</div>
-                            ${botonQR}
+                        listaEventos.innerHTML += `<li style="margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                            <div><strong>${ev.titulo}</strong> (${ev.tipo}) - Fecha: ${ev.fecha.replace('T', ' ')}</div>
+                            <div>${botones}</div>
                         </li>`;
                     });
                 }
 
-                // Ministerios
                 const minSnap = await getDocs(collection(db, "ministerios"));
-                const listaMin = document.getElementById('lista-ministerios');
-                listaMin.innerHTML = ""; 
-                minSnap.forEach((doc) => { if(doc.data().estado) listaMin.innerHTML += `<li><strong>${doc.data().nombre}</strong>: ${doc.data().descripcion}</li>`; });
+                document.getElementById('lista-ministerios').innerHTML = ""; 
+                minSnap.forEach((doc) => { if(doc.data().estado) document.getElementById('lista-ministerios').innerHTML += `<li><strong>${doc.data().nombre}</strong>: ${doc.data().descripcion}</li>`; });
 
-                // Formación
                 const formSnap = await getDoc(doc(db, "configuracion", "etapas_formacion"));
-                const listaForm = document.getElementById('lista-formacion');
-                listaForm.innerHTML = ""; 
-                if (formSnap.exists()) formSnap.data().lista.forEach(etapa => listaForm.innerHTML += `<li>${etapa}</li>`);
-
-            } catch (error) { console.error("Error leyendo datos generales:", error); }
+                document.getElementById('lista-formacion').innerHTML = ""; 
+                if (formSnap.exists()) formSnap.data().lista.forEach(etapa => document.getElementById('lista-formacion').innerHTML += `<li>${etapa}</li>`);
+            } catch (e) { console.error(e); }
         }
 
-        // Resto de funciones administrativas
         async function cargarTablaUsuarios() {
-            const tabla = document.getElementById('tabla-usuarios'); tabla.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
             try {
-                const qSnap = await getDocs(collection(db, "usuarios")); tabla.innerHTML = "";
+                const qSnap = await getDocs(collection(db, "usuarios")); 
+                document.getElementById('tabla-usuarios').innerHTML = "";
                 qSnap.forEach((doc) => {
-                    const u = doc.data(); window.usuariosData[doc.id] = u;
-                    tabla.innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td>${u.estado||''}</td><td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${doc.id}')">Editar</button></td></tr>`;
+                    const u = doc.data(); window.usuariosData[doc.id] = u; // Llenamos el diccionario vital para el cruce de datos
+                    document.getElementById('tabla-usuarios').innerHTML += `<tr><td>${u.nombre||''}</td><td>${u.perfilAcceso||''}</td><td>${u.cargo||''}</td><td>${u.estado||''}</td><td><button class="btn-admin btn-pequeno" onclick="abrirEditorUsuario('${doc.id}')">Editar</button></td></tr>`;
                 });
             } catch (e) { console.error(e); }
         }
+
         window.abrirEditorUsuario = function(uid) {
             const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block';
             document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre;
             document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación';
         }
         document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => {
-            e.preventDefault(); const uid = document.getElementById('edit-uid').value; const msg = document.getElementById('edit-mensaje'); msg.textContent = "Guardando..."; msg.style.color = "orange";
+            e.preventDefault(); const uid = document.getElementById('edit-uid').value; 
             try { await updateDoc(doc(db, "usuarios", uid), { perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value });
-                msg.textContent = "Guardado"; msg.style.color = "green"; cargarTablaUsuarios(); setTimeout(() => { msg.textContent = ""; document.getElementById('editor-usuario').style.display = 'none'; }, 1500); } catch (e) { msg.textContent = "Error"; msg.style.color = "red"; }
+                cargarTablaUsuarios(); document.getElementById('editor-usuario').style.display = 'none'; } catch (e) {}
         });
-        document.getElementById('btn-cancelar-edicion').addEventListener('click', () => document.getElementById('editor-usuario').style.display = 'none');
+        
         async function cargarTiposEventosSelect() {
             try { const docSnap = await getDoc(doc(db, "configuracion", "tipos_eventos"));
                 if (docSnap.exists()) { const s = document.getElementById('evento-tipo'); s.innerHTML = ""; docSnap.data().lista.forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`); }
-            } catch (e) { console.error(e); }
+            } catch (e) { }
         }
         document.getElementById('form-nuevo-evento').addEventListener('submit', async (e) => {
-            e.preventDefault(); const msg = document.getElementById('evento-mensaje'); msg.textContent = "Publicando..."; msg.style.color = "orange";
-            try { await addDoc(collection(db, "eventos"), { titulo: document.getElementById('evento-titulo').value, tipo: document.getElementById('evento-tipo').value, fecha: document.getElementById('evento-fecha').value, lugar: document.getElementById('evento-lugar').value, estado: "publicado" });
-                msg.textContent = "¡Publicado!"; msg.style.color = "green"; document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); setTimeout(() => { msg.textContent = ""; }, 3000); } catch (e) { msg.textContent = "Error"; msg.style.color = "red"; }
+            e.preventDefault(); try { await addDoc(collection(db, "eventos"), { titulo: document.getElementById('evento-titulo').value, tipo: document.getElementById('evento-tipo').value, fecha: document.getElementById('evento-fecha').value, lugar: document.getElementById('evento-lugar').value, estado: "publicado" });
+                document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); } catch (e) {}
         });
-        document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); cargarDatosGenerales(); } catch (e) { console.error(e); } });
-        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); cargarDatosGenerales(); } catch (e) { console.error(e); } });
+        document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); cargarDatosGenerales(); } catch (e) {} });
+        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); cargarDatosGenerales(); } catch (e) {} });
 
     </script>
 </body>

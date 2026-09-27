@@ -5,48 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>El Arca - App Iglesia</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        #estado { font-weight: bold; }
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9;}
+        h1, h2 { color: #333; }
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,00,0.1); margin-bottom: 20px; }
+        .success { color: green; font-weight: bold;}
+        .error { color: red; font-weight: bold;}
+        ul { padding-left: 20px; }
+        li { margin-bottom: 5px; }
     </style>
 </head>
 <body>
     
     <h1>Sistema El Arca</h1>
-    <p id="estado" style="color: orange;">Conectando a los servidores...</p>
+    <p id="estado" style="color: orange; font-weight: bold;">Conectando a los servidores...</p>
 
-    <!-- Código unificado para evitar errores 404 de GitHub Pages -->
+    <div class="card" id="modulo-ministerios">
+        <h2>Ministerios Activos</h2>
+        <ul id="lista-ministerios">
+            <li>Cargando ministerios...</li>
+        </ul>
+    </div>
+
+    <div class="card" id="modulo-formacion">
+        <h2>Ruta de Formación</h2>
+        <ol id="lista-formacion">
+            <li>Cargando etapas...</li>
+        </ol>
+    </div>
+
+    <!-- Código unificado -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Credenciales de tu proyecto en Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ",
             authDomain: "app-iglesia-core.firebaseapp.com",
             projectId: "app-iglesia-core",
             storageBucket: "app-iglesia-core.firebasestorage.app",
             messagingSenderId: "710025721588",
-            appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1",
-            measurementId: "G-DLS54C56XM"
+            appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
-        // Comprobar conexión en pantalla
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
             const estado = document.getElementById('estado');
+            const listaMinisterios = document.getElementById('lista-ministerios');
+            const listaFormacion = document.getElementById('lista-formacion');
             
-            if (db && auth) {
-                estado.textContent = "¡Conexión exitosa a la base de datos de Firebase!";
-                estado.style.color = "green";
-                console.log("Servicios de backend listos para operar.");
-            } else {
-                estado.textContent = "Error al conectar con la base de datos.";
-                estado.style.color = "red";
+            try {
+                // 1. Verificar conexión
+                if (db) {
+                    estado.textContent = "¡Conexión exitosa a la base de datos!";
+                    estado.className = "success";
+                }
+
+                // 2. Leer Colección de Ministerios
+                const ministeriosSnapshot = await getDocs(collection(db, "ministerios"));
+                listaMinisterios.innerHTML = ""; // Limpiar el "Cargando..."
+                
+                if (ministeriosSnapshot.empty) {
+                     listaMinisterios.innerHTML = "<li>No hay ministerios registrados.</li>";
+                } else {
+                     ministeriosSnapshot.forEach((doc) => {
+                        const min = doc.data();
+                        // Solo mostramos si el estado es true (Activo)
+                        if(min.estado) {
+                            listaMinisterios.innerHTML += `<li><strong>${min.nombre}</strong>: ${min.descripcion}</li>`;
+                        }
+                    });
+                }
+
+                // 3. Leer Documento Específico de Formación
+                const docRef = doc(db, "configuracion", "etapas_formacion");
+                const docSnap = await getDoc(docRef);
+                listaFormacion.innerHTML = ""; // Limpiar el "Cargando..."
+
+                if (docSnap.exists()) {
+                    const etapas = docSnap.data().lista;
+                    etapas.forEach(etapa => {
+                        listaFormacion.innerHTML += `<li>${etapa}</li>`;
+                    });
+                } else {
+                    listaFormacion.innerHTML = "<li>No se encontró configuración de formación.</li>";
+                }
+
+            } catch (error) {
+                console.error("Error leyendo Firestore:", error);
+                estado.textContent = "Error de permisos o conexión. Revisa la consola (F12).";
+                estado.className = "error";
             }
         });
     </script>

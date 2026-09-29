@@ -5,30 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Asistencia - El Arca</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d3b66">
+    <meta name="theme-color" content="#002d5a">
     <link rel="apple-touch-icon" href="logo-192.png">
-    <!-- Framework Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        :root { --azul-arca: #0d3b66; --dorado-arca: #f4a261; }
+        :root { --azul-arca: #002d5a; --dorado-arca: #eab64d; --fondo-crema: #f4f3f0; }
+        body { background-color: var(--fondo-crema); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .text-arca { color: var(--azul-arca); }
         .bg-arca { background-color: var(--azul-arca); color: white; }
         .btn-arca { background-color: var(--azul-arca); color: white; border: none; }
         .border-arca { border-top: 4px solid var(--azul-arca) !important; }
-        .logo-arca { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .logo-arca { width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); background: white; }
+        .navbar-arca { background-color: var(--azul-arca); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; padding-top: 15px; padding-bottom: 15px; margin-bottom: 25px; }
+        
+        .contador-acomp { display: flex; align-items: center; background: #f8f9fa; border: 1px solid #ced4da; border-radius: 6px; overflow: hidden; margin: 0 auto; width: fit-content; }
+        .contador-acomp button { background: #e9ecef; border: none; width: 45px; height: 45px; font-weight: bold; font-size: 1.4rem; cursor: pointer; color: var(--azul-arca); }
+        .contador-acomp button:hover { background: #dee2e6; }
+        .contador-acomp input { width: 50px; text-align: center; border: none; background: transparent; font-weight: bold; outline: none; font-size: 1.2rem; }
+        .contador-acomp input[type=number]::-webkit-inner-spin-button, .contador-acomp input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm mb-4">
+    <nav class="navbar navbar-expand-lg shadow-sm navbar-arca">
         <div class="container justify-content-center">
             <a class="navbar-brand d-flex align-items-center m-0" href="index.html">
-                <img src="IMG_1140.jpg" alt="Logo El Arca" class="logo-arca me-2" onerror="this.src='https://via.placeholder.com/45'">
-                <div>
-                    <h5 class="mb-0 fw-bold text-arca" style="line-height: 1.2;">El Arca</h5>
-                    <small class="text-muted" style="font-size: 0.7rem; font-style: italic;">El amor en personas</small>
-                </div>
+                <img src="IMG_1140.jpg" alt="Logo El Arca" class="logo-arca me-3" onerror="this.src='https://via.placeholder.com/55'">
+                <div><h4 class="mb-0 fw-bold text-white" style="line-height: 1;">El Arca</h4><small class="text-white" style="font-size: 0.8rem; opacity: 0.8;">El amor en personas</small></div>
             </a>
         </div>
     </nav>
@@ -36,38 +39,43 @@
     <div class="container pb-5">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
-                <div class="card shadow border-0 border-arca text-center p-4">
+                <div class="card shadow border-0 text-center p-4" style="border-top: 5px solid var(--dorado-arca) !important; border-radius: 15px;">
                     <h4 class="fw-bold text-arca mb-1">📍 Confirmar Asistencia</h4>
                     <h5 id="nombre-evento" class="text-muted mb-4 border-bottom pb-3">Cargando evento...</h5>
 
                     <div id="sec-login" style="display: none;">
                         <p class="mb-3 text-muted">Inicia sesión en tu cuenta para poder registrarte en este evento:</p>
                         <form id="login-form">
-                            <div class="mb-2"><input type="email" id="email" class="form-control form-control-lg" placeholder="Correo electrónico" required></div>
-                            <div class="mb-3"><input type="password" id="password" class="form-control form-control-lg" placeholder="Contraseña" required></div>
-                            <button type="submit" class="btn btn-arca w-100 fw-bold btn-lg">Ingresar</button>
+                            <div class="mb-2"><input type="email" id="email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div>
+                            <div class="mb-3"><input type="password" id="password" class="form-control form-control-lg bg-light" placeholder="Contraseña" required></div>
+                            <button type="submit" class="btn btn-arca w-100 fw-bold btn-lg rounded-pill">Ingresar</button>
                         </form>
                         <p id="login-error" class="text-danger mt-2 fw-bold"></p>
                     </div>
 
                     <div id="sec-confirmar" style="display: none;">
-                        <div class="alert alert-light border border-info text-start">
-                            👋 Hola <strong id="nombre-usuario" class="text-arca">...</strong>
+                        <div class="alert alert-light border shadow-sm text-center mb-4 rounded-3">
+                            👋 Hola <strong id="nombre-usuario" class="text-arca fs-5">...</strong>
                         </div>
                         
-                        <label class="form-label text-muted fw-bold mt-2">¿Vienes con niños o invitados extra?</label>
-                        <div class="input-group mb-4 justify-content-center">
-                            <span class="input-group-text bg-white fw-bold">+</span>
-                            <input type="number" id="acompanantes" class="form-control text-center fw-bold" value="0" min="0" style="max-width: 100px; font-size: 1.3rem;">
-                            <span class="input-group-text bg-white text-muted">personas</span>
+                        <div class="bg-light p-3 rounded mb-4 border">
+                            <label class="form-label text-muted fw-bold mb-3">¿Vienes con niños o invitados extra?</label>
+                            
+                            <div class="contador-acomp shadow-sm mb-3">
+                                <button onclick="cambiarNumero('acompanantes', -1)">-</button>
+                                <input type="number" id="acompanantes" value="0" min="0" readonly>
+                                <button onclick="cambiarNumero('acompanantes', 1)">+</button>
+                            </div>
+                            
+                            <input type="text" id="nombres-extra" class="form-control form-control-sm mt-2 text-center" placeholder="¿Cómo se llaman? (Opcional)">
                         </div>
                         
-                        <button id="btn-registrar" class="btn btn-success w-100 fw-bold btn-lg">✅ Confirmar Asistencia</button>
+                        <button id="btn-registrar" class="btn btn-success w-100 fw-bold btn-lg rounded-pill shadow-sm">✅ Confirmar Asistencia</button>
                     </div>
 
                     <div id="estado-asistencia" class="mt-3"></div>
                     
-                    <a href="index.html" class="btn btn-outline-secondary w-100 mt-4 fw-bold">Volver al Inicio</a>
+                    <a href="index.html" class="btn btn-outline-secondary w-100 mt-4 fw-bold rounded-pill">Volver al Inicio</a>
                 </div>
             </div>
         </div>
@@ -81,14 +89,25 @@
         const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
 
+        // FUNCION BOTONES +/-
+        window.cambiarNumero = function(inputId, cantidad) {
+            const input = document.getElementById(inputId);
+            let valorActual = parseInt(input.value) || 0;
+            let nuevoValor = valorActual + cantidad;
+            if (nuevoValor < 0) nuevoValor = 0;
+            input.value = nuevoValor;
+        };
+
         const urlParams = new URLSearchParams(window.location.search);
         const eventoID = urlParams.get('evento');
+        const nombreEventoPorURL = urlParams.get('nombreE'); // Lo recibe del generador de QR
         
         const secLogin = document.getElementById('sec-login');
         const secConfirmar = document.getElementById('sec-confirmar');
         const estadoAsistencia = document.getElementById('estado-asistencia');
         const nombreEventoTitle = document.getElementById('nombre-evento');
         let currentUserUid = null;
+        let snapshotTitulo = "Evento";
 
         if (!eventoID) {
             nombreEventoTitle.textContent = "QR Inválido";
@@ -101,11 +120,19 @@
             try {
                 const docSnap = await getDoc(doc(db, "eventos", eventoID));
                 if (docSnap.exists()) {
-                    nombreEventoTitle.textContent = docSnap.data().titulo;
+                    snapshotTitulo = docSnap.data().titulo;
+                    nombreEventoTitle.textContent = snapshotTitulo;
                     verificarUsuario();
                 } else {
-                    nombreEventoTitle.textContent = "Evento no encontrado";
-                    estadoAsistencia.innerHTML = '<div class="alert alert-danger fw-bold">El evento ya no está disponible.</div>';
+                    // Si el evento se borró pero aún tienen el QR impreso, usamos el nombre que nos mandó la URL
+                    if (nombreEventoPorURL) {
+                        snapshotTitulo = nombreEventoPorURL;
+                        nombreEventoTitle.textContent = snapshotTitulo;
+                        verificarUsuario();
+                    } else {
+                        nombreEventoTitle.textContent = "Evento no encontrado";
+                        estadoAsistencia.innerHTML = '<div class="alert alert-danger fw-bold">El evento ya no está disponible.</div>';
+                    }
                 }
             } catch (error) { estadoAsistencia.innerHTML = '<div class="alert alert-danger fw-bold">Error de conexión.</div>'; }
         }
@@ -121,7 +148,7 @@
                     
                     if (!snap.empty) {
                         secConfirmar.style.display = "none";
-                        estadoAsistencia.innerHTML = '<div class="alert alert-warning fw-bold">⚠️ Tu registro principal ya está confirmado para este evento.</div>';
+                        estadoAsistencia.innerHTML = '<div class="alert alert-warning fw-bold shadow-sm">⚠️ Tu registro principal ya está confirmado para este evento.</div>';
                     } else {
                         try {
                             const uDoc = await getDoc(doc(db, "usuarios", user.uid));
@@ -147,6 +174,7 @@
         document.getElementById('btn-registrar').addEventListener('click', async () => {
             const btn = document.getElementById('btn-registrar');
             const numAcompanantes = parseInt(document.getElementById('acompanantes').value) || 0;
+            const nombresAcompanantes = document.getElementById('nombres-extra').value.trim();
             
             btn.disabled = true; 
             btn.innerHTML = "⏳ Procesando...";
@@ -157,11 +185,13 @@
                     usuarioID: currentUserUid,
                     fechaHora: new Date().toISOString(),
                     metodo: "QR",
-                    acompanantes: numAcompanantes
+                    acompanantes: numAcompanantes,
+                    nombresAcompanantes: nombresAcompanantes,
+                    snapshotEventoTitulo: snapshotTitulo // Fotografía de seguridad
                 });
                 
                 secConfirmar.style.display = "none";
-                estadoAsistencia.innerHTML = '<div class="alert alert-success fw-bold">✅ ¡Asistencia registrada exitosamente!</div>';
+                estadoAsistencia.innerHTML = '<div class="alert alert-success fw-bold shadow-sm">✅ ¡Asistencia registrada exitosamente!</div>';
             } catch (error) {
                 btn.disabled = false; 
                 btn.innerHTML = "✅ Confirmar Asistencia";

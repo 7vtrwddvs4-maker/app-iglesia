@@ -18,15 +18,21 @@
         .btn-arca:hover { background-color: #08294a; color: white; }
         .border-arca { border-top: 4px solid var(--azul-arca) !important; }
         
-        .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 1040; }
+        /* LA NUEVA MAGIA: EL FONDO AHORA ES UNA CAJA FLEX QUE CENTRA TODO A LA FUERZA */
+        .modal-fondo { 
+            display: none; /* El JS lo cambiará a 'flex' */
+            position: fixed; 
+            top: 0; left: 0; right: 0; bottom: 0; /* Calcula el tamaño exacto sin fallos de barra URL */
+            background: rgba(0,0,0,0.6); 
+            z-index: 1040; 
+            align-items: center; 
+            justify-content: center;
+        }
         
-        /* CENTRADO FORZADO POR PANTALLA VISIBLE (VH/VW) */
+        /* LA VENTANA YA NO USA COORDENADAS, SE DEJA LLEVAR POR EL FONDO */
         .modal-caja { 
             display: none; 
-            position: fixed !important; 
-            top: 50vh !important; 
-            left: 50vw !important; 
-            transform: translate(-50%, -50%) !important; 
+            position: relative; 
             background: white; 
             padding: 25px 25px 35px 25px; 
             border-radius: 12px; 
@@ -37,7 +43,7 @@
             width: 95%; 
             max-width: 600px; 
             border-top: 5px solid var(--dorado-arca);
-            margin: 0 !important;
+            margin: auto;
         }
         
         .seccion-gestion { display: none; animation: fadeIn 0.3s; }
@@ -68,68 +74,73 @@
         </div>
     </nav>
 
-    <!-- MODAL DE QR -->
-    <div id="qr-fondo" class="modal-fondo"></div>
-    <div id="qr-modal" class="modal-caja text-center position-relative">
-        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('qr')"></button>
-        <h3 class="text-arca fw-bold">Escanear Asistencia</h3>
-        <h5 id="qr-evento-titulo" class="text-muted mb-3"></h5>
-        <div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-2"></div>
-        <p class="small text-muted mb-1">Si la cámara falla, toca este link directo:</p>
-        <a id="qr-enlace-directo" href="#" target="_blank" class="d-block mb-3 text-break fw-bold" style="font-size: 0.85rem;">Cargando enlace...</a>
-        <button class="btn btn-danger w-100" onclick="cerrarModal('qr')">Cerrar</button>
+    <!-- LAS VENTANAS AHORA ESTÁN DENTRO DE LOS FONDOS -->
+
+    <!-- MODAL DE QR BLINDADO -->
+    <div id="qr-fondo" class="modal-fondo">
+        <div id="qr-modal" class="modal-caja text-center position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('qr')"></button>
+            <h3 class="text-arca fw-bold">Escanear Asistencia</h3>
+            <h5 id="qr-evento-titulo" class="text-muted mb-3"></h5>
+            <div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-2"></div>
+            <p class="small text-muted mb-1">Si la cámara falla, toca este link directo:</p>
+            <a id="qr-enlace-directo" href="#" target="_blank" class="d-block mb-3 text-break fw-bold" style="font-size: 0.85rem;">Cargando enlace...</a>
+            <button class="btn btn-danger w-100" onclick="cerrarModal('qr')">Cerrar</button>
+        </div>
     </div>
 
     <!-- MODAL DE ASISTENCIA -->
-    <div id="asistencia-fondo" class="modal-fondo"></div>
-    <div id="asistencia-modal" class="modal-caja position-relative">
-        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('asistencia')"></button>
-        <h3 class="text-arca fw-bold pe-4">Reporte de Asistencia</h3>
-        <h5 id="asistencia-evento-titulo" class="text-primary mb-3"></h5>
-        
-        <div class="card bg-light border-0 mb-3">
-            <div class="card-body">
-                <h6 class="card-title fw-bold text-arca">1. Seleccionar persona registrada</h6>
-                <div class="input-group mb-3">
-                    <select id="select-usuario-manual" class="form-select"><option value="">Seleccione...</option></select>
-                    <input type="number" id="input-acompanantes-manual" class="form-control" placeholder="+ Acomp." min="0" style="max-width: 100px;">
-                    <button class="btn btn-success" onclick="registrarAsistenciaManual(this)">Agregar</button>
-                </div>
-                
-                <h6 class="card-title fw-bold text-arca border-top pt-2 mt-2">2. Registrar invitado (Sin App)</h6>
-                <div class="input-group">
-                    <input type="text" id="input-invitado-manual" class="form-control" placeholder="Nombre completo">
-                    <input type="number" id="input-acompanantes-invitado" class="form-control" placeholder="+ Acomp." min="0" style="max-width: 100px;">
-                    <button class="btn btn-primary" onclick="registrarAsistenciaInvitado(this)">Agregar</button>
+    <div id="asistencia-fondo" class="modal-fondo">
+        <div id="asistencia-modal" class="modal-caja position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('asistencia')"></button>
+            <h3 class="text-arca fw-bold pe-4">Reporte de Asistencia</h3>
+            <h5 id="asistencia-evento-titulo" class="text-primary mb-3"></h5>
+            
+            <div class="card bg-light border-0 mb-3">
+                <div class="card-body">
+                    <h6 class="card-title fw-bold text-arca">1. Seleccionar persona registrada</h6>
+                    <div class="input-group mb-3">
+                        <select id="select-usuario-manual" class="form-select"><option value="">Seleccione...</option></select>
+                        <input type="number" id="input-acompanantes-manual" class="form-control" placeholder="+ Acomp." min="0" style="max-width: 100px;">
+                        <button class="btn btn-success" onclick="registrarAsistenciaManual(this)">Agregar</button>
+                    </div>
+                    
+                    <h6 class="card-title fw-bold text-arca border-top pt-2 mt-2">2. Registrar invitado (Sin App)</h6>
+                    <div class="input-group">
+                        <input type="text" id="input-invitado-manual" class="form-control" placeholder="Nombre completo">
+                        <input type="number" id="input-acompanantes-invitado" class="form-control" placeholder="+ Acomp." min="0" style="max-width: 100px;">
+                        <button class="btn btn-primary" onclick="registrarAsistenciaInvitado(this)">Agregar</button>
+                    </div>
                 </div>
             </div>
+            
+            <div class="d-flex justify-content-between mb-2">
+                <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Descargar CSV</button>
+            </div>
+            
+            <div class="table-responsive mb-3 border rounded" style="max-height: 35vh; overflow-y: auto;">
+                <table class="table table-striped table-hover align-middle mb-0" id="tabla-exportar-asistencia">
+                    <thead class="table-dark sticky-top"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
+                    <tbody id="tabla-asistentes"></tbody>
+                </table>
+            </div>
+            <button class="btn btn-secondary w-100" onclick="cerrarModal('asistencia')">Cerrar Ventana</button>
         </div>
-        
-        <div class="d-flex justify-content-between mb-2">
-            <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Descargar CSV</button>
-        </div>
-        
-        <div class="table-responsive mb-3 border rounded" style="max-height: 35vh; overflow-y: auto;">
-            <table class="table table-striped table-hover align-middle mb-0" id="tabla-exportar-asistencia">
-                <thead class="table-dark sticky-top"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
-                <tbody id="tabla-asistentes"></tbody>
-            </table>
-        </div>
-        <button class="btn btn-secondary w-100" onclick="cerrarModal('asistencia')">Cerrar Ventana</button>
     </div>
 
     <!-- MODAL FORO -->
-    <div id="foro-fondo" class="modal-fondo"></div>
-    <div id="foro-modal" class="modal-caja position-relative">
-        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('foro')"></button>
-        <h3 class="text-arca fw-bold pe-4">Foro del Evento</h3>
-        <h6 id="foro-evento-titulo" class="text-muted border-bottom pb-2 mb-3"></h6>
-        <div id="lista-comentarios" class="foro-chat-box mb-3 d-flex flex-column gap-2"></div>
-        <form id="form-nuevo-comentario" class="input-group">
-            <input type="text" id="foro-texto" class="form-control" placeholder="Escribe un comentario..." required>
-            <button type="submit" class="btn btn-arca fw-bold" id="btn-enviar-comentario">Enviar</button>
-        </form>
-        <button class="btn btn-secondary w-100 mt-3" onclick="cerrarModal('foro')">Cerrar Foro</button>
+    <div id="foro-fondo" class="modal-fondo">
+        <div id="foro-modal" class="modal-caja position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('foro')"></button>
+            <h3 class="text-arca fw-bold pe-4">Foro del Evento</h3>
+            <h6 id="foro-evento-titulo" class="text-muted border-bottom pb-2 mb-3"></h6>
+            <div id="lista-comentarios" class="foro-chat-box mb-3 d-flex flex-column gap-2"></div>
+            <form id="form-nuevo-comentario" class="input-group">
+                <input type="text" id="foro-texto" class="form-control" placeholder="Escribe un comentario..." required>
+                <button type="submit" class="btn btn-arca fw-bold" id="btn-enviar-comentario">Enviar</button>
+            </form>
+            <button class="btn btn-secondary w-100 mt-3" onclick="cerrarModal('foro')">Cerrar Foro</button>
+        </div>
     </div>
 
     <div class="container pb-5">
@@ -338,13 +349,13 @@
         window.cerrarModal = function(tipo) { 
             document.getElementById(`${tipo}-fondo`).style.display = 'none'; 
             document.getElementById(`${tipo}-modal`).style.display = 'none'; 
-            document.body.style.overflow = ''; // Libera la pantalla de fondo
+            document.body.style.overflow = ''; // Descongela el fondo
         };
 
         window.abrirQR = function(id, tit) { 
             try {
                 document.body.style.overflow = 'hidden'; // Congela el fondo
-                document.getElementById('qr-fondo').style.display = 'block'; 
+                document.getElementById('qr-fondo').style.display = 'flex'; // Activa caja flex
                 document.getElementById('qr-modal').style.display = 'block'; 
                 document.getElementById('qr-evento-titulo').textContent = tit; 
                 document.getElementById('qrcode').innerHTML = ""; 
@@ -354,15 +365,30 @@
                 let urlCompleta = window.location.origin + rutaBase + "asistencia.html?evento=" + id;
                 
                 const linkTag = document.getElementById('qr-enlace-directo');
-                if (linkTag) { linkTag.href = urlCompleta; linkTag.textContent = urlCompleta; }
+                if (linkTag) {
+                    linkTag.href = urlCompleta;
+                    linkTag.textContent = urlCompleta;
+                }
 
-                new QRCode(document.getElementById("qrcode"), { text: urlCompleta, width: 220, height: 220 }); 
-            } catch (error) { alert("Error al generar el QR."); document.body.style.overflow = ''; }
+                new QRCode(document.getElementById("qrcode"), { 
+                    text: urlCompleta, 
+                    width: 220, 
+                    height: 220 
+                }); 
+            } catch (error) {
+                console.error("Error cargando QR:", error);
+                alert("Ocurrió un error al generar el QR. Intenta nuevamente.");
+                document.body.style.overflow = '';
+            }
         };
 
         window.abrirAsistencia = async function(id, tit) { 
             document.body.style.overflow = 'hidden'; // Congela el fondo
-            window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; 
+            window.eventoActualAsistenciaID = id; 
+            document.getElementById('asistencia-fondo').style.display='flex'; // Activa caja flex
+            document.getElementById('asistencia-modal').style.display='block'; 
+            document.getElementById('asistencia-evento-titulo').textContent = tit; 
+            
             const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; 
             const usuariosArray = Object.entries(window.usuariosData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || "")); 
             for (const [uid, u] of usuariosArray) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } 
@@ -388,7 +414,11 @@
 
         window.abrirForo = async function(id, tit) { 
             document.body.style.overflow = 'hidden'; // Congela el fondo
-            window.eventoActualForoID = id; document.getElementById('foro-fondo').style.display = 'block'; document.getElementById('foro-modal').style.display = 'block'; document.getElementById('foro-evento-titulo').textContent = tit; await cargarComentariosForo(); 
+            window.eventoActualForoID = id; 
+            document.getElementById('foro-fondo').style.display = 'flex'; // Activa caja flex
+            document.getElementById('foro-modal').style.display = 'block'; 
+            document.getElementById('foro-evento-titulo').textContent = tit; 
+            await cargarComentariosForo(); 
         }
 
         // ==========================================

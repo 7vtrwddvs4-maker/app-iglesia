@@ -337,6 +337,7 @@
         document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
         window.anularTransaccion = async function(id) { if (confirm("¿Anular?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
         window.abrirQR = function(id, tit) { document.getElementById('qr-fondo').style.display = 'block'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; new QRCode(document.getElementById("qrcode"), { text: `${window.location.href.split('index.html')[0].replace(/\/$/, "")}/asistencia.html?evento=${id}`, width: 220, height: 220 }); };
+
         
         // ==========================================
         // CÁLCULO DE AFORO REAL (TOTAL + ACOMPAÑANTES)

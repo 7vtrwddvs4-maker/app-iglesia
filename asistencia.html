@@ -4,141 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Asistencia - El Arca</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d3b66">
+    <link rel="apple-touch-icon" href="logo-192.png">
+    <!-- Framework Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; text-align: center; }
-        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,00,0.1); max-width: 400px; margin: 40px auto; }
-        h2 { color: #333; margin-top: 0; }
-        .success { color: #0f5132; background-color: #d1e7dd; padding: 15px; border-radius: 4px; font-weight: bold; border: 1px solid #badbcc; }
-        .error { color: #842029; background-color: #f8d7da; padding: 15px; border-radius: 4px; font-weight: bold; border: 1px solid #f5c2c7; }
-        .warning { color: #664d03; background-color: #fff3cd; padding: 15px; border-radius: 4px; font-weight: bold; border: 1px solid #ffecb5; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #28a745; color: white; padding: 12px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; }
-        button:hover { background-color: #218838; }
-        #estado-asistencia { margin-top: 20px; }
+        body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --azul-arca: #0d3b66; --dorado-arca: #f4a261; }
+        .text-arca { color: var(--azul-arca); }
+        .bg-arca { background-color: var(--azul-arca); color: white; }
+        .btn-arca { background-color: var(--azul-arca); color: white; border: none; }
+        .btn-arca:hover { background-color: #08294a; color: white; }
+        .border-arca { border-top: 4px solid var(--azul-arca) !important; }
+        .logo-arca { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>📍 Registro de Asistencia</h2>
-        <h3 id="nombre-evento" style="color: #007bff;">Cargando evento...</h3>
-        
-        <div id="login-section" style="display: none;">
-            <p>Inicia sesión para confirmar tu asistencia:</p>
-            <form id="login-form">
-                <input type="email" id="email" placeholder="Correo electrónico" required>
-                <input type="password" id="password" placeholder="Contraseña" required>
-                <button type="submit">Confirmar Asistencia</button>
-            </form>
-            <p id="login-error" style="color: red;"></p>
+    <!-- Barra de navegación con Logo -->
+    <nav class="navbar navbar-expand-lg bg-white shadow-sm mb-4">
+        <div class="container justify-content-center">
+            <a class="navbar-brand d-flex align-items-center m-0" href="index.html">
+                <img src="IMG_1140.jpg" alt="Logo El Arca" class="logo-arca me-2" onerror="this.src='https://via.placeholder.com/45'">
+                <div>
+                    <h5 class="mb-0 fw-bold text-arca" style="line-height: 1.2;">El Arca</h5>
+                    <small class="text-muted" style="font-size: 0.7rem; font-style: italic;">El amor en personas</small>
+                </div>
+            </a>
         </div>
+    </nav>
 
-        <div id="estado-asistencia"></div>
-        
-        <a href="index.html" style="display: inline-block; margin-top: 20px; color: #007bff; text-decoration: none;">Volver al Inicio</a>
+    <div class="container pb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="card shadow border-0 border-arca text-center p-4">
+                    <h4 class="fw-bold text-arca mb-1">📍 Confirmar Asistencia</h4>
+                    <h5 id="nombre-evento" class="text-muted mb-4 border-bottom pb-3">Cargando evento...</h5>
+
+                    <!-- SECCIÓN 1: LOGIN (Si la persona no tiene su sesión abierta) -->
+                    <div id="sec-login" style="display: none;">
+                        <p class="mb-3 text-muted">Inicia sesión en tu cuenta para poder registrarte en este evento:</p>
+                        <form id="login-form">
+                            <div class="mb-2"><input type="email" id="email" class="form-control form-control-lg" placeholder="Correo electrónico" required></div>
+                            <div class="mb-3"><input type="password" id="password" class="form-control form-control-lg" placeholder="Contraseña" required></div>
+                            <button type="submit" class="btn btn-arca w-100 fw-bold btn-lg">Ingresar</button>
+                        </form>
+                        <p id="login-error" class="text-danger mt-2 fw-bold"></p>
+                    </div>
+
+                    <!-- SECCIÓN 2: FORMULARIO DE ACOMPAÑANTES (Si ya tiene sesión) -->
+                    <div id="sec-confirmar" style="display: none;">
+                        <div class="alert alert-light border border-info text-start">
+                            👋 Hola <strong id="nombre-usuario" class="text-arca">...</strong>
+                        </div>
+                        
+                        <label class="form-label text-muted fw-bold mt-2">¿Vienes con niños o invitados extra?</label>
+                        <div class="input-group mb-4 justify-content-center">
+                            <span class="input-group-text bg-white fw-bold">+</span>
+                            <input type="number" id="acompanantes" class="form-control text-center fw-bold" value="0" min="0" style="max-width: 100px; font-size: 1.3rem;">
+                            <span class="input-group-text bg-white text-muted">personas</span>
+                        </div>
+                        
+                        <button id="btn-registrar" class="btn btn-success w-100 fw-bold btn-lg">✅ Confirmar Asistencia</button>
+                    </div>
+
+                    <!-- SECCIÓN 3: MENSAJES DE ESTADO (Éxito o Duplicado) -->
+                    <div id="estado-asistencia" class="mt-3"></div>
+                    
+                    <a href="index.html" class="btn btn-outline-secondary w-100 mt-4 fw-bold">Volver al Inicio</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // Importamos query y where para buscar si ya existe un registro previo
         import { getFirestore, collection, addDoc, getDoc, doc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ",
-            authDomain: "app-iglesia-core.firebaseapp.com",
-            projectId: "app-iglesia-core",
-            storageBucket: "app-iglesia-core.firebasestorage.app",
-            messagingSenderId: "710025721588",
-            appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
+        const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // 1. Capturar el ID del evento desde la URL
+        // Capturar el ID del evento de la URL
         const urlParams = new URLSearchParams(window.location.search);
         const eventoID = urlParams.get('evento');
         
-        const nombreEventoTitle = document.getElementById('nombre-evento');
-        const loginSection = document.getElementById('login-section');
+        const secLogin = document.getElementById('sec-login');
+        const secConfirmar = document.getElementById('sec-confirmar');
         const estadoAsistencia = document.getElementById('estado-asistencia');
-        let eventoCargado = false;
+        const nombreEventoTitle = document.getElementById('nombre-evento');
+        let currentUserUid = null;
 
         if (!eventoID) {
-            nombreEventoTitle.textContent = "Error: Código QR inválido.";
-            estadoAsistencia.innerHTML = '<div class="error">No se detectó ningún evento.</div>';
+            nombreEventoTitle.textContent = "QR Inválido";
+            estadoAsistencia.innerHTML = '<div class="alert alert-danger fw-bold">No se detectó ningún código de evento válido.</div>';
         } else {
             cargarDetallesEvento();
         }
 
-        // 2. Buscar si el evento existe realmente en la base de datos
         async function cargarDetallesEvento() {
             try {
                 const docSnap = await getDoc(doc(db, "eventos", eventoID));
                 if (docSnap.exists()) {
                     nombreEventoTitle.textContent = docSnap.data().titulo;
-                    eventoCargado = true;
                     verificarUsuario();
                 } else {
                     nombreEventoTitle.textContent = "Evento no encontrado";
-                    estadoAsistencia.innerHTML = '<div class="error">El evento ya no está disponible.</div>';
+                    estadoAsistencia.innerHTML = '<div class="alert alert-danger fw-bold">El evento ya no está disponible o fue eliminado.</div>';
                 }
-            } catch (error) {
-                console.error("Error obteniendo evento:", error);
-            }
+            } catch (error) { estadoAsistencia.innerHTML = '<div class="alert alert-danger fw-bold">Error de conexión.</div>'; }
         }
 
-        // 3. Verificar si la persona tiene sesión iniciada en su celular
+        // Lógica de visualización
         function verificarUsuario() {
             onAuthStateChanged(auth, async (user) => {
-                if (user && eventoCargado) {
-                    loginSection.style.display = "none";
-                    registrarAsistenciaSegura(user.uid);
-                } else if (eventoCargado) {
-                    loginSection.style.display = "block";
+                if (user) {
+                    secLogin.style.display = "none";
+                    currentUserUid = user.uid;
+                    
+                    // 1. Verificar si ya registró asistencia antes para no dejarlo duplicar
+                    const q = query(collection(db, "asistencias"), where("eventoID", "==", eventoID), where("usuarioID", "==", user.uid));
+                    const snap = await getDocs(q);
+                    
+                    if (!snap.empty) {
+                        secConfirmar.style.display = "none";
+                        estadoAsistencia.innerHTML = '<div class="alert alert-warning fw-bold">⚠️ Tu registro principal ya está confirmado para este evento.</div>';
+                    } else {
+                        // 2. Si es la primera vez, cargar su nombre y pedirle el # de acompañantes
+                        try {
+                            const uDoc = await getDoc(doc(db, "usuarios", user.uid));
+                            if(uDoc.exists()) document.getElementById('nombre-usuario').textContent = uDoc.data().nombre;
+                        } catch(e){}
+                        secConfirmar.style.display = "block";
+                    }
+                } else {
+                    // Si no tiene sesión iniciada, mostrar login
+                    secLogin.style.display = "block";
+                    secConfirmar.style.display = "none";
                 }
             });
         }
 
-        // 4. Formulario de acceso en caso de no tener sesión activa
+        // Login Manual
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            document.getElementById('login-error').textContent = "Verificando...";
-            signInWithEmailAndPassword(auth, email, password).catch(() => {
+            document.getElementById('login-error').textContent = "Verificando credenciales...";
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => {
                 document.getElementById('login-error').textContent = "Credenciales incorrectas.";
             });
         });
 
-        // 5. Lógica central: Validar duplicados y guardar
-        async function registrarAsistenciaSegura(uid) {
-            estadoAsistencia.innerHTML = '<div>Procesando registro...</div>';
+        // Botón de Envío Final
+        document.getElementById('btn-registrar').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-registrar');
+            const numAcompanantes = parseInt(document.getElementById('acompanantes').value) || 0;
+            
+            btn.disabled = true; 
+            btn.innerHTML = "⏳ Procesando...";
+            
             try {
-                // Paso A: Consultar si ya existe un documento con este eventoID + usuarioID
-                const q = query(collection(db, "asistencias"), where("eventoID", "==", eventoID), where("usuarioID", "==", uid));
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    // Si el arreglo no está vacío, la persona ya se registró
-                    estadoAsistencia.innerHTML = '<div class="warning">⚠️ Tu asistencia para este evento ya estaba registrada.</div>';
-                } else {
-                    // Paso B: Escribir el nuevo registro
-                    await addDoc(collection(db, "asistencias"), {
-                        eventoID: eventoID,
-                        usuarioID: uid,
-                        fechaHora: new Date().toISOString(),
-                        metodo: "QR"
-                    });
-                    estadoAsistencia.innerHTML = '<div class="success">✅ ¡Asistencia registrada exitosamente!</div>';
-                }
+                // Guardar la asistencia sumando los acompañantes para el aforo real
+                await addDoc(collection(db, "asistencias"), {
+                    eventoID: eventoID,
+                    usuarioID: currentUserUid,
+                    fechaHora: new Date().toISOString(),
+                    metodo: "QR",
+                    acompanantes: numAcompanantes
+                });
+                
+                secConfirmar.style.display = "none";
+                estadoAsistencia.innerHTML = '<div class="alert alert-success fw-bold">✅ ¡Asistencia registrada exitosamente!</div>';
             } catch (error) {
-                console.error("Error al registrar:", error);
-                estadoAsistencia.innerHTML = '<div class="error">Error de red al intentar registrar.</div>';
+                btn.disabled = false; 
+                btn.innerHTML = "✅ Confirmar Asistencia";
+                estadoAsistencia.innerHTML = '<div class="alert alert-danger fw-bold">Error de red. Intenta nuevamente.</div>';
             }
-        }
+        });
     </script>
 </body>
 </html>

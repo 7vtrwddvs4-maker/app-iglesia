@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>El Arca - App Iglesia</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d3b66">
@@ -18,25 +18,26 @@
         .btn-arca:hover { background-color: #08294a; color: white; }
         .border-arca { border-top: 4px solid var(--azul-arca) !important; }
         
-        .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1040; }
+        .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 1040; }
         
-        /* RESTAURADO AL CENTRADO PERFECTO EN PANTALLA */
+        /* CENTRADO FORZADO POR PANTALLA VISIBLE (VH/VW) */
         .modal-caja { 
             display: none; 
-            position: fixed; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
+            position: fixed !important; 
+            top: 50vh !important; 
+            left: 50vw !important; 
+            transform: translate(-50%, -50%) !important; 
             background: white; 
             padding: 25px 25px 35px 25px; 
             border-radius: 12px; 
             z-index: 1050; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
-            max-height: 90vh; /* Nunca será más grande que la pantalla */
-            overflow-y: auto; /* Scroll interno asegurado */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            max-height: 90vh; 
+            overflow-y: auto; 
             width: 95%; 
             max-width: 600px; 
             border-top: 5px solid var(--dorado-arca);
+            margin: 0 !important;
         }
         
         .seccion-gestion { display: none; animation: fadeIn 0.3s; }
@@ -67,7 +68,7 @@
         </div>
     </nav>
 
-    <!-- MODAL DE QR BLINDADO -->
+    <!-- MODAL DE QR -->
     <div id="qr-fondo" class="modal-fondo"></div>
     <div id="qr-modal" class="modal-caja text-center position-relative">
         <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('qr')"></button>
@@ -108,7 +109,6 @@
             <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Descargar CSV</button>
         </div>
         
-        <!-- Contenedor con scroll interno para la tabla (Protege el botón cerrar) -->
         <div class="table-responsive mb-3 border rounded" style="max-height: 35vh; overflow-y: auto;">
             <table class="table table-striped table-hover align-middle mb-0" id="tabla-exportar-asistencia">
                 <thead class="table-dark sticky-top"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
@@ -332,13 +332,18 @@
         document.getElementById('registro-form').addEventListener('submit', async (e) => { e.preventDefault(); const errorP = document.getElementById('auth-error'); errorP.textContent = "Creando..."; errorP.className = "text-warning mt-3 fw-bold"; const n = document.getElementById('reg-nombre').value; const em = document.getElementById('reg-email').value; const pass = document.getElementById('reg-password').value; const tel = document.getElementById('reg-telefono').value; try { const uc = await createUserWithEmailAndPassword(auth, em, pass); await setDoc(doc(db, "usuarios", uc.user.uid), { nombre: n, email: em, telefono: tel, perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() }); errorP.textContent = "¡Cuenta creada! Entrando..."; errorP.className = "text-success mt-3 fw-bold"; } catch (err) { errorP.textContent = "Error."; errorP.className = "text-danger mt-3 fw-bold"; } });
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
         
+        // ==========================================
+        // CONTROL DE VENTANAS Y SCROLL LOCK
+        // ==========================================
         window.cerrarModal = function(tipo) { 
             document.getElementById(`${tipo}-fondo`).style.display = 'none'; 
             document.getElementById(`${tipo}-modal`).style.display = 'none'; 
+            document.body.style.overflow = ''; // Libera la pantalla de fondo
         };
 
         window.abrirQR = function(id, tit) { 
             try {
+                document.body.style.overflow = 'hidden'; // Congela el fondo
                 document.getElementById('qr-fondo').style.display = 'block'; 
                 document.getElementById('qr-modal').style.display = 'block'; 
                 document.getElementById('qr-evento-titulo').textContent = tit; 
@@ -349,21 +354,44 @@
                 let urlCompleta = window.location.origin + rutaBase + "asistencia.html?evento=" + id;
                 
                 const linkTag = document.getElementById('qr-enlace-directo');
-                if (linkTag) {
-                    linkTag.href = urlCompleta;
-                    linkTag.textContent = urlCompleta;
-                }
+                if (linkTag) { linkTag.href = urlCompleta; linkTag.textContent = urlCompleta; }
 
-                new QRCode(document.getElementById("qrcode"), { 
-                    text: urlCompleta, 
-                    width: 220, 
-                    height: 220 
-                }); 
-            } catch (error) {
-                console.error("Error cargando QR:", error);
-                alert("Ocurrió un error al generar el QR. Intenta nuevamente.");
-            }
+                new QRCode(document.getElementById("qrcode"), { text: urlCompleta, width: 220, height: 220 }); 
+            } catch (error) { alert("Error al generar el QR."); document.body.style.overflow = ''; }
         };
+
+        window.abrirAsistencia = async function(id, tit) { 
+            document.body.style.overflow = 'hidden'; // Congela el fondo
+            window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; 
+            const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; 
+            const usuariosArray = Object.entries(window.usuariosData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || "")); 
+            for (const [uid, u] of usuariosArray) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } 
+            
+            const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; 
+            try { 
+                const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); 
+                const snap = await getDocs(q); 
+                let totalAsistentesReales = 0; 
+                
+                snap.forEach((d) => { 
+                    const a = d.data(); 
+                    const f = new Date(a.fechaHora); 
+                    const cantAcomp = a.acompanantes ? parseInt(a.acompanantes) : 0;
+                    totalAsistentesReales += 1 + cantAcomp;
+                    const textoAcomp = cantAcomp > 0 ? ` <span class="badge bg-info text-dark">+${cantAcomp} acomp.</span>` : "";
+
+                    tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}${textoAcomp}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; 
+                }); 
+                document.getElementById('asistencia-evento-titulo').textContent = `${tit} (${totalAsistentesReales} presentes en total)`; 
+            } catch(e){} 
+        };
+
+        window.abrirForo = async function(id, tit) { 
+            document.body.style.overflow = 'hidden'; // Congela el fondo
+            window.eventoActualForoID = id; document.getElementById('foro-fondo').style.display = 'block'; document.getElementById('foro-modal').style.display = 'block'; document.getElementById('foro-evento-titulo').textContent = tit; await cargarComentariosForo(); 
+        }
+
+        // ==========================================
 
         window.eliminarEvento = async function(id) { if(confirm("⚠ Eliminar evento definitivamente?")) { try { await deleteDoc(doc(db, "eventos", id)); cargarDatosGenerales(); } catch(e) {} } };
         window.eliminarMinisterio = async function(id) { if(confirm("⚠ Eliminar ministerio?")) { try { await deleteDoc(doc(db, "ministerios", id)); await cargarMinisteriosGbl(); cargarDatosGenerales(); prepararSelectoresEventos(); } catch(e) {} } };
@@ -416,31 +444,6 @@
         document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
         window.anularTransaccion = async function(id) { if (confirm("¿Anular?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
 
-        window.abrirAsistencia = async function(id, tit) { 
-            window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; 
-            const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; 
-            const usuariosArray = Object.entries(window.usuariosData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || "")); 
-            for (const [uid, u] of usuariosArray) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } 
-            
-            const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; 
-            try { 
-                const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); 
-                const snap = await getDocs(q); 
-                let totalAsistentesReales = 0; 
-                
-                snap.forEach((d) => { 
-                    const a = d.data(); 
-                    const f = new Date(a.fechaHora); 
-                    const cantAcomp = a.acompanantes ? parseInt(a.acompanantes) : 0;
-                    totalAsistentesReales += 1 + cantAcomp;
-                    const textoAcomp = cantAcomp > 0 ? ` <span class="badge bg-info text-dark">+${cantAcomp} acomp.</span>` : "";
-
-                    tab.innerHTML += `<tr><td>${window.usuariosData[a.usuarioID]?.nombre||"?"}${textoAcomp}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; 
-                }); 
-                document.getElementById('asistencia-evento-titulo').textContent = `${tit} (${totalAsistentesReales} presentes en total)`; 
-            } catch(e){} 
-        };
-        
         window.registrarAsistenciaManual = async function(btn) { 
             const v = document.getElementById('select-usuario-manual').value; 
             const ac = document.getElementById('input-acompanantes-manual').value || 0;
@@ -477,7 +480,6 @@
             } catch(e) { alert("Error al registrar al invitado."); } finally { btn.disabled = false; btn.innerText = "Agregar"; }
         };
 
-        window.abrirForo = async function(id, tit) { window.eventoActualForoID = id; document.getElementById('foro-fondo').style.display = 'block'; document.getElementById('foro-modal').style.display = 'block'; document.getElementById('foro-evento-titulo').textContent = tit; await cargarComentariosForo(); }
         async function cargarComentariosForo() { const lista = document.getElementById('lista-comentarios'); lista.innerHTML = "<p class='text-center text-muted mt-3'>Cargando foro...</p>"; try { const q = query(collection(db, "comentarios"), where("eventoID", "==", window.eventoActualForoID)); const snap = await getDocs(q); if (snap.empty) { lista.innerHTML = "<p class='text-center text-muted mt-3 small'>Aún no hay comentarios. ¡Inicia la conversación!</p>"; } else { let arr = []; snap.forEach(d => arr.push(d.data())); arr.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); lista.innerHTML = ""; arr.forEach(c => { const f = new Date(c.fecha); const fechaStr = `${f.getDate()}/${f.getMonth()+1} ${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}`; const esMio = c.usuarioID === auth.currentUser.uid; const align = esMio ? "text-end" : "text-start"; const burbujaClase = esMio ? "burbuja-mia" : "burbuja-otro"; lista.innerHTML += `<div class="${align} w-100"><small class="text-muted d-block" style="font-size: 0.7rem; margin-bottom: 2px;">${c.nombreUsuario} • ${fechaStr}</small><div class="burbuja ${burbujaClase} text-start shadow-sm">${c.texto}</div></div>`; }); lista.scrollTop = lista.scrollHeight; } } catch (e) { lista.innerHTML = "<p class='text-center text-danger mt-3'>Error.</p>"; } }
         document.getElementById('form-nuevo-comentario').addEventListener('submit', async (e) => { e.preventDefault(); const txt = document.getElementById('foro-texto'); if (!txt.value.trim()) return; const btn = document.getElementById('btn-enviar-comentario'); btn.disabled = true; try { const miNombre = window.usuariosData[auth.currentUser.uid] ? window.usuariosData[auth.currentUser.uid].nombre : "Usuario"; await addDoc(collection(db, "comentarios"), { eventoID: window.eventoActualForoID, usuarioID: auth.currentUser.uid, nombreUsuario: miNombre, texto: txt.value.trim(), fecha: new Date().toISOString() }); txt.value = ""; await cargarComentariosForo(); } catch(e) {} finally { btn.disabled = false; } });
         async function cargarDatosGenerales() { try { const eS = await getDocs(collection(db,"eventos")); const lE = document.getElementById('lista-eventos'); lE.innerHTML = ""; eS.forEach((d) => { const ev = d.data(); let b_gestion = ""; let btnEliminar = ""; let puedeOperar = false; let puedeEliminar = false; if(window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor") { puedeOperar = true; puedeEliminar = true; } if(window.perfilUsuarioActual === "Líder" && (ev.ministerio === window.ministerioUsuarioActual || ev.ministerio === "General")) puedeOperar = true; if(window.perfilUsuarioActual === "Líder" && ev.ministerio === window.ministerioUsuarioActual) puedeEliminar = true; if (puedeEliminar) { btnEliminar = `<button class="btn btn-sm btn-outline-danger" onclick="eliminarEvento('${d.id}')">🗑️</button>`; } if (puedeOperar) { b_gestion = `${btnEliminar} <button class="btn btn-sm btn-primary" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn btn-sm btn-success" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; } const imgHtml = ev.imagenUrl ? `<img src="${ev.imagenUrl}" class="card-img-top border-bottom" style="height: 180px; object-fit: cover;" alt="Imagen Evento" onerror="this.style.display='none'">` : ''; lE.innerHTML += `<div class="col-md-6 mb-3"><div class="card h-100 shadow-sm border-0">${imgHtml}<div class="card-body d-flex flex-column"><h6 class="fw-bold mb-1">${ev.titulo} <span class="badge bg-light text-dark border">${ev.ministerio || 'General'}</span></h6><small class="text-muted d-block mb-1">${ev.tipo} • ${ev.fecha.replace('T', ' ')}</small><small class="d-block mb-3">📍 ${ev.lugar}</small><div class="mt-auto d-flex flex-wrap gap-2 justify-content-between"><button class="btn btn-sm btn-outline-secondary" onclick="abrirForo('${d.id}', '${ev.titulo}')">💬 Foro</button><div class="btn-group">${b_gestion}</div></div></div></div></div>`; }); const mS = await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML = ""; mS.forEach((d) => { if (d.data().estado) { let btnEliminarMin = (window.perfilUsuarioActual === "Administrador") ? `<button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="eliminarMinisterio('${d.id}')">🗑️</button>` : ''; document.getElementById('lista-ministerios').innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center"><strong>${d.data().nombre}</strong> ${btnEliminarMin}</li>`; } }); } catch(e) {} }

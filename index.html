@@ -10,7 +10,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
-        /* NUEVA PALETA DE COLORES BASADA EN LA IMAGEN */
         :root { 
             --azul-arca: #002d5a; 
             --fondo-crema: #f4f3f0;
@@ -23,23 +22,19 @@
         .text-arca { color: var(--azul-arca) !important; }
         .bg-arca { background-color: var(--azul-arca); color: white; }
         
-        /* BOTONES Y PESTAÑAS */
         .btn-arca { background-color: var(--azul-arca); color: white; border: none; }
         .btn-arca:hover { background-color: #001a35; color: white; }
         
         .btn-group .btn-outline-primary { color: var(--azul-arca); border-color: #ddd; background: white; font-weight: bold; }
         .btn-group .btn-outline-primary.active { background-color: var(--azul-arca); color: white; border-color: var(--azul-arca); }
         
-        /* Pestaña especial de finanzas */
         #btn-tab-finanzas { background-color: var(--dorado-arca); color: var(--texto-oscuro); font-weight: bold; border: none; }
         #btn-tab-finanzas.active { background-color: #d4a03c; color: white; }
         
         .card { border-radius: 12px; border: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; }
         
-        /* CABECERAS DE TABLA SUAVES (En lugar del negro antiguo) */
         .table-cabecera-suave th { background-color: var(--crema-tabla) !important; color: var(--azul-arca) !important; border-bottom: 2px solid #eaeaea; font-weight: bold; }
         
-        /* NAVBAR OSCURO */
         .navbar-arca { background-color: var(--azul-arca); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; padding-top: 15px; padding-bottom: 15px; margin-bottom: 25px; }
         .navbar-arca .text-arca { color: white !important; }
         .navbar-arca .text-muted { color: #d0dbe5 !important; }
@@ -58,11 +53,17 @@
         .burbuja { display: inline-block; padding: 8px 12px; border-radius: 15px; max-width: 85%; font-size: 0.95rem; }
         .burbuja-mia { background-color: var(--azul-arca); color: white; border-bottom-right-radius: 2px; }
         .burbuja-otro { background-color: white; color: #333; border: 1px solid #ccc; border-bottom-left-radius: 2px; }
+        
+        /* DISEÑO PARA LOS BOTONES NUMÉRICOS (+/-) */
+        .contador-acomp { display: flex; align-items: center; background: #f8f9fa; border: 1px solid #ced4da; border-radius: 6px; overflow: hidden; }
+        .contador-acomp button { background: #e9ecef; border: none; width: 35px; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--azul-arca); }
+        .contador-acomp button:hover { background: #dee2e6; }
+        .contador-acomp input { width: 40px; text-align: center; border: none; background: transparent; font-weight: bold; outline: none; }
+        .contador-acomp input[type=number]::-webkit-inner-spin-button, .contador-acomp input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR ACTUALIZADO AL DISEÑO AZUL MARINO -->
     <nav class="navbar navbar-expand-lg shadow-sm navbar-arca">
         <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand d-flex align-items-center m-0" href="#">
@@ -89,7 +90,7 @@
         </div>
     </div>
 
-    <!-- MODAL DE ASISTENCIA CON BUSCADORES -->
+    <!-- MODAL DE ASISTENCIA CON BOTONES (+/-) Y NOMBRES -->
     <div id="asistencia-fondo" class="modal-fondo">
         <div id="asistencia-modal" class="modal-caja position-relative">
             <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('asistencia')"></button>
@@ -98,26 +99,43 @@
             
             <div class="card bg-light border-0 mb-3 shadow-none">
                 <div class="card-body p-3">
+                    <!-- SECCIÓN 1 -->
                     <h6 class="card-title fw-bold text-arca">1. Registrar persona (Con cuenta)</h6>
-                    <!-- BUSCADOR PARA EL SELECT -->
                     <input type="text" id="buscador-select-asistencia" class="form-control form-control-sm mb-2" placeholder="🔍 Buscar persona para agregar...">
-                    <div class="input-group mb-3">
-                        <select id="select-usuario-manual" class="form-select"><option value="">Seleccione...</option></select>
-                        <input type="number" id="input-acompanantes-manual" class="form-control" placeholder="+ Acomp." min="0" style="max-width: 90px;">
-                        <button class="btn btn-success" onclick="registrarAsistenciaManual(this)">Agregar</button>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <select id="select-usuario-manual" class="form-select flex-grow-1" style="min-width: 150px;"><option value="">Seleccione...</option></select>
+                        
+                        <!-- BOTONERA DE NÚMEROS -->
+                        <div class="contador-acomp shadow-sm">
+                            <button onclick="cambiarNumero('input-acompanantes-manual', -1)">-</button>
+                            <input type="number" id="input-acompanantes-manual" value="0" min="0" readonly>
+                            <button onclick="cambiarNumero('input-acompanantes-manual', 1)">+</button>
+                        </div>
                     </div>
+                    <!-- CAMPO OPCIONAL NOMBRES -->
+                    <input type="text" id="input-nombres-extra-manual" class="form-control form-control-sm mb-2" placeholder="Nombres de acompañantes (Opcional)">
+                    <button class="btn btn-success w-100" onclick="registrarAsistenciaManual(this)">Agregar Asistencia</button>
                     
-                    <h6 class="card-title fw-bold text-arca border-top pt-2 mt-2">2. Registrar invitado (Sin App)</h6>
-                    <div class="input-group">
-                        <input type="text" id="input-invitado-manual" class="form-control" placeholder="Nombre completo">
-                        <input type="number" id="input-acompanantes-invitado" class="form-control" placeholder="+ Acomp." min="0" style="max-width: 90px;">
-                        <button class="btn btn-primary" onclick="registrarAsistenciaInvitado(this)">Agregar</button>
+                    
+                    <!-- SECCIÓN 2 -->
+                    <h6 class="card-title fw-bold text-arca border-top pt-3 mt-3">2. Registrar invitado (Sin App)</h6>
+                    <div class="d-flex flex-wrap gap-2 mb-2">
+                        <input type="text" id="input-invitado-manual" class="form-control flex-grow-1" placeholder="Nombre completo" style="min-width: 150px;">
+                        
+                        <!-- BOTONERA DE NÚMEROS -->
+                        <div class="contador-acomp shadow-sm">
+                            <button onclick="cambiarNumero('input-acompanantes-invitado', -1)">-</button>
+                            <input type="number" id="input-acompanantes-invitado" value="0" min="0" readonly>
+                            <button onclick="cambiarNumero('input-acompanantes-invitado', 1)">+</button>
+                        </div>
                     </div>
+                    <!-- CAMPO OPCIONAL NOMBRES -->
+                    <input type="text" id="input-nombres-extra-invitado" class="form-control form-control-sm mb-2" placeholder="Nombres de acompañantes (Opcional)">
+                    <button class="btn btn-primary w-100" onclick="registrarAsistenciaInvitado(this)">Crear y Agregar</button>
                 </div>
             </div>
             
             <div class="d-flex justify-content-between align-items-center mb-2 gap-2">
-                <!-- BUSCADOR PARA LA TABLA DE ASISTENTES -->
                 <input type="text" id="buscador-tabla-asistencia" class="form-control form-control-sm w-50" placeholder="🔍 Buscar en la lista...">
                 <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Exportar</button>
             </div>
@@ -210,7 +228,6 @@
                     <div class="seccion-gestion activa" id="sec-usuarios">
                         <h5 class="fw-bold text-arca mb-3">👥 Directorio de Personas</h5>
                         
-                        <!-- BUSCADOR DE USUARIOS -->
                         <div class="mb-3">
                             <input type="text" id="buscador-usuarios-admin" class="form-control bg-white shadow-sm" placeholder="🔍 Buscar por nombre, perfil, estado o ministerio...">
                         </div>
@@ -308,6 +325,7 @@
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
 
         window.usuariosData = {}; window.perfilUsuarioActual = ""; window.ministerioUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.eventoActualForoID = ""; window.catalogoEtapas = []; window.catalogoMinisterios = []; 
+        window.nombreEventoActualEnMemoria = "Evento Desconocido"; // <--- Para el Snapshot
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
         const estado = document.getElementById('estado');
@@ -322,44 +340,35 @@
             }); 
         });
 
-        // ==========================================
-        // BUSCADORES EN TIEMPO REAL (NUEVO)
-        // ==========================================
-        // 1. Buscador del Directorio de Personas
+        // UTILIDAD PARA LOS BOTONES + y -
+        window.cambiarNumero = function(inputId, cantidad) {
+            const input = document.getElementById(inputId);
+            let valorActual = parseInt(input.value) || 0;
+            let nuevoValor = valorActual + cantidad;
+            if (nuevoValor < 0) nuevoValor = 0; // No permite números negativos
+            input.value = nuevoValor;
+        };
+
         document.getElementById('buscador-usuarios-admin').addEventListener('input', function(e) {
             const term = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#tabla-usuarios tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
-            });
+            rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; });
         });
 
-        // 2. Buscador del Dropdown de Asistencia
         document.getElementById('buscador-select-asistencia').addEventListener('input', function(e) {
             const term = e.target.value.toLowerCase();
             const options = document.querySelectorAll('#select-usuario-manual option');
             options.forEach(opt => {
-                if(opt.value === "") return; // Mantiene el "Seleccione..." siempre visible
-                const text = opt.text.toLowerCase();
-                if(text.includes(term)) {
-                    opt.style.display = ''; opt.removeAttribute('disabled');
-                } else {
-                    opt.style.display = 'none'; opt.setAttribute('disabled', 'disabled');
-                }
+                if(opt.value === "") return; 
+                if(opt.text.toLowerCase().includes(term)) { opt.style.display = ''; opt.removeAttribute('disabled'); } else { opt.style.display = 'none'; opt.setAttribute('disabled', 'disabled'); }
             });
         });
 
-        // 3. Buscador de la tabla de Asistencia
         document.getElementById('buscador-tabla-asistencia').addEventListener('input', function(e) {
             const term = e.target.value.toLowerCase();
             const rows = document.querySelectorAll('#tabla-asistentes tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
-            });
+            rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; });
         });
-        // ==========================================
 
         document.getElementById('link-registrar').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-login').style.display = 'none'; document.getElementById('caja-registro').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
         document.getElementById('link-login').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-registro').style.display = 'none'; document.getElementById('caja-login').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
@@ -409,7 +418,9 @@
                 
                 let rutaBase = window.location.pathname.replace('index.html', '');
                 if (!rutaBase.endsWith('/')) rutaBase += '/';
-                let urlCompleta = window.location.origin + rutaBase + "asistencia.html?evento=" + id;
+                
+                // CÓDIGO ACTUALIZADO: Le enviamos por URL el nombre del evento para el Snapshot
+                let urlCompleta = window.location.origin + rutaBase + "asistencia.html?evento=" + id + "&nombreE=" + encodeURIComponent(tit);
                 
                 const linkTag = document.getElementById('qr-enlace-directo');
                 if (linkTag) { linkTag.href = urlCompleta; linkTag.textContent = urlCompleta; }
@@ -421,13 +432,18 @@
         window.abrirAsistencia = async function(id, tit) { 
             document.body.style.overflow = 'hidden'; 
             window.eventoActualAsistenciaID = id; 
+            window.nombreEventoActualEnMemoria = tit; // Guardamos en memoria para el Snapshot Manual
+
             document.getElementById('asistencia-fondo').style.display='flex'; 
             document.getElementById('asistencia-modal').style.display='block'; 
             document.getElementById('asistencia-evento-titulo').textContent = tit; 
             
-            // Limpiar buscadores
             document.getElementById('buscador-select-asistencia').value = "";
             document.getElementById('buscador-tabla-asistencia').value = "";
+            document.getElementById('input-acompanantes-manual').value = "0";
+            document.getElementById('input-nombres-extra-manual').value = "";
+            document.getElementById('input-acompanantes-invitado').value = "0";
+            document.getElementById('input-nombres-extra-invitado').value = "";
             
             const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; 
             const usuariosArray = Object.entries(window.usuariosData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || "")); 
@@ -444,7 +460,13 @@
                     const f = new Date(a.fechaHora); 
                     const cantAcomp = a.acompanantes ? parseInt(a.acompanantes) : 0;
                     totalAsistentesReales += 1 + cantAcomp;
-                    const textoAcomp = cantAcomp > 0 ? ` <span class="badge bg-primary text-white ms-1 rounded-pill px-2 small">+${cantAcomp} acomp.</span>` : "";
+                    
+                    // LÓGICA PARA MOSTRAR LOS NOMBRES DE ACOMPAÑANTES EN LA TABLA
+                    let textoAcomp = "";
+                    if (cantAcomp > 0) {
+                        let extraDesc = a.nombresAcompanantes ? ` <span class="small text-muted">(${a.nombresAcompanantes})</span>` : "";
+                        textoAcomp = `<br><span class="badge bg-primary text-white rounded-pill px-2 small">+${cantAcomp} acomp.</span>${extraDesc}`;
+                    }
 
                     tab.innerHTML += `<tr><td><span class="fw-bold">${window.usuariosData[a.usuarioID]?.nombre||"?"}</span>${textoAcomp}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; 
                 }); 
@@ -472,7 +494,10 @@
             const correoTexto = dU.email ? `📧 ${dU.email}` : ""; const telTexto = dU.telefono ? `<br>📱 ${dU.telefono}` : ""; document.getElementById('mi-contacto').innerHTML = `${correoTexto} ${telTexto}` || 'Sin datos';
             const c = dU.etapasCompletadas || []; const t = window.catalogoEtapas.length; const pct = t > 0 ? Math.round((c.length / t) * 100) : 0; document.getElementById('mi-avance-texto').textContent = `${c.length} de ${t} etapas completadas (${pct}%)`; const lst = document.getElementById('mi-lista-etapas'); lst.innerHTML = ""; window.catalogoEtapas.forEach(e => { const ch = c.includes(e) ? "✅" : "⏳"; const col = c.includes(e) ? "text-success" : "text-muted"; lst.innerHTML += `<li class="${col} mb-2 d-flex align-items-center gap-2"><span>${ch}</span> <span>${e}</span></li>`; }); 
             try { 
-                const eS = await getDocs(collection(db, "eventos")); const dic = {}; eS.forEach(d => dic[d.id] = d.data()); 
+                const eS = await getDocs(collection(db, "eventos")); const dic = {}; 
+                // CÓDIGO ACTUALIZADO: Buscamos primero en el diccionario, si no, usamos el Snapshot
+                eS.forEach(d => dic[d.id] = d.data()); 
+                
                 const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); const s = await getDocs(q); 
                 const tab = document.getElementById('mi-tabla-asistencia'); tab.innerHTML = ""; 
                 if (s.empty) { tab.innerHTML = "<tr><td colspan='3'>Aún no has registrado asistencias.</td></tr>"; } else { 
@@ -481,7 +506,22 @@
                         const f = new Date(i.fechaHora); 
                         const cantAcomp = i.acompanantes ? parseInt(i.acompanantes) : 0;
                         const badgeAcomp = cantAcomp > 0 ? `<br><span class="badge bg-info text-dark rounded-pill mt-1">+${cantAcomp} acomp.</span>` : "";
-                        tab.innerHTML += `<tr><td><strong class="text-arca">${dic[i.eventoID]?.titulo || "?"}</strong><br><span class="badge bg-light text-dark border">${dic[i.eventoID]?.ministerio || "General"}</span></td><td>${f.toLocaleDateString()}<br><span class="text-muted small">${f.getHours()}:${f.getMinutes().toString().padStart(2,'0')}</span></td><td><span class="badge bg-secondary">${i.metodo}</span>${badgeAcomp}</td></tr>`; 
+                        
+                        // LÓGICA DE FOTOGRAFÍA (SNAPSHOT)
+                        let tituloEventoAMostrar = "Evento Borrado";
+                        let ministerioAMostrar = "Desconocido";
+                        
+                        // Si el evento aún existe en la base de datos, usamos la info actualizada
+                        if (dic[i.eventoID]) {
+                            tituloEventoAMostrar = dic[i.eventoID].titulo;
+                            ministerioAMostrar = dic[i.eventoID].ministerio || "General";
+                        } else {
+                            // Si el evento ya fue borrado, usamos la fotografía que tomamos al momento de registrarlo
+                            tituloEventoAMostrar = i.snapshotEventoTitulo || "Evento Borrado";
+                            ministerioAMostrar = "Eliminado";
+                        }
+
+                        tab.innerHTML += `<tr><td><strong class="text-arca">${tituloEventoAMostrar}</strong><br><span class="badge bg-light text-dark border">${ministerioAMostrar}</span></td><td>${f.toLocaleDateString()}<br><span class="text-muted small">${f.getHours()}:${f.getMinutes().toString().padStart(2,'0')}</span></td><td><span class="badge bg-secondary">${i.metodo}</span>${badgeAcomp}</td></tr>`; 
                     }); 
                 } 
             } catch (e) {} 
@@ -513,9 +553,13 @@
         document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
         window.anularTransaccion = async function(id) { if (confirm("¿Anular movimiento? Esta acción es irreversible.")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
 
+        // ==========================================
+        // GUARDADO DE ASISTENCIA CON "SNAPSHOT" Y NOMBRES EXTRA
+        // ==========================================
         window.registrarAsistenciaManual = async function(btn) { 
             const v = document.getElementById('select-usuario-manual').value; 
             const ac = document.getElementById('input-acompanantes-manual').value || 0;
+            const nomsExtra = document.getElementById('input-nombres-extra-manual').value.trim();
             if(!v) { alert("⚠️ Primero debes seleccionar a una persona de la lista."); return; }
             
             btn.disabled = true; btn.innerText = "⏳...";
@@ -523,26 +567,41 @@
                 const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); 
                 const snap = await getDocs(q); 
                 if(snap.empty){ 
-                    await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual", acompanantes: parseInt(ac) }); 
-                    document.getElementById('select-usuario-manual').value=""; document.getElementById('input-acompanantes-manual').value="";
+                    await addDoc(collection(db, "asistencias"), { 
+                        eventoID: window.eventoActualAsistenciaID, 
+                        usuarioID: v, 
+                        fechaHora: new Date().toISOString(), 
+                        metodo: "Manual", 
+                        acompanantes: parseInt(ac),
+                        nombresAcompanantes: nomsExtra,
+                        snapshotEventoTitulo: window.nombreEventoActualEnMemoria // Fotografía del nombre del evento
+                    }); 
+                    document.getElementById('select-usuario-manual').value=""; document.getElementById('input-acompanantes-manual').value="0"; document.getElementById('input-nombres-extra-manual').value="";
                     window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
-                } else {
-                    alert("⚠️ Esta persona ya estaba registrada en este evento.");
-                }
+                } else { alert("⚠️ Esta persona ya estaba registrada en este evento."); }
             } catch(e){} finally { btn.disabled = false; btn.innerText = "Agregar"; }
         };
         
         window.registrarAsistenciaInvitado = async function(btn) { 
             const nom = document.getElementById('input-invitado-manual').value.trim(); 
             const ac = document.getElementById('input-acompanantes-invitado').value || 0;
+            const nomsExtra = document.getElementById('input-nombres-extra-invitado').value.trim();
             if(!nom) { alert("⚠️ Debes escribir el nombre del invitado primero."); return; }
             
             btn.disabled = true; btn.innerText = "⏳...";
             try { 
                 const docRef = await addDoc(collection(db, "usuarios"), { nombre: nom, perfilAcceso: "Invitado", cargo: "Invitado", estado: "Asistente externo", ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() }); 
                 window.usuariosData[docRef.id] = { nombre: nom, perfilAcceso: "Invitado" }; 
-                await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: docRef.id, fechaHora: new Date().toISOString(), metodo: "Manual (Invitado)", acompanantes: parseInt(ac) }); 
-                document.getElementById('input-invitado-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "";
+                await addDoc(collection(db, "asistencias"), { 
+                    eventoID: window.eventoActualAsistenciaID, 
+                    usuarioID: docRef.id, 
+                    fechaHora: new Date().toISOString(), 
+                    metodo: "Manual (Invitado)", 
+                    acompanantes: parseInt(ac),
+                    nombresAcompanantes: nomsExtra,
+                    snapshotEventoTitulo: window.nombreEventoActualEnMemoria // Fotografía del nombre del evento
+                }); 
+                document.getElementById('input-invitado-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = "";
                 window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
             } catch(e) { alert("Error al registrar al invitado."); } finally { btn.disabled = false; btn.innerText = "Agregar"; }
         };

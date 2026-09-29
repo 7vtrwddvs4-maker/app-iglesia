@@ -19,7 +19,9 @@
         .border-arca { border-top: 4px solid var(--azul-arca) !important; }
         
         .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1040; }
-        .modal-caja { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px 25px 35px 25px; border-radius: 12px; z-index: 1050; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 95vh; overflow-y: auto; width: 95%; max-width: 600px; border-top: 5px solid var(--dorado-arca);}
+        /* CORRECCIÓN UX PARA TABLETS Y PANTALLAS HORIZONTALES: top: 5vh en lugar de top: 50% */
+        .modal-caja { display: none; position: fixed; top: 5vh; left: 50%; transform: translateX(-50%); background: white; padding: 25px 25px 35px 25px; border-radius: 12px; z-index: 1050; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; width: 95%; max-width: 600px; border-top: 5px solid var(--dorado-arca);}
+        
         .seccion-gestion { display: none; animation: fadeIn 0.3s; }
         .seccion-gestion.activa { display: block; }
         .estado-anulado { text-decoration: line-through; color: #6c757d; }
@@ -317,30 +319,23 @@
             document.getElementById(`${tipo}-modal`).style.display = 'none'; 
         };
 
-        // ==========================================
-        // CÓDIGO QR BLINDADO Y SEGURO (NUEVO)
-        // ==========================================
         window.abrirQR = function(id, tit) { 
             try {
-                // Abrir ventanas
                 document.getElementById('qr-fondo').style.display = 'block'; 
                 document.getElementById('qr-modal').style.display = 'block'; 
                 document.getElementById('qr-evento-titulo').textContent = tit; 
                 document.getElementById('qrcode').innerHTML = ""; 
                 
-                // Generar URL dinámicamente sin fallos
                 let rutaBase = window.location.pathname.replace('index.html', '');
                 if (!rutaBase.endsWith('/')) rutaBase += '/';
                 let urlCompleta = window.location.origin + rutaBase + "asistencia.html?evento=" + id;
                 
-                // Actualizar enlace azul solo si existe
                 const linkTag = document.getElementById('qr-enlace-directo');
                 if (linkTag) {
                     linkTag.href = urlCompleta;
                     linkTag.textContent = urlCompleta;
                 }
 
-                // Generar dibujo del QR
                 new QRCode(document.getElementById("qrcode"), { 
                     text: urlCompleta, 
                     width: 220, 
@@ -348,7 +343,7 @@
                 }); 
             } catch (error) {
                 console.error("Error cargando QR:", error);
-                alert("Ocurrió un pequeño error gráfico al generar el QR. Por favor recarga la página (F5) e intenta de nuevo.");
+                alert("Ocurrió un error al generar el QR. Intenta nuevamente.");
             }
         };
 

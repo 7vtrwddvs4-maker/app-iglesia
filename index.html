@@ -54,7 +54,6 @@
         <h3 class="text-arca fw-bold">Escanear Asistencia</h3><h5 id="qr-evento-titulo" class="text-muted mb-3"></h5><div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-3"></div><button class="btn btn-danger w-100" onclick="cerrarModal('qr')">Cerrar</button>
     </div>
 
-    <!-- MODAL DE ASISTENCIA -->
     <div id="asistencia-fondo" class="modal-fondo"></div>
     <div id="asistencia-modal" class="modal-caja">
         <h3 class="text-arca fw-bold">Reporte de Asistencia</h3><h5 id="asistencia-evento-titulo" class="text-primary mb-3"></h5>
@@ -299,7 +298,7 @@
         };
 
         // ==========================================
-        // MEJORA UX: BOTÓN DE GUARDAR USUARIO
+        // GUARDADO DE USUARIO OPTIMIZADO (RÁPIDO)
         // ==========================================
         document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { 
             e.preventDefault(); 
@@ -307,11 +306,12 @@
             const btn = document.getElementById('btn-guardar-usuario');
             const textoOriginal = btn.innerHTML;
             
-            // 1. Mostrar estado de carga
+            // 1. Deshabilitar botón inmediatamente
             btn.disabled = true;
             btn.innerHTML = "⏳ Guardando...";
 
             try { 
+                // 2. Ejecutar guardado en Firebase (Esto es rápido)
                 await updateDoc(doc(db, "usuarios", uid), { 
                     telefono: document.getElementById('edit-telefono').value,
                     perfilAcceso: document.getElementById('edit-perfil').value, 
@@ -321,25 +321,27 @@
                     etapasCompletadas: Array.from(document.querySelectorAll('input[name="etapas-check"]:checked')).map(c => c.value) 
                 }); 
                 
-                // 2. Mostrar éxito y optimizar recarga
+                // 3. Confirmación visual Inmediata
                 btn.innerHTML = "✅ ¡Listo!";
-                await cargarTablaUsuarios(); 
                 
-                // Solo recargamos el perfil si te estás editando a ti mismo (Ahorra tiempo)
-                if (uid === auth.currentUser.uid) {
-                    await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); 
-                }
-                
-                // 3. Cerrar el modal suavemente
+                // 4. Cerrar la ventana casi al instante (400 milisegundos)
                 setTimeout(() => {
                     document.getElementById('editor-usuario').style.display = 'none'; 
                     btn.disabled = false;
                     btn.innerHTML = textoOriginal;
-                }, 800);
+                    
+                    // 5. Trabajo pesado en segundo plano SIN CONGELAR la pantalla
+                    cargarTablaUsuarios(); 
+                    if (uid === auth.currentUser.uid) {
+                        getDoc(doc(db, "usuarios", auth.currentUser.uid)).then(docSnap => {
+                            cargarPerfilMiembro(auth.currentUser.uid, docSnap.data()); 
+                        });
+                    }
+                }, 400);
 
             } catch (err) { 
-                btn.innerHTML = "❌ Error al guardar";
-                btn.disabled = false;
+                btn.innerHTML = "❌ Error";
+                setTimeout(() => { btn.disabled = false; btn.innerHTML = textoOriginal; }, 2000);
             } 
         });
 

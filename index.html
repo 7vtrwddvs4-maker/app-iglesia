@@ -19,8 +19,25 @@
         .border-arca { border-top: 4px solid var(--azul-arca) !important; }
         
         .modal-fondo { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1040; }
-        /* CORRECCIÓN UX PARA TABLETS Y PANTALLAS HORIZONTALES: top: 5vh en lugar de top: 50% */
-        .modal-caja { display: none; position: fixed; top: 5vh; left: 50%; transform: translateX(-50%); background: white; padding: 25px 25px 35px 25px; border-radius: 12px; z-index: 1050; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto; width: 95%; max-width: 600px; border-top: 5px solid var(--dorado-arca);}
+        
+        /* RESTAURADO AL CENTRADO PERFECTO EN PANTALLA */
+        .modal-caja { 
+            display: none; 
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            background: white; 
+            padding: 25px 25px 35px 25px; 
+            border-radius: 12px; 
+            z-index: 1050; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); 
+            max-height: 90vh; /* Nunca será más grande que la pantalla */
+            overflow-y: auto; /* Scroll interno asegurado */
+            width: 95%; 
+            max-width: 600px; 
+            border-top: 5px solid var(--dorado-arca);
+        }
         
         .seccion-gestion { display: none; animation: fadeIn 0.3s; }
         .seccion-gestion.activa { display: block; }
@@ -62,7 +79,7 @@
         <button class="btn btn-danger w-100" onclick="cerrarModal('qr')">Cerrar</button>
     </div>
 
-    <!-- MODAL DE ASISTENCIA (CÁLCULO DE AFORO) -->
+    <!-- MODAL DE ASISTENCIA -->
     <div id="asistencia-fondo" class="modal-fondo"></div>
     <div id="asistencia-modal" class="modal-caja position-relative">
         <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('asistencia')"></button>
@@ -91,6 +108,7 @@
             <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Descargar CSV</button>
         </div>
         
+        <!-- Contenedor con scroll interno para la tabla (Protege el botón cerrar) -->
         <div class="table-responsive mb-3 border rounded" style="max-height: 35vh; overflow-y: auto;">
             <table class="table table-striped table-hover align-middle mb-0" id="tabla-exportar-asistencia">
                 <thead class="table-dark sticky-top"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
@@ -398,9 +416,6 @@
         document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
         window.anularTransaccion = async function(id) { if (confirm("¿Anular?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
 
-        // ==========================================
-        // FUNCIONES DE ASISTENCIA Y AFORO CON ALERTAS
-        // ==========================================
         window.abrirAsistencia = async function(id, tit) { 
             window.eventoActualAsistenciaID = id; document.getElementById('asistencia-fondo').style.display='block'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; 
             const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; 

@@ -67,6 +67,13 @@
 </head>
 <body>
 
+    <!-- BANNER DE INSTALACIÓN PWA -->
+    <div id="install-banner" class="shadow-lg" style="display: none; position: fixed; bottom: 0; width: 100%; background: var(--azul-arca); color: white; padding: 15px; z-index: 9999; text-align: center; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <span class="fw-bold me-2">📲 Instala la app de El Arca</span>
+        <button id="btn-install" class="btn btn-light btn-sm fw-bold rounded-pill px-3">Instalar</button>
+        <button id="btn-close-install" class="btn btn-sm text-white ms-2" style="font-size: 1.2rem; padding: 0 5px;">&times;</button>
+    </div>
+
     <nav class="navbar navbar-expand-lg shadow-sm navbar-arca">
         <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand d-flex align-items-center m-0" href="#">
@@ -542,6 +549,36 @@
         function cargarVistaEtapasAdmin() { const lista = document.getElementById('lista-admin-etapas'); lista.innerHTML = ""; window.catalogoEtapas.forEach(e => { lista.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light">${e} <button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarEtapaFormacion('${e}')">🗑️</button></li>`; }); }
         window.eliminarEtapaFormacion = async function(nombreEtapa) { if(confirm(`¿Estás seguro de eliminar la etapa '${nombreEtapa}'? Se borrará del catálogo.`)) { try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayRemove(nombreEtapa) }); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); } catch(e) { alert("Error al eliminar etapa."); } } }
         document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); });
+    </script>
+
+    <script>
+        // Registrar el Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW falló: ', err));
+            });
+        }
+
+        // Lógica del botón de instalación
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); // Evita que Chrome muestre el aviso nativo por defecto
+            deferredPrompt = e;
+            document.getElementById('install-banner').style.display = 'block';
+        });
+
+        document.getElementById('btn-install').addEventListener('click', async () => {
+            document.getElementById('install-banner').style.display = 'none';
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                deferredPrompt = null;
+            }
+        });
+
+        document.getElementById('btn-close-install').addEventListener('click', () => {
+            document.getElementById('install-banner').style.display = 'none';
+        });
     </script>
 </body>
 </html>

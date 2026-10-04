@@ -18,6 +18,10 @@
         .logo-arca { width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); background: white; }
         .navbar-arca { background-color: var(--azul-arca); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; padding-top: 15px; padding-bottom: 15px; margin-bottom: 25px; }
         
+        /* ESTILO PARA BOTÓN GOOGLE */
+        .btn-google { background-color: white; color: #757575; border: 1px solid #ddd; font-weight: 500; }
+        .btn-google:hover { background-color: #f8f9fa; color: #555; }
+
         .contador-acomp { display: flex; align-items: center; background: #f8f9fa; border: 1px solid #ced4da; border-radius: 6px; overflow: hidden; margin: 0 auto; width: fit-content; }
         .contador-acomp button { background: #e9ecef; border: none; width: 45px; height: 45px; font-weight: bold; font-size: 1.4rem; cursor: pointer; color: var(--azul-arca); }
         .contador-acomp button:hover { background: #dee2e6; }
@@ -45,6 +49,15 @@
 
                     <div id="sec-login" style="display: none;">
                         <p class="mb-3 text-muted">Inicia sesión en tu cuenta para poder registrarte en este evento:</p>
+                        
+                        <!-- BOTÓN DE GOOGLE -->
+                        <button type="button" id="btn-google-login" class="btn btn-google w-100 fw-bold rounded-pill mb-3 d-flex align-items-center justify-content-center">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px; margin-right: 10px;">
+                            Continuar con Google
+                        </button>
+                        
+                        <div class="d-flex align-items-center my-3"><hr class="flex-grow-1"><span class="mx-2 text-muted small">O con tu correo</span><hr class="flex-grow-1"></div>
+
                         <form id="login-form">
                             <div class="mb-2"><input type="email" id="email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div>
                             <div class="mb-3"><input type="password" id="password" class="form-control form-control-lg bg-light" placeholder="Contraseña" required></div>
@@ -83,13 +96,15 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDoc, doc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        // Agregamos setDoc a la importación de firestore para poder guardar al usuario si es nuevo
+        import { getFirestore, collection, addDoc, getDoc, setDoc, doc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importamos GoogleAuthProvider y signInWithPopup
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
 
-        // FUNCION BOTONES +/-
         window.cambiarNumero = function(inputId, cantidad) {
             const input = document.getElementById(inputId);
             let valorActual = parseInt(input.value) || 0;
@@ -100,7 +115,7 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const eventoID = urlParams.get('evento');
-        const nombreEventoPorURL = urlParams.get('nombreE'); // Lo recibe del generador de QR
+        const nombreEventoPorURL = urlParams.get('nombreE'); 
         
         const secLogin = document.getElementById('sec-login');
         const secConfirmar = document.getElementById('sec-confirmar');
@@ -124,7 +139,6 @@
                     nombreEventoTitle.textContent = snapshotTitulo;
                     verificarUsuario();
                 } else {
-                    // Si el evento se borró pero aún tienen el QR impreso, usamos el nombre que nos mandó la URL
                     if (nombreEventoPorURL) {
                         snapshotTitulo = nombreEventoPorURL;
                         nombreEventoTitle.textContent = snapshotTitulo;
@@ -163,11 +177,48 @@
             });
         }
 
+        // LÓGICA GOOGLE LOGIN
+        const loginConGoogle = async () => {
+            const errorP = document.getElementById('login-error');
+            errorP.textContent = "Conectando con Google...";
+            errorP.className = "text-info mt-2 fw-bold";
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                const userDocRef = doc(db, "usuarios", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                if (!userDocSnap.exists()) {
+                    await setDoc(userDocRef, { 
+                        nombre: user.displayName || "Usuario de Google", 
+                        email: user.email, 
+                        telefono: user.phoneNumber || "", 
+                        perfilAcceso: "Miembro", 
+                        cargo: "Miembro", 
+                        estado: "En consolidación", 
+                        ministerioAsignado: "Ninguno", 
+                        etapasCompletadas: [], 
+                        fechaRegistro: new Date().toISOString() 
+                    });
+                }
+                errorP.textContent = "";
+            } catch (error) {
+                console.error(error);
+                errorP.textContent = "Acceso con Google cancelado o fallido.";
+                errorP.className = "text-danger mt-2 fw-bold";
+            }
+        };
+
+        document.getElementById('btn-google-login').addEventListener('click', loginConGoogle);
+
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             document.getElementById('login-error').textContent = "Verificando...";
+            document.getElementById('login-error').className = "text-info mt-2 fw-bold";
             signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => {
                 document.getElementById('login-error').textContent = "Credenciales incorrectas.";
+                document.getElementById('login-error').className = "text-danger mt-2 fw-bold";
             });
         });
 
@@ -187,7 +238,7 @@
                     metodo: "QR",
                     acompanantes: numAcompanantes,
                     nombresAcompanantes: nombresAcompanantes,
-                    snapshotEventoTitulo: snapshotTitulo // Fotografía de seguridad
+                    snapshotEventoTitulo: snapshotTitulo 
                 });
                 
                 secConfirmar.style.display = "none";

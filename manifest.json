@@ -1,11 +1,10 @@
 {
-  "name": "Sistema El Arca",
+  "name": "El Arca",
   "short_name": "El Arca",
-  "description": "Sistema administrativo y de asistencia",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f0f2f5",
-  "theme_color": "#0d3b66",
+  "background_color": "#f4f3f0",
+  "theme_color": "#002d5a",
   "icons": [
     {
       "src": "logo-192.png",

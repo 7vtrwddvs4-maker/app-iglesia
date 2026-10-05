@@ -67,7 +67,7 @@
 </head>
 <body>
 
-    <!-- BANNER DE INSTALACIÓN PWA -->
+    <!-- BANNER DE INSTALACIÓN PWA (IPhone / Android Detección) -->
     <div id="install-banner" class="shadow-lg" style="display: none; position: fixed; bottom: 0; width: 100%; background: var(--azul-arca); color: white; padding: 15px; z-index: 9999; text-align: center; border-top-left-radius: 15px; border-top-right-radius: 15px;">
         <span class="fw-bold me-2">📲 Instala la app de El Arca</span>
         <button id="btn-install" class="btn btn-light btn-sm fw-bold rounded-pill px-3">Instalar</button>
@@ -163,6 +163,19 @@
                 <button type="submit" class="btn btn-arca fw-bold" id="btn-enviar-comentario">Enviar</button>
             </form>
             <button class="btn btn-secondary w-100 mt-3" onclick="cerrarModal('foro')">Cerrar Foro</button>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN CALENDARIO -->
+    <div id="calendario-fondo" class="modal-fondo">
+        <div id="calendario-modal" class="modal-caja text-center position-relative" style="max-width: 400px; z-index: 1060;">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('calendario')"></button>
+            <h3 class="text-success fw-bold mb-2">¡Inscripción Exitosa!</h3>
+            <p class="text-muted mb-4">Ya estás anotado en la lista. ¿Deseas agregar este evento a la agenda de tu teléfono para recibir un recordatorio?</p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-outline-secondary w-50 fw-bold" onclick="cerrarModal('calendario')">No, gracias</button>
+                <button id="btn-confirmar-agenda" class="btn btn-arca w-50 fw-bold">📅 Agregar</button>
+            </div>
         </div>
     </div>
 
@@ -343,7 +356,13 @@
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
         const googleProvider = new GoogleAuthProvider(); // Proveedor de Google
 
-        window.usuariosData = {}; window.perfilUsuarioActual = ""; window.ministerioUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.eventoActualForoID = ""; window.catalogoEtapas = []; window.catalogoMinisterios = []; window.nombreEventoActualEnMemoria = "Evento Desconocido"; 
+        window.usuariosData = {}; 
+        window.eventosData = {}; // GLOBAL AGREGADA PARA CALENDARIO
+        window.perfilUsuarioActual = ""; window.ministerioUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.eventoActualForoID = ""; window.catalogoEtapas = []; window.catalogoMinisterios = []; window.nombreEventoActualEnMemoria = "Evento Desconocido"; 
+        
+        // VARIABLES GLOBALES PARA CALENDARIO
+        window.eventoParaCalendario = null;
+        
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
         const estado = document.getElementById('estado');
@@ -512,6 +531,7 @@
         document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
         window.anularTransaccion = async function(id) { if (confirm("¿Anular movimiento? Esta acción es irreversible.")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
 
+        // === REGISTRO DE ASISTENCIA + TRIGGER DE CALENDARIO ===
         window.registrarAsistenciaManual = async function(btn) { 
             const v = document.getElementById('select-usuario-manual').value; const ac = document.getElementById('input-acompanantes-manual').value || 0; const nomsExtra = document.getElementById('input-nombres-extra-manual').value.trim();
             if(!v) { alert("⚠️ Primero debes seleccionar a una persona de la lista."); return; }
@@ -522,8 +542,16 @@
                     await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
                     document.getElementById('select-usuario-manual').value=""; document.getElementById('input-acompanantes-manual').value="0"; document.getElementById('input-nombres-extra-manual').value="";
                     window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
+                    
+                    // ABRIR MODAL DE CALENDARIO
+                    const evObj = window.eventosData[window.eventoActualAsistenciaID];
+                    if(evObj) {
+                        window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar };
+                        document.getElementById('calendario-fondo').style.display = 'flex';
+                        document.getElementById('calendario-modal').style.display = 'block';
+                    }
                 } else { alert("⚠️ Esta persona ya estaba registrada en este evento."); }
-            } catch(e){} finally { btn.disabled = false; btn.innerText = "Agregar"; }
+            } catch(e){} finally { btn.disabled = false; btn.innerText = "Agregar Asistencia"; }
         };
         
         window.registrarAsistenciaInvitado = async function(btn) { 
@@ -536,13 +564,58 @@
                 await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: docRef.id, fechaHora: new Date().toISOString(), metodo: "Manual (Invitado)", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
                 document.getElementById('input-invitado-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = "";
                 window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
-            } catch(e) { alert("Error al registrar al invitado."); } finally { btn.disabled = false; btn.innerText = "Agregar"; }
+                
+                // ABRIR MODAL DE CALENDARIO
+                const evObj = window.eventosData[window.eventoActualAsistenciaID];
+                if(evObj) {
+                    window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar };
+                    document.getElementById('calendario-fondo').style.display = 'flex';
+                    document.getElementById('calendario-modal').style.display = 'block';
+                }
+            } catch(e) { alert("Error al registrar al invitado."); } finally { btn.disabled = false; btn.innerText = "Crear y Agregar"; }
         };
+
+        // === MOTOR DE CALENDARIO NATIVO ===
+        window.agregarAlCalendarioLimpio = function(evento) {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const fechaInicioDate = new Date(evento.fechaInicio);
+            const fechaTerminoDate = new Date(fechaInicioDate.getTime() + (2 * 60 * 60 * 1000)); 
+
+            if (isIOS) {
+                const formatoICS = (fecha) => fecha.toISOString().replace(/-|:|\.\d{3}/g, '');
+                const icsContenido = [
+                    "BEGIN:VCALENDAR",
+                    "VERSION:2.0",
+                    "BEGIN:VEVENT",
+                    `DTSTART:${formatoICS(fechaInicioDate)}`,
+                    `DTEND:${formatoICS(fechaTerminoDate)}`,
+                    `SUMMARY:${evento.titulo}`,
+                    `LOCATION:${evento.lugar || 'Iglesia El Arca'}`,
+                    `DESCRIPTION:Inscripción desde El Arca App.`,
+                    "END:VEVENT",
+                    "END:VCALENDAR"
+                ].join("\n");
+                window.location.href = "data:text/calendar;charset=utf8," + encodeURIComponent(icsContenido);
+            } else {
+                const formatoGoogle = (fecha) => fecha.toISOString().replace(/-|:|\.\d{3}/g, '');
+                const urlGoogle = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
+                    `&text=${encodeURIComponent(evento.titulo)}` +
+                    `&dates=${formatoGoogle(fechaInicioDate)}/${formatoGoogle(fechaTerminoDate)}` +
+                    `&details=${encodeURIComponent('Inscripción desde El Arca App.')}` +
+                    `&location=${encodeURIComponent(evento.lugar || 'Iglesia El Arca')}`;
+                window.open(urlGoogle, '_blank');
+            }
+        };
+
+        document.getElementById('btn-confirmar-agenda')?.addEventListener('click', () => {
+            if (window.eventoParaCalendario) { window.agregarAlCalendarioLimpio(window.eventoParaCalendario); }
+            window.cerrarModal('calendario');
+        });
 
         async function cargarComentariosForo() { const lista = document.getElementById('lista-comentarios'); lista.innerHTML = "<p class='text-center text-muted mt-3'>Cargando foro...</p>"; try { const q = query(collection(db, "comentarios"), where("eventoID", "==", window.eventoActualForoID)); const snap = await getDocs(q); if (snap.empty) { lista.innerHTML = "<p class='text-center text-muted mt-3 small'>Aún no hay comentarios. ¡Inicia la conversación!</p>"; } else { let arr = []; snap.forEach(d => arr.push(d.data())); arr.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); lista.innerHTML = ""; arr.forEach(c => { const f = new Date(c.fecha); const fechaStr = `${f.getDate()}/${f.getMonth()+1} ${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}`; const esMio = c.usuarioID === auth.currentUser.uid; const align = esMio ? "text-end" : "text-start"; const burbujaClase = esMio ? "burbuja-mia" : "burbuja-otro"; lista.innerHTML += `<div class="${align} w-100"><small class="text-muted d-block" style="font-size: 0.7rem; margin-bottom: 2px;">${c.nombreUsuario} • ${fechaStr}</small><div class="burbuja ${burbujaClase} text-start shadow-sm">${c.texto}</div></div>`; }); lista.scrollTop = lista.scrollHeight; } } catch (e) { lista.innerHTML = "<p class='text-center text-danger mt-3'>Error.</p>"; } }
         document.getElementById('form-nuevo-comentario').addEventListener('submit', async (e) => { e.preventDefault(); const txt = document.getElementById('foro-texto'); if (!txt.value.trim()) return; const btn = document.getElementById('btn-enviar-comentario'); btn.disabled = true; try { const miNombre = window.usuariosData[auth.currentUser.uid] ? window.usuariosData[auth.currentUser.uid].nombre : "Usuario"; await addDoc(collection(db, "comentarios"), { eventoID: window.eventoActualForoID, usuarioID: auth.currentUser.uid, nombreUsuario: miNombre, texto: txt.value.trim(), fecha: new Date().toISOString() }); txt.value = ""; await cargarComentariosForo(); } catch(e) {} finally { btn.disabled = false; } });
         
-        async function cargarDatosGenerales() { try { const eS = await getDocs(collection(db,"eventos")); const lE = document.getElementById('lista-eventos'); lE.innerHTML = ""; eS.forEach((d) => { const ev = d.data(); let b_gestion = ""; let btnEliminar = ""; let puedeOperar = false; let puedeEliminar = false; if(window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor") { puedeOperar = true; puedeEliminar = true; } if(window.perfilUsuarioActual === "Líder" && (ev.ministerio === window.ministerioUsuarioActual || ev.ministerio === "General")) puedeOperar = true; if(window.perfilUsuarioActual === "Líder" && ev.ministerio === window.ministerioUsuarioActual) puedeEliminar = true; if (puedeEliminar) { btnEliminar = `<button class="btn btn-sm btn-outline-danger" onclick="eliminarEvento('${d.id}')">🗑️</button>`; } if (puedeOperar) { b_gestion = `${btnEliminar} <button class="btn btn-sm btn-primary" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn btn-sm btn-success" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; } const imgHtml = ev.imagenUrl ? `<img src="${ev.imagenUrl}" class="card-img-top border-bottom" style="height: 180px; object-fit: cover;" alt="Imagen Evento" onerror="this.style.display='none'">` : ''; lE.innerHTML += `<div class="col-md-6 mb-4"><div class="card h-100 shadow-sm border-0 bg-white">${imgHtml}<div class="card-body d-flex flex-column"><h5 class="fw-bold text-arca mb-1">${ev.titulo}</h5><div class="mb-2"><span class="badge bg-light text-dark border">${ev.ministerio || 'General'}</span></div><small class="text-muted d-block mb-1">📅 ${ev.fecha.replace('T', ' ')}</small><small class="d-block mb-3 text-muted">📍 ${ev.lugar}</small><div class="mt-auto d-flex flex-wrap gap-2 justify-content-between"><button class="btn btn-sm btn-outline-secondary" onclick="abrirForo('${d.id}', '${ev.titulo}')">💬 Foro</button><div class="btn-group shadow-sm">${b_gestion}</div></div></div></div></div>`; }); const mS = await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML = ""; mS.forEach((d) => { if (d.data().estado) { let btnEliminarMin = (window.perfilUsuarioActual === "Administrador") ? `<button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarMinisterio('${d.id}')">🗑️</button>` : ''; document.getElementById('lista-ministerios').innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light"><strong>${d.data().nombre}</strong> ${btnEliminarMin}</li>`; } }); } catch(e) {} }
+        async function cargarDatosGenerales() { try { const eS = await getDocs(collection(db,"eventos")); const lE = document.getElementById('lista-eventos'); lE.innerHTML = ""; window.eventosData = {}; eS.forEach((d) => { const ev = d.data(); window.eventosData[d.id] = ev; let b_gestion = ""; let btnEliminar = ""; let puedeOperar = false; let puedeEliminar = false; if(window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor") { puedeOperar = true; puedeEliminar = true; } if(window.perfilUsuarioActual === "Líder" && (ev.ministerio === window.ministerioUsuarioActual || ev.ministerio === "General")) puedeOperar = true; if(window.perfilUsuarioActual === "Líder" && ev.ministerio === window.ministerioUsuarioActual) puedeEliminar = true; if (puedeEliminar) { btnEliminar = `<button class="btn btn-sm btn-outline-danger" onclick="eliminarEvento('${d.id}')">🗑️</button>`; } if (puedeOperar) { b_gestion = `${btnEliminar} <button class="btn btn-sm btn-primary" onclick="abrirQR('${d.id}','${ev.titulo}')">QR</button> <button class="btn btn-sm btn-success" onclick="abrirAsistencia('${d.id}','${ev.titulo}')">Lista</button>`; } const imgHtml = ev.imagenUrl ? `<img src="${ev.imagenUrl}" class="card-img-top border-bottom" style="height: 180px; object-fit: cover;" alt="Imagen Evento" onerror="this.style.display='none'">` : ''; lE.innerHTML += `<div class="col-md-6 mb-4"><div class="card h-100 shadow-sm border-0 bg-white">${imgHtml}<div class="card-body d-flex flex-column"><h5 class="fw-bold text-arca mb-1">${ev.titulo}</h5><div class="mb-2"><span class="badge bg-light text-dark border">${ev.ministerio || 'General'}</span></div><small class="text-muted d-block mb-1">📅 ${ev.fecha.replace('T', ' ')}</small><small class="d-block mb-3 text-muted">📍 ${ev.lugar}</small><div class="mt-auto d-flex flex-wrap gap-2 justify-content-between"><button class="btn btn-sm btn-outline-secondary" onclick="abrirForo('${d.id}', '${ev.titulo}')">💬 Foro</button><div class="btn-group shadow-sm">${b_gestion}</div></div></div></div></div>`; }); const mS = await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML = ""; mS.forEach((d) => { if (d.data().estado) { let btnEliminarMin = (window.perfilUsuarioActual === "Administrador") ? `<button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarMinisterio('${d.id}')">🗑️</button>` : ''; document.getElementById('lista-ministerios').innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light"><strong>${d.data().nombre}</strong> ${btnEliminarMin}</li>`; } }); } catch(e) {} }
         async function cargarTiposEventosSelect(){ try { const dS = await getDoc(doc(db,"configuracion","tipos_eventos")); if (dS.exists()) { const s = document.getElementById('evento-tipo'); s.innerHTML = ""; dS.data().lista.forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`); } } catch(e) {} }
         document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ e.preventDefault(); const minEvento = document.getElementById('evento-ministerio-select').disabled ? window.ministerioUsuarioActual : document.getElementById('evento-ministerio-select').value; const urlImagen = document.getElementById('evento-imagen-url').value.trim(); await addDoc(collection(db,"eventos"),{ titulo: document.getElementById('evento-titulo').value, tipo: document.getElementById('evento-tipo').value, ministerio: minEvento, fecha: document.getElementById('evento-fecha').value, lugar: document.getElementById('evento-lugar').value, imagenUrl: urlImagen, estado: "publicado" }); document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); });
         document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); await cargarMinisteriosGbl(); cargarDatosGenerales(); prepararSelectoresEventos(); });
@@ -559,25 +632,40 @@
             });
         }
 
-        // Lógica del botón de instalación
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); // Evita que Chrome muestre el aviso nativo por defecto
-            deferredPrompt = e;
-            document.getElementById('install-banner').style.display = 'block';
-        });
+        // Variables y Detección de plataforma para instalación PWA
+        const banner = document.getElementById('install-banner');
+        const btnInstall = document.getElementById('btn-install');
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-        document.getElementById('btn-install').addEventListener('click', async () => {
-            document.getElementById('install-banner').style.display = 'none';
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                deferredPrompt = null;
+        if (!isStandalone) {
+            if (isIOS) {
+                // LÓGICA PARA IPHONE
+                btnInstall.style.display = 'none';
+                banner.querySelector('span').innerHTML = '📲 Para instalar: Toca Compartir en Safari y selecciona <b>"Agregar a inicio"</b>.';
+                banner.style.display = 'block';
+            } else {
+                // LÓGICA PARA ANDROID
+                let deferredPrompt;
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    banner.style.display = 'block';
+                });
+
+                btnInstall.addEventListener('click', async () => {
+                    banner.style.display = 'none';
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        const { outcome } = await deferredPrompt.userChoice;
+                        deferredPrompt = null;
+                    }
+                });
             }
-        });
+        }
 
         document.getElementById('btn-close-install').addEventListener('click', () => {
-            document.getElementById('install-banner').style.display = 'none';
+            banner.style.display = 'none';
         });
     </script>
 </body>

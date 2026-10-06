@@ -179,6 +179,34 @@
         </div>
     </div>
 
+    <!-- MODAL DONACIONES -->
+    <div id="donacion-fondo" class="modal-fondo">
+        <div id="donacion-modal" class="modal-caja position-relative" style="max-width: 450px; z-index: 1060;">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('donacion')"></button>
+            <h4 class="text-arca fw-bold mb-3">💖 Realizar Aporte</h4>
+            
+            <div class="bg-light p-3 rounded mb-3 border text-start shadow-sm">
+                <p class="mb-1 small text-muted">Datos de transferencia:</p>
+                <p class="mb-0 fw-bold text-arca">Iglesia El Arca</p>
+                <p class="mb-0">RUT: 65.000.000-0</p>
+                <p class="mb-0">BancoEstado - Cuenta Vista</p>
+                <p class="mb-0">N° 123456789</p>
+                <p class="mb-0">finanzas@elarca.cl</p>
+                <button class="btn btn-sm btn-outline-primary w-100 mt-3 fw-bold" onclick="copiarDatosBancarios(this)">📋 Copiar Datos</button>
+            </div>
+
+            <form id="form-declarar-donacion" class="text-start border-top pt-3 mt-2">
+                <label class="form-label small text-muted fw-bold">¿Ya transferiste? Notifica tu aporte aquí:</label>
+                <div class="input-group mb-2">
+                    <span class="input-group-text bg-white">$</span>
+                    <input type="number" id="donacion-monto" class="form-control" placeholder="Monto transferido" required min="1">
+                    <button type="submit" class="btn btn-success fw-bold" id="btn-enviar-donacion">Notificar</button>
+                </div>
+                <p class="small text-muted mb-0" style="font-size: 0.75rem;">Tu aporte quedará "Pendiente" hasta que el equipo de finanzas valide la recepción en el banco.</p>
+            </form>
+        </div>
+    </div>
+
     <div class="container pb-5">
         
         <!-- PANTALLA DE ACCESO Y REGISTRO (CON GOOGLE LOGIN) -->
@@ -239,6 +267,13 @@
                         <div class="col-md-3 mb-2"><p class="mb-0 text-muted small">Ministerio asignado</p><h6 id="mi-ministerio-asignado" class="text-success fw-bold mb-0">Ninguno</h6></div>
                         <div class="col-md-3 mb-0"><p class="mb-0 text-muted small">Contacto</p><span id="mi-contacto" class="text-secondary small"></span></div>
                     </div>
+                    <div class="bg-white p-3 rounded border border-light shadow-sm mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h6 class="fw-bold text-arca mb-0">💖 Mis Aportes</h6>
+            <small class="text-muted">Diezmos, ofrendas y donaciones</small>
+        </div>
+        <button class="btn btn-arca btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="abrirModalDonacion()">Realizar Aporte</button>
+    </div>
                     <h5 class="fw-bold text-arca mt-2">🛤️ Mi Ruta de Formación</h5>
                     <div class="bg-white p-3 rounded border border-light shadow-sm mb-4"><h6 id="mi-avance-texto" class="text-primary fw-bold border-bottom pb-2"></h6><ul id="mi-lista-etapas" class="list-unstyled mb-0 mt-2"></ul></div>
                     <h5 class="fw-bold text-arca">📅 Mi Historial de Asistencia</h5>
@@ -348,20 +383,13 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        
-        // IMPORTAMOS AUTENTICACIÓN GOOGLE
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
-        const googleProvider = new GoogleAuthProvider(); // Proveedor de Google
+        const googleProvider = new GoogleAuthProvider();
 
-        window.usuariosData = {}; 
-        window.eventosData = {}; // GLOBAL AGREGADA PARA CALENDARIO
-        window.perfilUsuarioActual = ""; window.ministerioUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.eventoActualForoID = ""; window.catalogoEtapas = []; window.catalogoMinisterios = []; window.nombreEventoActualEnMemoria = "Evento Desconocido"; 
-        
-        // VARIABLES GLOBALES PARA CALENDARIO
-        window.eventoParaCalendario = null;
+        window.usuariosData = {}; window.eventosData = {}; window.perfilUsuarioActual = ""; window.ministerioUsuarioActual = ""; window.eventoActualAsistenciaID = ""; window.eventoActualForoID = ""; window.catalogoEtapas = []; window.catalogoMinisterios = []; window.nombreEventoActualEnMemoria = "Evento Desconocido"; window.eventoParaCalendario = null;
         
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
@@ -380,44 +408,15 @@
         document.getElementById('link-registrar').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-login').style.display = 'none'; document.getElementById('caja-registro').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
         document.getElementById('link-login').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-registro').style.display = 'none'; document.getElementById('caja-login').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
 
-        // ==========================================
-        // LÓGICA DE INICIO DE SESIÓN CON GOOGLE
-        // ==========================================
         const loginConGoogle = async () => {
-            const errorP = document.getElementById('auth-error');
-            errorP.textContent = "Conectando con Google...";
-            errorP.className = "text-info mt-3 fw-bold";
+            const errorP = document.getElementById('auth-error'); errorP.textContent = "Conectando..."; errorP.className = "text-info mt-3 fw-bold";
             try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-                
-                // Buscar si ya lo tenemos registrado en Firestore
-                const userDocRef = doc(db, "usuarios", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                
-                if (!userDocSnap.exists()) {
-                    // Si no existe, es nuevecito. Le creamos su perfil por defecto.
-                    await setDoc(userDocRef, { 
-                        nombre: user.displayName || "Usuario de Google", 
-                        email: user.email, 
-                        telefono: user.phoneNumber || "", 
-                        perfilAcceso: "Miembro", 
-                        cargo: "Miembro", 
-                        estado: "En consolidación", 
-                        ministerioAsignado: "Ninguno", 
-                        etapasCompletadas: [], 
-                        fechaRegistro: new Date().toISOString() 
-                    });
-                }
+                const result = await signInWithPopup(auth, googleProvider); const user = result.user;
+                const userDocRef = doc(db, "usuarios", user.uid); const userDocSnap = await getDoc(userDocRef);
+                if (!userDocSnap.exists()) { await setDoc(userDocRef, { nombre: user.displayName || "Usuario de Google", email: user.email, telefono: user.phoneNumber || "", perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() }); }
                 errorP.textContent = "";
-            } catch (error) {
-                console.error(error);
-                errorP.textContent = "Acceso con Google cancelado o fallido.";
-                errorP.className = "text-danger mt-3 fw-bold";
-            }
+            } catch (error) { errorP.textContent = "Acceso cancelado."; errorP.className = "text-danger mt-3 fw-bold"; }
         };
-
-        // Enlazamos los nuevos botones de Google a la función
         document.getElementById('btn-google-login').addEventListener('click', loginConGoogle);
         document.getElementById('btn-google-registro').addEventListener('click', loginConGoogle);
 
@@ -452,6 +451,17 @@
         
         window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; document.body.style.overflow = ''; };
 
+        // === DONACIONES ===
+        window.abrirModalDonacion = function() { document.body.style.overflow = 'hidden'; document.getElementById('donacion-fondo').style.display='flex'; document.getElementById('donacion-modal').style.display='block'; };
+        window.copiarDatosBancarios = function(btn) { const texto = "Iglesia El Arca\nRUT: 65.000.000-0\nBancoEstado - Cuenta Vista\nN° 123456789\nfinanzas@elarca.cl"; navigator.clipboard.writeText(texto).then(()=>{ btn.innerText = "✅ ¡Copiado!"; setTimeout(()=>btn.innerText="📋 Copiar Datos", 2000); }); };
+        document.getElementById('form-declarar-donacion').addEventListener('submit', async (e) => { 
+            e.preventDefault(); const btn = document.getElementById('btn-enviar-donacion'); btn.disabled=true; btn.innerText="⏳..."; 
+            try { 
+                await addDoc(collection(db, "finanzas"), { tipo: "Ingreso", monto: Number(document.getElementById('donacion-monto').value), fecha: new Date().toISOString().split('T')[0], concepto: "Aporte de " + window.usuariosData[auth.currentUser.uid].nombre, estado: "Pendiente", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); 
+                window.cerrarModal('donacion'); alert("¡Gracias! Tu aporte ha sido notificado y está en revisión por finanzas."); document.getElementById('form-declarar-donacion').reset(); cargarFinanzas(); 
+            } catch(err){} finally { btn.disabled=false; btn.innerText="Notificar"; } 
+        });
+
         window.abrirQR = function(id, tit) { 
             try {
                 document.body.style.overflow = 'hidden'; document.getElementById('qr-fondo').style.display = 'flex'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; 
@@ -465,12 +475,10 @@
         window.abrirAsistencia = async function(id, tit) { 
             document.body.style.overflow = 'hidden'; window.eventoActualAsistenciaID = id; window.nombreEventoActualEnMemoria = tit; 
             document.getElementById('asistencia-fondo').style.display='flex'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; 
-            
             document.getElementById('buscador-select-asistencia').value = ""; document.getElementById('buscador-tabla-asistencia').value = ""; document.getElementById('input-acompanantes-manual').value = "0"; document.getElementById('input-nombres-extra-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = "";
             const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; 
             const usuariosArray = Object.entries(window.usuariosData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || "")); 
             for (const [uid, u] of usuariosArray) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } 
-            
             const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; 
             try { 
                 const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let totalAsistentesReales = 0; 
@@ -527,11 +535,37 @@
             } catch (err) { btn.innerHTML = "❌ Error"; setTimeout(() => { btn.disabled = false; btn.innerHTML = textoOriginal; }, 2000); } 
         });
 
-        async function cargarFinanzas() { const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; try { const f = await getDocs(collection(db, "finanzas")); f.forEach((d) => aT.push({ id: d.id, ...d.data() })); aT.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); t.innerHTML = ""; aT.forEach((tr) => { const an = tr.estado === "Anulado"; if (!an) { if (tr.tipo === "Ingreso") sI += tr.monto; else sE += tr.monto; } const cM = an ? "text-secondary" : (tr.tipo === "Ingreso" ? "text-success" : "text-danger"); const bA = an ? `<span class="badge bg-secondary">Anulado</span>` : `<button class="btn btn-sm btn-outline-danger px-3 rounded-pill" onclick="anularTransaccion('${tr.id}')">Anular</button>`; t.innerHTML += `<tr class="${an ? 'estado-anulado' : ''}"><td>${tr.fecha}</td><td>${tr.concepto}</td><td><span class="badge bg-light text-dark border">${tr.tipo}</span></td><td class="${cM} fw-bold">${formatoMoneda.format(tr.monto)}</td><td>${tr.estado}</td><td>${bA}</td></tr>`; }); document.getElementById('total-ingresos').textContent = formatoMoneda.format(sI); document.getElementById('total-egresos').textContent = formatoMoneda.format(sE); document.getElementById('total-saldo').textContent = formatoMoneda.format(sI - sE); } catch (e) {} }
+        // === FINANZAS ACTUALIZADO PARA DONACIONES ===
+        async function cargarFinanzas() { 
+            const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; 
+            try { 
+                const f = await getDocs(collection(db, "finanzas")); f.forEach((d) => aT.push({ id: d.id, ...d.data() })); aT.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); t.innerHTML = ""; 
+                aT.forEach((tr) => { 
+                    const an = tr.estado === "Anulado"; 
+                    const pen = tr.estado === "Pendiente"; 
+                    if (tr.estado === "Activo" || (!tr.estado && !an)) { 
+                        if (tr.tipo === "Ingreso") sI += tr.monto; else sE += tr.monto; 
+                    } 
+                    const cM = an ? "text-secondary" : (tr.tipo === "Ingreso" ? "text-success" : "text-danger"); 
+                    let bA = ""; 
+                    if(pen) { 
+                        bA = `<button class="btn btn-sm btn-success px-2 py-0 rounded-pill fw-bold me-1" onclick="aprobarTransaccion('${tr.id}')">Aprobar</button><button class="btn btn-sm btn-danger px-2 py-0 rounded-pill fw-bold" onclick="anularTransaccion('${tr.id}')">❌</button>`; 
+                    } else if(an) { 
+                        bA = `<span class="badge bg-secondary">Anulado</span>`; 
+                    } else { 
+                        bA = `<button class="btn btn-sm btn-outline-danger py-0 px-2 rounded-pill" onclick="anularTransaccion('${tr.id}')">Anular</button>`; 
+                    } 
+                    const badgeCol = pen ? "bg-warning text-dark" : (an ? "bg-secondary" : "bg-success"); 
+                    const estadoTexto = tr.estado || (an ? "Anulado" : "Activo");
+                    t.innerHTML += `<tr class="${an ? 'estado-anulado' : ''}"><td>${tr.fecha}</td><td>${tr.concepto}</td><td><span class="badge bg-light text-dark border">${tr.tipo}</span></td><td class="${cM} fw-bold">${formatoMoneda.format(tr.monto)}</td><td><span class="badge ${badgeCol}">${estadoTexto}</span></td><td>${bA}</td></tr>`; 
+                }); 
+                document.getElementById('total-ingresos').textContent = formatoMoneda.format(sI); document.getElementById('total-egresos').textContent = formatoMoneda.format(sE); document.getElementById('total-saldo').textContent = formatoMoneda.format(sI - sE); 
+            } catch (e) {} 
+        }
         document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
-        window.anularTransaccion = async function(id) { if (confirm("¿Anular movimiento? Esta acción es irreversible.")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
+        window.anularTransaccion = async function(id) { if (confirm("¿Rechazar o anular este movimiento? Esta acción es irreversible.")) { await updateDoc(doc(db, "finanzas", id), { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); cargarFinanzas(); } };
+        window.aprobarTransaccion = async function(id) { if (confirm("¿Confirmas que este dinero ya se reflejó en la cuenta bancaria de la iglesia?")) { await updateDoc(doc(db, "finanzas", id), { estado: "Activo", aprobadoPor: auth.currentUser.uid, fechaAprobacion: new Date().toISOString() }); cargarFinanzas(); } };
 
-        // === REGISTRO DE ASISTENCIA + TRIGGER DE CALENDARIO ===
         window.registrarAsistenciaManual = async function(btn) { 
             const v = document.getElementById('select-usuario-manual').value; const ac = document.getElementById('input-acompanantes-manual').value || 0; const nomsExtra = document.getElementById('input-nombres-extra-manual').value.trim();
             if(!v) { alert("⚠️ Primero debes seleccionar a una persona de la lista."); return; }
@@ -542,21 +576,15 @@
                     await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
                     document.getElementById('select-usuario-manual').value=""; document.getElementById('input-acompanantes-manual').value="0"; document.getElementById('input-nombres-extra-manual').value="";
                     window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
-                    
-                    // ABRIR MODAL DE CALENDARIO
                     const evObj = window.eventosData[window.eventoActualAsistenciaID];
-                    if(evObj) {
-                        window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar };
-                        document.getElementById('calendario-fondo').style.display = 'flex';
-                        document.getElementById('calendario-modal').style.display = 'block';
-                    }
-                } else { alert("⚠️ Esta persona ya estaba registrada en este evento."); }
+                    if(evObj) { window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar }; document.getElementById('calendario-fondo').style.display = 'flex'; document.getElementById('calendario-modal').style.display = 'block'; }
+                } else { alert("⚠️ Esta persona ya estaba registrada."); }
             } catch(e){} finally { btn.disabled = false; btn.innerText = "Agregar Asistencia"; }
         };
         
         window.registrarAsistenciaInvitado = async function(btn) { 
             const nom = document.getElementById('input-invitado-manual').value.trim(); const ac = document.getElementById('input-acompanantes-invitado').value || 0; const nomsExtra = document.getElementById('input-nombres-extra-invitado').value.trim();
-            if(!nom) { alert("⚠️ Debes escribir el nombre del invitado primero."); return; }
+            if(!nom) { alert("⚠️ Escribe el nombre del invitado."); return; }
             btn.disabled = true; btn.innerText = "⏳...";
             try { 
                 const docRef = await addDoc(collection(db, "usuarios"), { nombre: nom, perfilAcceso: "Invitado", cargo: "Invitado", estado: "Asistente externo", ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() }); 
@@ -564,53 +592,25 @@
                 await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: docRef.id, fechaHora: new Date().toISOString(), metodo: "Manual (Invitado)", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
                 document.getElementById('input-invitado-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = "";
                 window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
-                
-                // ABRIR MODAL DE CALENDARIO
                 const evObj = window.eventosData[window.eventoActualAsistenciaID];
-                if(evObj) {
-                    window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar };
-                    document.getElementById('calendario-fondo').style.display = 'flex';
-                    document.getElementById('calendario-modal').style.display = 'block';
-                }
-            } catch(e) { alert("Error al registrar al invitado."); } finally { btn.disabled = false; btn.innerText = "Crear y Agregar"; }
+                if(evObj) { window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar }; document.getElementById('calendario-fondo').style.display = 'flex'; document.getElementById('calendario-modal').style.display = 'block'; }
+            } catch(e) {} finally { btn.disabled = false; btn.innerText = "Crear y Agregar"; }
         };
 
-        // === MOTOR DE CALENDARIO NATIVO ===
         window.agregarAlCalendarioLimpio = function(evento) {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            const fechaInicioDate = new Date(evento.fechaInicio);
-            const fechaTerminoDate = new Date(fechaInicioDate.getTime() + (2 * 60 * 60 * 1000)); 
-
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; const fI = new Date(evento.fechaInicio); const fT = new Date(fI.getTime() + (2 * 60 * 60 * 1000)); 
             if (isIOS) {
-                const formatoICS = (fecha) => fecha.toISOString().replace(/-|:|\.\d{3}/g, '');
-                const icsContenido = [
-                    "BEGIN:VCALENDAR",
-                    "VERSION:2.0",
-                    "BEGIN:VEVENT",
-                    `DTSTART:${formatoICS(fechaInicioDate)}`,
-                    `DTEND:${formatoICS(fechaTerminoDate)}`,
-                    `SUMMARY:${evento.titulo}`,
-                    `LOCATION:${evento.lugar || 'Iglesia El Arca'}`,
-                    `DESCRIPTION:Inscripción desde El Arca App.`,
-                    "END:VEVENT",
-                    "END:VCALENDAR"
-                ].join("\n");
-                window.location.href = "data:text/calendar;charset=utf8," + encodeURIComponent(icsContenido);
+                const formatoICS = (f) => f.toISOString().replace(/-|:|\.\d{3}/g, '');
+                const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "BEGIN:VEVENT", `DTSTART:${formatoICS(fI)}`, `DTEND:${formatoICS(fT)}`, `SUMMARY:${evento.titulo}`, `LOCATION:${evento.lugar || 'Iglesia El Arca'}`, `DESCRIPTION:Inscripción desde El Arca App.`, "END:VEVENT", "END:VCALENDAR"].join("\n");
+                window.location.href = "data:text/calendar;charset=utf8," + encodeURIComponent(ics);
             } else {
-                const formatoGoogle = (fecha) => fecha.toISOString().replace(/-|:|\.\d{3}/g, '');
-                const urlGoogle = `https://calendar.google.com/calendar/render?action=TEMPLATE` +
-                    `&text=${encodeURIComponent(evento.titulo)}` +
-                    `&dates=${formatoGoogle(fechaInicioDate)}/${formatoGoogle(fechaTerminoDate)}` +
-                    `&details=${encodeURIComponent('Inscripción desde El Arca App.')}` +
-                    `&location=${encodeURIComponent(evento.lugar || 'Iglesia El Arca')}`;
-                window.open(urlGoogle, '_blank');
+                const formatoGoogle = (f) => f.toISOString().replace(/-|:|\.\d{3}/g, '');
+                const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evento.titulo)}&dates=${formatoGoogle(fI)}/${formatoGoogle(fT)}&details=${encodeURIComponent('Inscripción desde El Arca App.')}&location=${encodeURIComponent(evento.lugar || 'Iglesia El Arca')}`;
+                window.open(url, '_blank');
             }
         };
 
-        document.getElementById('btn-confirmar-agenda')?.addEventListener('click', () => {
-            if (window.eventoParaCalendario) { window.agregarAlCalendarioLimpio(window.eventoParaCalendario); }
-            window.cerrarModal('calendario');
-        });
+        document.getElementById('btn-confirmar-agenda')?.addEventListener('click', () => { if (window.eventoParaCalendario) { window.agregarAlCalendarioLimpio(window.eventoParaCalendario); } window.cerrarModal('calendario'); });
 
         async function cargarComentariosForo() { const lista = document.getElementById('lista-comentarios'); lista.innerHTML = "<p class='text-center text-muted mt-3'>Cargando foro...</p>"; try { const q = query(collection(db, "comentarios"), where("eventoID", "==", window.eventoActualForoID)); const snap = await getDocs(q); if (snap.empty) { lista.innerHTML = "<p class='text-center text-muted mt-3 small'>Aún no hay comentarios. ¡Inicia la conversación!</p>"; } else { let arr = []; snap.forEach(d => arr.push(d.data())); arr.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); lista.innerHTML = ""; arr.forEach(c => { const f = new Date(c.fecha); const fechaStr = `${f.getDate()}/${f.getMonth()+1} ${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}`; const esMio = c.usuarioID === auth.currentUser.uid; const align = esMio ? "text-end" : "text-start"; const burbujaClase = esMio ? "burbuja-mia" : "burbuja-otro"; lista.innerHTML += `<div class="${align} w-100"><small class="text-muted d-block" style="font-size: 0.7rem; margin-bottom: 2px;">${c.nombreUsuario} • ${fechaStr}</small><div class="burbuja ${burbujaClase} text-start shadow-sm">${c.texto}</div></div>`; }); lista.scrollTop = lista.scrollHeight; } } catch (e) { lista.innerHTML = "<p class='text-center text-danger mt-3'>Error.</p>"; } }
         document.getElementById('form-nuevo-comentario').addEventListener('submit', async (e) => { e.preventDefault(); const txt = document.getElementById('foro-texto'); if (!txt.value.trim()) return; const btn = document.getElementById('btn-enviar-comentario'); btn.disabled = true; try { const miNombre = window.usuariosData[auth.currentUser.uid] ? window.usuariosData[auth.currentUser.uid].nombre : "Usuario"; await addDoc(collection(db, "comentarios"), { eventoID: window.eventoActualForoID, usuarioID: auth.currentUser.uid, nombreUsuario: miNombre, texto: txt.value.trim(), fecha: new Date().toISOString() }); txt.value = ""; await cargarComentariosForo(); } catch(e) {} finally { btn.disabled = false; } });
@@ -622,51 +622,6 @@
         function cargarVistaEtapasAdmin() { const lista = document.getElementById('lista-admin-etapas'); lista.innerHTML = ""; window.catalogoEtapas.forEach(e => { lista.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light">${e} <button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarEtapaFormacion('${e}')">🗑️</button></li>`; }); }
         window.eliminarEtapaFormacion = async function(nombreEtapa) { if(confirm(`¿Estás seguro de eliminar la etapa '${nombreEtapa}'? Se borrará del catálogo.`)) { try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayRemove(nombreEtapa) }); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); } catch(e) { alert("Error al eliminar etapa."); } } }
         document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); });
-    </script>
-
-    <script>
-        // Registrar el Service Worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW falló: ', err));
-            });
-        }
-
-        // Variables y Detección de plataforma para instalación PWA
-        const banner = document.getElementById('install-banner');
-        const btnInstall = document.getElementById('btn-install');
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-        if (!isStandalone) {
-            if (isIOS) {
-                // LÓGICA PARA IPHONE
-                btnInstall.style.display = 'none';
-                banner.querySelector('span').innerHTML = '📲 Para instalar: Toca Compartir en Safari y selecciona <b>"Agregar a inicio"</b>.';
-                banner.style.display = 'block';
-            } else {
-                // LÓGICA PARA ANDROID
-                let deferredPrompt;
-                window.addEventListener('beforeinstallprompt', (e) => {
-                    e.preventDefault();
-                    deferredPrompt = e;
-                    banner.style.display = 'block';
-                });
-
-                btnInstall.addEventListener('click', async () => {
-                    banner.style.display = 'none';
-                    if (deferredPrompt) {
-                        deferredPrompt.prompt();
-                        const { outcome } = await deferredPrompt.userChoice;
-                        deferredPrompt = null;
-                    }
-                });
-            }
-        }
-
-        document.getElementById('btn-close-install').addEventListener('click', () => {
-            banner.style.display = 'none';
-        });
     </script>
 </body>
 </html>

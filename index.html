@@ -117,10 +117,12 @@
                 </div>
             </div>
 
-            <!-- FILA INFERIOR: Usuario y Botón Salir -->
-            <div class="d-flex justify-content-end align-items-center w-100 mt-2">
-                <span id="estado" class="badge bg-light text-dark me-2 py-2 px-3 rounded-pill shadow-sm d-inline-block text-truncate" style="max-width: 260px; font-size: 0.85rem;">Verificando...</span>
-                <button id="btn-logout" class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm" style="display:none; background-color: #e57373; border: none; color: #fff;" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket" style="margin: 0;"></i></button>
+            <!-- FILA INFERIOR: Usuario y Botón Salir (Flexbox Dinámico) -->
+            <div class="d-flex w-100 mt-2 align-items-center">
+                <div class="text-end" style="flex: 1; min-width: 0;">
+                    <span id="estado" class="badge bg-light text-dark py-2 px-3 rounded-pill shadow-sm d-inline-block text-truncate" style="font-size: 0.85rem; max-width: 100%;">Verificando...</span>
+                </div>
+                <button id="btn-logout" class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm ms-2 flex-shrink-0" style="display:none; background-color: #e57373; border: none; color: #fff;" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket" style="margin: 0;"></i></button>
             </div>
             
         </div>

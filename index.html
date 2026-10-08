@@ -333,7 +333,8 @@
                         <button type="button" class="btn btn-outline-primary" id="btn-tab-eventos"><i class="fa-solid fa-calendar-days"></i> Eventos</button>
                         <button type="button" class="btn btn-outline-primary" id="btn-tab-ministerios"><i class="fa-solid fa-handshake-angle"></i> Ministerios</button>
                         <button type="button" class="btn btn-outline-primary" id="btn-tab-catalogos"><i class="fa-solid fa-book-open"></i> Catálogos</button>
-                        <button type="button" class="btn" id="btn-tab-finanzas"><i class="fa-solid fa-vault"></i> Finanzas</button>
+                        <button type="button" class="btn btn-outline-primary" id="btn-tab-inventario"><i class="fa-solid fa-boxes-stacked"></i> Inventario</button>
+                        <button type="button" class="btn btn-outline-primary" id="btn-tab-finanzas"><i class="fa-solid fa-vault"></i> Finanzas</button>
                     </div>
 
                     <div class="seccion-gestion activa" id="sec-usuarios">
@@ -358,6 +359,14 @@
                                             <label class="form-label small text-muted fw-bold text-success">Ministerios a Cargo</label>
                                             <div id="contenedor-checkboxes-ministerios" class="p-2 border rounded bg-white shadow-sm" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;">
                                                 <!-- Se llenará dinámicamente con checkboxes -->
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mt-2 border-top pt-3">
+                                            <div class="form-check form-switch fs-6">
+                                                <input class="form-check-input" type="checkbox" id="edit-vastago" role="switch" style="cursor: pointer;">
+                                                <label class="form-check-label fw-bold text-arca" for="edit-vastago" style="cursor: pointer;">
+                                                    <i class="fa-solid fa-star text-warning"></i> Privilegios de Vástago (Administrar Inventario y recibir alertas)
+                                                </label>
                                             </div>
                                         </div>
                                     </div>
@@ -402,6 +411,71 @@
                         <h6 class="text-muted fw-bold">Etapas Actuales (Presiona para Eliminar)</h6>
                         <ul id="lista-admin-etapas" class="list-group shadow-sm"></ul>
                     </div>
+
+                    <div class="seccion-gestion" id="sec-inventario">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="fw-bold text-arca mb-0"><i class="fa-solid fa-boxes-stacked"></i> Control de Donaciones e Inventario</h5>
+                        </div>
+
+                        <!-- Formulario de Nuevo Producto -->
+                        <div class="bg-light p-3 rounded shadow-sm border border-light mb-4">
+                            <h6 class="fw-bold text-arca mb-3">Registrar Nuevo Insumo</h6>
+                            <form id="form-nuevo-producto" class="row g-2 align-items-end">
+                                <div class="col-md-3">
+                                    <label class="small text-muted fw-bold">Nombre del Producto</label>
+                                    <input type="text" id="inv-nombre" class="form-control bg-white" placeholder="Ej. Arroz, Frazadas..." required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="small text-muted fw-bold">Categoría</label>
+                                    <select id="inv-categoria" class="form-select bg-white" required>
+                                        <option value="Alimentos">Alimentos no perecibles</option>
+                                        <option value="Ropa">Ropa y Abrigo</option>
+                                        <option value="Mobiliario">Mobiliario / Equipamiento</option>
+                                        <option value="Insumos">Insumos Varios</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small text-muted fw-bold">Unidad</label>
+                                    <select id="inv-unidad" class="form-select bg-white">
+                                        <option value="Unidades">Unidades</option>
+                                        <option value="Kilos">Kilos</option>
+                                        <option value="Litros">Litros</option>
+                                        <option value="Cajas">Cajas</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="small text-muted fw-bold text-danger">Stock Crítico</label>
+                                    <input type="number" id="inv-minimo" class="form-control bg-white" placeholder="Alerta en..." min="1" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-arca w-100 fw-bold">Crear Ficha</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Buscador y Tabla de Inventario -->
+                        <div class="d-flex justify-content-between align-items-end mb-2 gap-2">
+                            <input type="text" id="buscador-inventario" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar insumo por nombre o categoría...">
+                            <button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-inventario', 'Reporte_Inventario.csv')">📥 Exportar Stock</button>
+                        </div>
+                        
+                        <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                            <table class="table table-hover align-middle mb-0" id="tabla-exportar-inventario">
+                                <thead class="table-cabecera-suave">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Categoría</th>
+                                        <th>Stock Actual</th>
+                                        <th>Estado</th>
+                                        <th>Dispensación / Ingreso</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-inventario">
+                                    <!-- Se llenará con JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -426,7 +500,6 @@
         </div>
     </div>
 
-    <!-- EL ÚNICO BLOQUE DE SCRIPT NECESARIO -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -437,51 +510,30 @@
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
         const googleProvider = new GoogleAuthProvider();
 
-        window.usuariosData = {}; window.eventosData = {}; window.perfilUsuarioActual = ""; 
-        window.ministeriosUsuarioActual = []; // ARRAY PARA MULTI-MINISTERIO
+        window.usuariosData = {}; window.eventosData = {}; window.inventarioData = {}; window.perfilUsuarioActual = ""; 
+        window.ministeriosUsuarioActual = []; window.esVastagoActual = false;
         window.eventoActualAsistenciaID = ""; window.eventoActualForoID = ""; window.catalogoEtapas = []; window.catalogoMinisterios = []; window.nombreEventoActualEnMemoria = "Evento Desconocido"; window.eventoParaCalendario = null;
         window.notificacionesPendientes = []; 
         
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
-        // === GESTIÓN DEL TEMA OSCURO ===
-        const themeBtn = document.getElementById('btn-theme');
-        let currentTheme = localStorage.getItem('theme') || 'auto';
-
-        function applyTheme(theme) {
-            if (theme === 'auto') {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
-                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>'; themeBtn.title = 'Tema actual: Automático';
-            } else {
-                document.documentElement.setAttribute('data-bs-theme', theme);
-                themeBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
-                themeBtn.title = `Tema actual: ${theme === 'dark' ? 'Oscuro' : 'Claro'}`;
-            }
-        }
-
-        window.toggleTheme = function() {
-            if (currentTheme === 'auto') currentTheme = 'light';
-            else if (currentTheme === 'light') currentTheme = 'dark';
-            else currentTheme = 'auto';
-            localStorage.setItem('theme', currentTheme);
-            applyTheme(currentTheme);
-        };
-
-        applyTheme(currentTheme); 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if(currentTheme === 'auto') applyTheme('auto'); });
+        const themeBtn = document.getElementById('btn-theme'); let currentTheme = localStorage.getItem('theme') || 'auto';
+        function applyTheme(theme) { if (theme === 'auto') { const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light'); themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>'; themeBtn.title = 'Tema actual: Automático'; } else { document.documentElement.setAttribute('data-bs-theme', theme); themeBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>'; themeBtn.title = `Tema actual: ${theme === 'dark' ? 'Oscuro' : 'Claro'}`; } }
+        window.toggleTheme = function() { if (currentTheme === 'auto') currentTheme = 'light'; else if (currentTheme === 'light') currentTheme = 'dark'; else currentTheme = 'auto'; localStorage.setItem('theme', currentTheme); applyTheme(currentTheme); };
+        applyTheme(currentTheme); window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if(currentTheme === 'auto') applyTheme('auto'); });
 
         const estado = document.getElementById('estado');
-        const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos'), document.getElementById('btn-tab-finanzas')];
-        const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-finanzas')];
+        const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos'), document.getElementById('btn-tab-finanzas'), document.getElementById('btn-tab-inventario')];
+        const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-finanzas'), document.getElementById('sec-inventario')];
         
-        btnTabs.forEach((btn, idx) => { btn.addEventListener('click', () => { btnTabs.forEach(b => b.classList.remove('active', 'btn-primary')); if(btn.id !== 'btn-tab-finanzas') btn.classList.add('active'); secs.forEach((sec, i) => { i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'); }); }); });
+        btnTabs.forEach((btn, idx) => { if(!btn) return; btn.addEventListener('click', () => { btnTabs.forEach(b => { if(b) b.classList.remove('active', 'btn-primary'); }); if(btn.id !== 'btn-tab-finanzas') btn.classList.add('active'); secs.forEach((sec, i) => { if(!sec) return; i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'); }); }); });
 
         window.cambiarNumero = function(inputId, cantidad) { const input = document.getElementById(inputId); let valorActual = parseInt(input.value) || 0; let nuevoValor = valorActual + cantidad; if (nuevoValor < 0) nuevoValor = 0; input.value = nuevoValor; };
 
         document.getElementById('buscador-usuarios-admin').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const rows = document.querySelectorAll('#tabla-usuarios tr'); rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; }); });
         document.getElementById('buscador-select-asistencia').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const options = document.querySelectorAll('#select-usuario-manual option'); options.forEach(opt => { if(opt.value === "") return; if(opt.text.toLowerCase().includes(term)) { opt.style.display = ''; opt.removeAttribute('disabled'); } else { opt.style.display = 'none'; opt.setAttribute('disabled', 'disabled'); } }); });
         document.getElementById('buscador-tabla-asistencia').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const rows = document.querySelectorAll('#tabla-asistentes tr'); rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; }); });
+        document.getElementById('buscador-inventario').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const rows = document.querySelectorAll('#tabla-inventario tr'); rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; }); });
 
         document.getElementById('link-registrar').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-login').style.display = 'none'; document.getElementById('caja-registro').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
         document.getElementById('link-login').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-registro').style.display = 'none'; document.getElementById('caja-login').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
@@ -491,7 +543,7 @@
             try {
                 const result = await signInWithPopup(auth, googleProvider); const user = result.user;
                 const userDocRef = doc(db, "usuarios", user.uid); const userDocSnap = await getDoc(userDocRef);
-                if (!userDocSnap.exists()) { await setDoc(userDocRef, { nombre: user.displayName || "Usuario de Google", email: user.email, telefono: user.phoneNumber || "", perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() }); }
+                if (!userDocSnap.exists()) { await setDoc(userDocRef, { nombre: user.displayName || "Usuario de Google", email: user.email, telefono: user.phoneNumber || "", perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], esVastago: false, fechaRegistro: new Date().toISOString() }); }
                 errorP.textContent = "";
             } catch (error) { errorP.textContent = "Acceso cancelado."; errorP.className = "text-danger mt-3 fw-bold"; }
         };
@@ -505,33 +557,31 @@
                     const userDoc = await getDoc(doc(db, "usuarios", user.uid));
                     if (userDoc.exists()) {
                         const dU = userDoc.data(); window.perfilUsuarioActual = dU.perfilAcceso; 
-                        
-                        // LÓGICA DE COMPATIBILIDAD MULTI-MINISTERIO
                         window.ministeriosUsuarioActual = dU.ministeriosAsignados || (dU.ministerioAsignado && dU.ministerioAsignado !== "Ninguno" ? [dU.ministerioAsignado] : []);
+                        window.esVastagoActual = dU.esVastago || false;
                         
                         window.usuariosData[user.uid] = dU; 
                         estado.textContent = `👤 ${dU.nombre} (${dU.perfilAcceso})`; estado.className = "badge bg-white text-dark py-2 px-3 rounded-pill shadow-sm d-inline-block text-truncate badge-usuario"; document.getElementById('btn-logout').style.display = "block";
                         document.getElementById('modulo-mi-perfil').style.display = "block"; document.getElementById('btn-campana').style.display = "block"; 
                         await cargarPerfilMiembro(user.uid, dU);
 
-                        let qNotif;
-                        if (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor") { qNotif = query(collection(db, "notificaciones"), where("receptor", "in", [user.uid, "Administradores"])); } else { qNotif = query(collection(db, "notificaciones"), where("receptor", "==", user.uid)); }
+                        let rolesNotif = [user.uid];
+                        if (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor") rolesNotif.push("Administradores");
+                        if (dU.perfilAcceso === "Administrador" || window.esVastagoActual) rolesNotif.push("Bodega");
+                        
+                        const qNotif = query(collection(db, "notificaciones"), where("receptor", "in", rolesNotif));
                         
                         onSnapshot(qNotif, (snapshot) => {
-                            let noLeidas = 0; const lista = document.getElementById('lista-notificaciones');
-                            if(lista) lista.innerHTML = ""; let notifs = [];
-                            snapshot.forEach(d => { notifs.push({id: d.id, ...d.data()}); });
-                            notifs.sort((a,b) => new Date(b.fecha) - new Date(a.fecha)); 
+                            let noLeidas = 0; const lista = document.getElementById('lista-notificaciones'); if(lista) lista.innerHTML = ""; let notifs = [];
+                            snapshot.forEach(d => { notifs.push({id: d.id, ...d.data()}); }); notifs.sort((a,b) => new Date(b.fecha) - new Date(a.fecha)); 
                             
-                            if(notifs.length === 0) {
-                                if(lista) lista.innerHTML = "<p class='text-muted small text-center mt-3'>No tienes notificaciones recientes.</p>";
-                            } else {
+                            if(notifs.length === 0) { if(lista) lista.innerHTML = "<p class='text-muted small text-center mt-3'>No tienes notificaciones recientes.</p>"; } else {
                                 notifs.forEach(n => {
-                                    if(!n.leida) noLeidas++;
-                                    const bg = n.leida ? "bg-white text-muted" : "bg-light fw-bold border-start border-4 border-primary";
+                                    if(!n.leida) noLeidas++; const bg = n.leida ? "bg-white text-muted" : "bg-light fw-bold border-start border-4 border-primary";
                                     const f = new Date(n.fecha); const hora = `${f.getDate()}/${f.getMonth()+1} - ${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}`;
                                     let accionClick = ""; let estiloCursor = ""; let tituloHover = "";
                                     if ((n.texto.includes("💸") || n.texto.includes("fa-money-bill-transfer")) && (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor")) { accionClick = `onclick="irAFinanzas('${n.id}')"`; estiloCursor = "cursor: pointer;"; tituloHover = `title="Clic para ir a revisión de finanzas"`; }
+                                    if ((n.texto.includes("Alerta de Inventario")) && (dU.perfilAcceso === "Administrador" || window.esVastagoActual)) { accionClick = `onclick="irAInventario('${n.id}')"`; estiloCursor = "cursor: pointer;"; tituloHover = `title="Clic para ir a Bodega"`; }
                                     if(lista) lista.innerHTML += `<div class="p-2 rounded shadow-sm mb-2 ${bg}" ${accionClick} style="${estiloCursor}" ${tituloHover}><p class="mb-1 small">${n.texto}</p><small class="text-secondary" style="font-size:0.7rem;">${hora}</small></div>`;
                                 });
                             }
@@ -539,13 +589,28 @@
                             window.notificacionesPendientes = notifs.filter(n => !n.leida).map(n => n.id);
                         });
 
-                        if (dU.perfilAcceso === "Administrador") {
-                            document.getElementById('admin-panel').style.display = "block"; document.getElementById('btn-tab-usuarios').style.display = "inline-block"; document.getElementById('btn-tab-finanzas').style.display = "inline-block"; document.getElementById('btn-tab-ministerios').style.display = "inline-block"; document.getElementById('btn-tab-catalogos').style.display = "inline-block";
-                            await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas(); prepararSelectoresEventos(); cargarVistaEtapasAdmin();
-                        } else if (dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder") {
-                            document.getElementById('admin-panel').style.display = "block"; document.getElementById('btn-tab-usuarios').style.display = "none"; document.getElementById('btn-tab-finanzas').style.display = "none"; document.getElementById('btn-tab-ministerios').style.display = "none"; document.getElementById('btn-tab-catalogos').style.display = "none";
-                            btnTabs[1].click(); cargarTiposEventosSelect(); prepararSelectoresEventos(); await cargarTablaUsuarios(); 
-                        } else { document.getElementById('admin-panel').style.display = "none"; await cargarTablaUsuarios(); }
+                        // LÓGICA DE VISIBILIDAD DE PESTAÑAS (Roles + Vástago)
+                        const isAdmin = dU.perfilAcceso === "Administrador";
+                        const isPastor = dU.perfilAcceso === "Pastor";
+                        const isLider = dU.perfilAcceso === "Líder";
+                        const isVastago = window.esVastagoActual;
+
+                        if (isAdmin || isPastor || isLider || isVastago) {
+                            document.getElementById('admin-panel').style.display = "block";
+                            document.getElementById('btn-tab-usuarios').style.display = isAdmin ? "inline-block" : "none";
+                            document.getElementById('btn-tab-eventos').style.display = (isAdmin || isPastor || isLider) ? "inline-block" : "none";
+                            document.getElementById('btn-tab-ministerios').style.display = isAdmin ? "inline-block" : "none";
+                            document.getElementById('btn-tab-catalogos').style.display = isAdmin ? "inline-block" : "none";
+                            document.getElementById('btn-tab-finanzas').style.display = isAdmin ? "inline-block" : "none";
+                            document.getElementById('btn-tab-inventario').style.display = (isAdmin || isVastago) ? "inline-block" : "none";
+
+                            // Clic automático a la primera pestaña habilitada
+                            if (isAdmin) { btnTabs[0].click(); await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas(); prepararSelectoresEventos(); cargarVistaEtapasAdmin(); cargarInventario(); }
+                            else if (isPastor || isLider) { btnTabs[1].click(); cargarTiposEventosSelect(); prepararSelectoresEventos(); await cargarTablaUsuarios(); if(isVastago) cargarInventario(); }
+                            else if (isVastago) { document.getElementById('btn-tab-inventario').click(); cargarInventario(); }
+                        } else {
+                            document.getElementById('admin-panel').style.display = "none"; await cargarTablaUsuarios();
+                        }
                     }
                 } catch (e) {}
                 document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
@@ -555,13 +620,14 @@
         });
 
         document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => { document.getElementById('auth-error').textContent = "Credenciales incorrectas."; }); });
-        document.getElementById('registro-form').addEventListener('submit', async (e) => { e.preventDefault(); const errorP = document.getElementById('auth-error'); errorP.textContent = "Creando..."; errorP.className = "text-warning mt-3 fw-bold"; const n = document.getElementById('reg-nombre').value; const em = document.getElementById('reg-email').value; const pass = document.getElementById('reg-password').value; const tel = document.getElementById('reg-telefono').value; try { const uc = await createUserWithEmailAndPassword(auth, em, pass); await setDoc(doc(db, "usuarios", uc.user.uid), { nombre: n, email: em, telefono: tel, perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() }); errorP.textContent = "¡Cuenta creada! Entrando..."; errorP.className = "text-success mt-3 fw-bold"; } catch (err) { errorP.textContent = "Error."; errorP.className = "text-danger mt-3 fw-bold"; } });
+        document.getElementById('registro-form').addEventListener('submit', async (e) => { e.preventDefault(); const errorP = document.getElementById('auth-error'); errorP.textContent = "Creando..."; errorP.className = "text-warning mt-3 fw-bold"; const n = document.getElementById('reg-nombre').value; const em = document.getElementById('reg-email').value; const pass = document.getElementById('reg-password').value; const tel = document.getElementById('reg-telefono').value; try { const uc = await createUserWithEmailAndPassword(auth, em, pass); await setDoc(doc(db, "usuarios", uc.user.uid), { nombre: n, email: em, telefono: tel, perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], esVastago: false, fechaRegistro: new Date().toISOString() }); errorP.textContent = "¡Cuenta creada! Entrando..."; errorP.className = "text-success mt-3 fw-bold"; } catch (err) { errorP.textContent = "Error."; errorP.className = "text-danger mt-3 fw-bold"; } });
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
         
         window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; document.body.style.overflow = ''; };
         window.abrirModalNotificaciones = function() { document.body.style.overflow = 'hidden'; document.getElementById('notif-fondo').style.display='flex'; document.getElementById('notif-modal').style.display='block'; };
         window.marcarNotificacionesLeidas = async function() { if(window.notificacionesPendientes.length > 0) { for(const nid of window.notificacionesPendientes) { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } } };
-        window.irAFinanzas = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('admin-panel').style.display === 'block') { document.getElementById('btn-tab-finanzas').click(); document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' }); } };
+        window.irAFinanzas = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-finanzas').style.display !== 'none') { document.getElementById('btn-tab-finanzas').click(); document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' }); } };
+        window.irAInventario = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-inventario').style.display !== 'none') { document.getElementById('btn-tab-inventario').click(); document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' }); } };
 
         window.abrirModalDonacion = function() { document.body.style.overflow = 'hidden'; document.getElementById('donacion-fondo').style.display='flex'; document.getElementById('donacion-modal').style.display='block'; };
         window.copiarDatosBancarios = function(btn) { const texto = "Iglesia El Arca\nRUT: 65.000.000-0\nBancoEstado - Cuenta Vista\nN° 123456789\nfinanzas@elarca.cl"; navigator.clipboard.writeText(texto).then(()=>{ btn.innerText = "✅ ¡Copiado!"; setTimeout(()=>btn.innerHTML='<i class="fa-solid fa-copy"></i> Copiar Datos', 2000); }); };
@@ -573,6 +639,76 @@
                 window.cerrarModal('donacion'); alert("¡Gracias! Tu aporte ha sido notificado y está en revisión por finanzas."); document.getElementById('form-declarar-donacion').reset(); cargarFinanzas(); 
             } catch(err){} finally { btn.disabled=false; btn.innerText="Notificar"; } 
         });
+
+        // ================= INVENTARIO (NUEVO MÓDULO) ================= //
+        document.getElementById('form-nuevo-producto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button'); btn.disabled = true;
+            try {
+                await addDoc(collection(db, "inventario"), {
+                    nombre: document.getElementById('inv-nombre').value,
+                    categoria: document.getElementById('inv-categoria').value,
+                    unidad: document.getElementById('inv-unidad').value,
+                    stockMinimo: parseInt(document.getElementById('inv-minimo').value),
+                    stockActual: 0,
+                    creadoPor: window.usuariosData[auth.currentUser.uid]?.nombre || "Usuario",
+                    fechaCreacion: new Date().toISOString()
+                });
+                document.getElementById('form-nuevo-producto').reset();
+                cargarInventario();
+            } catch(err) {} finally { btn.disabled = false; }
+        });
+
+        window.cargarInventario = async function() { 
+            try { 
+                const snap = await getDocs(collection(db, "inventario")); 
+                const t = document.getElementById('tabla-inventario'); t.innerHTML = ""; window.inventarioData = {}; let arr = [];
+                snap.forEach(d => { window.inventarioData[d.id] = d.data(); arr.push({id: d.id, ...d.data()}); }); 
+                arr.sort((a,b) => a.nombre.localeCompare(b.nombre));
+                
+                arr.forEach(p => { 
+                    let estadoPill = ""; 
+                    if(p.stockActual === 0) estadoPill = `<span class="badge bg-danger rounded-pill px-3">Agotado</span>`; 
+                    else if(p.stockActual <= p.stockMinimo) estadoPill = `<span class="badge bg-warning text-dark rounded-pill px-3"><i class="fa-solid fa-triangle-exclamation"></i> Stock Bajo</span>`; 
+                    else estadoPill = `<span class="badge bg-success rounded-pill px-3">Óptimo</span>`; 
+                    
+                    t.innerHTML += `<tr>
+                        <td class="fw-bold">${p.nombre}</td>
+                        <td><span class="badge bg-light text-dark border">${p.categoria}</span></td>
+                        <td class="fs-5 fw-bold text-arca">${p.stockActual} <small class="text-muted fs-6">${p.unidad}</small></td>
+                        <td>${estadoPill}</td>
+                        <td>
+                            <div class="btn-group shadow-sm">
+                                <button class="btn btn-sm btn-outline-danger fw-bold px-3 fs-6" onclick="ajustarStock('${p.id}', -1)" title="Retirar 1 unidad">-</button>
+                                <button class="btn btn-sm btn-outline-success fw-bold px-3 fs-6" onclick="ajustarStock('${p.id}', 1)" title="Ingresar 1 unidad">+</button>
+                            </div>
+                        </td>
+                    </tr>`; 
+                }); 
+            } catch (e) {} 
+        };
+
+        window.ajustarStock = async function(id, cantidad) {
+            const p = window.inventarioData[id];
+            let nuevoStock = p.stockActual + cantidad;
+            if(nuevoStock < 0) nuevoStock = 0;
+
+            try {
+                await updateDoc(doc(db, "inventario", id), { stockActual: nuevoStock });
+                
+                // Gatillador automático de notificación a Vástagos y Administradores
+                if(nuevoStock <= p.stockMinimo && cantidad < 0 && p.stockActual > p.stockMinimo) {
+                    await addDoc(collection(db, "notificaciones"), {
+                        receptor: "Bodega",
+                        texto: `⚠️ <b>Alerta de Inventario:</b> "${p.nombre}" ha bajado a nivel crítico (${nuevoStock} ${p.unidad} restantes). Por favor, gestionar reposición.`,
+                        fecha: new Date().toISOString(),
+                        leida: false
+                    });
+                }
+                cargarInventario();
+            } catch(e) {}
+        };
+        // ================= FIN INVENTARIO ================= //
 
         async function cargarFinanzas() { 
             const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; 
@@ -672,7 +808,8 @@
                 q.forEach((d) => { 
                     const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot}` : "N/A"; 
                     const minData = (u.ministeriosAsignados && u.ministeriosAsignados.length > 0) ? u.ministeriosAsignados.join(', ') : (u.ministerioAsignado || 'Ninguno');
-                    t.innerHTML += `<tr><td><span class="fw-bold">${u.nombre||''}</span></td><td><span class="text-muted small">${u.perfilAcceso||''}</span></td><td><span class="badge bg-secondary rounded-pill px-3 text-wrap" style="max-width: 150px; line-height: 1.2;">${minData}</span></td><td><span class="badge bg-info text-dark rounded-pill">${u.estado||''}</span></td><td><strong>${r}</strong></td><td><button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; 
+                    const vastagoPill = u.esVastago ? ' <i class="fa-solid fa-star text-warning" title="Vástago"></i>' : '';
+                    t.innerHTML += `<tr><td><span class="fw-bold">${u.nombre||''}</span>${vastagoPill}</td><td><span class="text-muted small">${u.perfilAcceso||''}</span></td><td><span class="badge bg-secondary rounded-pill px-3 text-wrap" style="max-width: 150px; line-height: 1.2;">${minData}</span></td><td><span class="badge bg-info text-dark rounded-pill">${u.estado||''}</span></td><td><strong>${r}</strong></td><td><button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold" onclick="abrirEditorUsuario('${d.id}')">Editar</button></td></tr>`; 
                 }); 
             } catch (e) {} 
         }
@@ -680,6 +817,9 @@
         window.abrirEditorUsuario = function(uid) { 
             const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; document.getElementById('edit-email-display').textContent = u.email || 'Sin correo'; document.getElementById('edit-telefono').value = u.telefono || ''; document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; 
             
+            // Cargar el Switch de Vástago
+            document.getElementById('edit-vastago').checked = u.esVastago || false;
+
             const cMin = document.getElementById('contenedor-checkboxes-ministerios'); cMin.innerHTML = "";
             const minsUser = u.ministeriosAsignados || (u.ministerioAsignado && u.ministerioAsignado !== "Ninguno" ? [u.ministerioAsignado] : []);
             window.catalogoMinisterios.forEach(m => {
@@ -694,8 +834,11 @@
             e.preventDefault(); const uid = document.getElementById('edit-uid').value; const btn = document.getElementById('btn-guardar-usuario'); const textoOriginal = btn.innerHTML; btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
             try { 
                 const minsSeleccionados = Array.from(document.querySelectorAll('input[name="ministerio-check"]:checked')).map(c => c.value);
-                await updateDoc(doc(db, "usuarios", uid), { telefono: document.getElementById('edit-telefono').value, perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, ministeriosAsignados: minsSeleccionados, ministerioAsignado: minsSeleccionados.length > 0 ? minsSeleccionados[0] : "Ninguno", etapasCompletadas: Array.from(document.querySelectorAll('input[name="etapas-check"]:checked')).map(c => c.value) }); 
-                btn.innerHTML = "✅ ¡Listo!"; setTimeout(() => { document.getElementById('editor-usuario').style.display = 'none'; btn.disabled = false; btn.innerHTML = textoOriginal; document.getElementById('buscador-usuarios-admin').value = ""; cargarTablaUsuarios(); if (uid === auth.currentUser.uid) { getDoc(doc(db, "usuarios", auth.currentUser.uid)).then(docSnap => { cargarPerfilMiembro(auth.currentUser.uid, docSnap.data()); }); } }, 400);
+                const vastagoChecked = document.getElementById('edit-vastago').checked;
+
+                await updateDoc(doc(db, "usuarios", uid), { telefono: document.getElementById('edit-telefono').value, perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, ministeriosAsignados: minsSeleccionados, ministerioAsignado: minsSeleccionados.length > 0 ? minsSeleccionados[0] : "Ninguno", etapasCompletadas: Array.from(document.querySelectorAll('input[name="etapas-check"]:checked')).map(c => c.value), esVastago: vastagoChecked }); 
+                
+                btn.innerHTML = "✅ ¡Listo!"; setTimeout(() => { document.getElementById('editor-usuario').style.display = 'none'; btn.disabled = false; btn.innerHTML = textoOriginal; document.getElementById('buscador-usuarios-admin').value = ""; cargarTablaUsuarios(); if (uid === auth.currentUser.uid) { getDoc(doc(db, "usuarios", auth.currentUser.uid)).then(docSnap => { window.esVastagoActual = docSnap.data().esVastago || false; cargarPerfilMiembro(auth.currentUser.uid, docSnap.data()); }); } }, 400);
             } catch (err) { btn.innerHTML = "❌ Error"; setTimeout(() => { btn.disabled = false; btn.innerHTML = textoOriginal; }, 2000); } 
         });
 
@@ -720,7 +863,7 @@
             if(!nom) { alert("⚠️ Escribe el nombre del invitado."); return; }
             btn.disabled = true; btn.innerText = "⏳...";
             try { 
-                const docRef = await addDoc(collection(db, "usuarios"), { nombre: nom, perfilAcceso: "Invitado", cargo: "Invitado", estado: "Asistente externo", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], fechaRegistro: new Date().toISOString() }); 
+                const docRef = await addDoc(collection(db, "usuarios"), { nombre: nom, perfilAcceso: "Invitado", cargo: "Invitado", estado: "Asistente externo", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], esVastago: false, fechaRegistro: new Date().toISOString() }); 
                 window.usuariosData[docRef.id] = { nombre: nom, perfilAcceso: "Invitado" }; 
                 await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: docRef.id, fechaHora: new Date().toISOString(), metodo: "Manual (Invitado)", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
                 document.getElementById('input-invitado-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = "";
@@ -780,7 +923,10 @@
         function cargarVistaEtapasAdmin() { const lista = document.getElementById('lista-admin-etapas'); lista.innerHTML = ""; window.catalogoEtapas.forEach(e => { lista.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light">${e} <button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarEtapaFormacion('${e}')"><i class="fa-solid fa-trash"></i></button></li>`; }); }
         window.eliminarEtapaFormacion = async function(nombreEtapa) { if(confirm(`¿Estás seguro de eliminar la etapa '${nombreEtapa}'? Se borrará del catálogo.`)) { try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayRemove(nombreEtapa) }); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); } catch(e) { alert("Error al eliminar etapa."); } } }
         document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); });
+    </script>
     
+    <!-- SCRIPT DE INSTALACIÓN PWA -->
+    <script>
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW falló: ', err)); }); }
         const banner = document.getElementById('install-banner'); const btnInstall = document.getElementById('btn-install'); const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         if (!isStandalone) {

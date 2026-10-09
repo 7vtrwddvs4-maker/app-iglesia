@@ -16,7 +16,7 @@
         .btn:active { transform: scale(0.95); }
         .btn-arca, .btn-success, .btn-primary { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .btn-arca:hover, .btn-success:hover, .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-        i { margin-right: 6px; } /* Separación estándar para los íconos */
+        i { margin-right: 6px; } 
         :root { 
             --azul-arca: #002d5a; 
             --fondo-crema: #f4f3f0;
@@ -30,7 +30,7 @@
             --fondo-crema: #121212;
             --crema-tabla: #2b3035;
             --texto-oscuro: #e0e0e0;
-            --azul-arca: #1f426b; /* Un azul ligeramente más claro para resaltar en fondo negro */
+            --azul-arca: #1f426b;
         }
         [data-bs-theme="dark"] body { background-color: var(--fondo-crema); color: var(--texto-oscuro); }
         [data-bs-theme="dark"] .bg-white { background-color: #212529 !important; color: #e0e0e0 !important; border-color: #373b3e !important; }
@@ -42,7 +42,7 @@
         [data-bs-theme="dark"] .burbuja-otro { background-color: #2b3035; color: #e0e0e0; border-color: #495057; }
         [data-bs-theme="dark"] .list-group-item { background-color: #212529; color: #e0e0e0; border-color: #373b3e; }
 
-        body { background-color: var(--fondo-crema); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--texto-oscuro); transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--fondo-crema); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--texto-oscuro); transition: background-color 0.3s, color 0.3s; padding-bottom: 85px; /* ESPACIO PARA LA BARRA INFERIOR */ }
         .text-arca { color: var(--azul-arca) !important; }
         .bg-arca { background-color: var(--azul-arca); color: white; }
         
@@ -59,22 +59,19 @@
         #btn-tab-finanzas.active { background-color: #d4a03c; color: white; }
         
         .card { border-radius: 12px; border: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 20px; transition: background-color 0.3s; }
-        
         .table-cabecera-suave th { background-color: var(--crema-tabla) !important; color: var(--azul-arca) !important; border-bottom: 2px solid #eaeaea; font-weight: bold; }
         
         .navbar-arca { background-color: var(--azul-arca); border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; padding-top: 15px; padding-bottom: 15px; margin-bottom: 25px; transition: background-color 0.3s; }
-        .navbar-arca .text-arca { color: white !important; }
-        .navbar-arca .text-muted { color: #d0dbe5 !important; }
         
-        .modal-fondo { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1040; align-items: center; justify-content: center; }
-        .modal-caja { display: none; position: relative; padding: 25px 25px 35px 25px; border-radius: 12px; z-index: 1050; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; width: 95%; max-width: 600px; border-top: 5px solid var(--dorado-arca); margin: auto; transition: background-color 0.3s; }
+        .modal-fondo { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1060; align-items: center; justify-content: center; }
+        .modal-caja { display: none; position: relative; padding: 25px 25px 35px 25px; border-radius: 12px; z-index: 1070; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-height: 90vh; overflow-y: auto; width: 95%; max-width: 600px; border-top: 5px solid var(--dorado-arca); margin: auto; transition: background-color 0.3s; }
         
         .seccion-gestion { display: none; animation: fadeIn 0.3s; }
         .seccion-gestion.activa { display: block; }
         .estado-anulado { text-decoration: line-through; color: #6c757d; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .logo-arca { width: 55px; height: 55px; object-fit: cover; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); background: white; }
-        #dashboard-container, #admin-panel, #modulo-mi-perfil { display: none; }
+        .logo-arca { width: 45px; height: 45px; object-fit: cover; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); background: white; }
+        #dashboard-container { display: none; }
         
         .foro-chat-box { max-height: 350px; overflow-y: auto; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; }
         .burbuja { display: inline-block; padding: 8px 12px; border-radius: 15px; max-width: 85%; font-size: 0.95rem; }
@@ -84,209 +81,107 @@
         .contador-acomp { display: flex; align-items: center; border: 1px solid #ced4da; border-radius: 6px; overflow: hidden; }
         .contador-acomp button { border: none; width: 35px; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--azul-arca); }
         .contador-acomp input { width: 40px; text-align: center; border: none; background: transparent; font-weight: bold; outline: none; }
-        .contador-acomp input[type=number]::-webkit-inner-spin-button, .contador-acomp input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* ========= NUEVA BARRA INFERIOR (BOTTOM NAV) ========= */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--fondo-crema);
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 0;
+            z-index: 1030;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* Para iPhones modernos */
+        }
+        [data-bs-theme="dark"] .bottom-nav { background-color: #212529; border-top: 1px solid #373b3e; box-shadow: 0 -4px 15px rgba(0,0,0,0.5); }
+        
+        .bottom-nav-item {
+            color: #6c757d;
+            font-size: 1.6rem;
+            text-decoration: none;
+            position: relative;
+            padding: 5px 20px;
+            border-radius: 12px;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bottom-nav-item:hover { color: var(--azul-arca); }
+        .bottom-nav-item.active { color: var(--azul-arca); }
+        [data-bs-theme="dark"] .bottom-nav-item:hover, [data-bs-theme="dark"] .bottom-nav-item.active { color: #4da3ff; }
+        
+        .nav-avatar {
+            width: 30px; height: 30px; border-radius: 50%;
+            background-color: #6c757d; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.9rem; font-weight: bold; border: 2px solid transparent;
+            object-fit: cover;
+        }
+        .bottom-nav-item.active .nav-avatar { border-color: var(--azul-arca); background-color: var(--azul-arca); }
+        [data-bs-theme="dark"] .bottom-nav-item.active .nav-avatar { border-color: #4da3ff; }
+        
+        /* Ocultar pantallas de la App */
+        .app-pantalla { display: none; animation: fadeIn 0.3s; }
+        .app-pantalla.activa { display: block; }
     </style>
 </head>
 <body>
 
     <!-- BANNER DE INSTALACIÓN PWA -->
-    <div id="install-banner" class="shadow-lg" style="display: none; position: fixed; bottom: 0; width: 100%; background: var(--azul-arca); color: white; padding: 15px; z-index: 9999; text-align: center; border-top-left-radius: 15px; border-top-right-radius: 15px;">
-        <span class="fw-bold me-2">📲 Instala la app de El Arca</span>
-        <button id="btn-install" class="btn btn-light btn-sm fw-bold rounded-pill px-3">Instalar</button>
-        <button id="btn-close-install" class="btn btn-sm text-white ms-2" style="font-size: 1.2rem; padding: 0 5px;">&times;</button>
+    <div id="install-banner" class="shadow-lg" style="display: none; position: fixed; bottom: 85px; width: 100%; background: var(--dorado-arca); color: var(--texto-oscuro); padding: 15px; z-index: 9999; text-align: center; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+        <span class="fw-bold me-2">📲 Instala la app de El Arca en tu inicio</span>
+        <button id="btn-install" class="btn btn-dark btn-sm fw-bold rounded-pill px-3 ms-2">Instalar</button>
+        <button id="btn-close-install" class="btn btn-sm text-dark ms-2" style="font-size: 1.2rem; padding: 0 5px;">&times;</button>
     </div>
 
+    <!-- CABECERA SUPERIOR LIMPIA -->
     <nav class="navbar shadow-sm navbar-arca">
-        <div class="container d-flex flex-column align-items-stretch gap-1">
-            
-            <!-- FILA SUPERIOR: Logo e Iconos -->
-            <div class="d-flex justify-content-between align-items-center w-100">
-                <a class="navbar-brand d-flex align-items-center m-0" href="#">
-                    <img src="IMG_1140.jpg" alt="Logo El Arca" class="logo-arca me-3" onerror="this.src='https://via.placeholder.com/55'">
-                    <div>
-                        <h4 class="mb-0 fw-bold text-white" style="line-height: 1;">El Arca</h4>
-                        <small class="text-white" style="font-size: 0.8rem; font-style: italic; opacity: 0.8;">El amor en personas</small>
-                    </div>
-                </a>
-                <div class="d-flex align-items-center">
-                    <button id="btn-theme" class="btn btn-link text-white text-decoration-none p-0 me-3" style="font-size: 1.3rem;" onclick="toggleTheme()" title="Cambiar tema: Automático"><i class="fa-solid fa-circle-half-stroke"></i></button>
-                    <div class="position-relative me-1" style="cursor:pointer; display:none;" id="btn-campana" onclick="abrirModalNotificaciones()">
-                        <i class="fa-solid fa-bell text-white" style="font-size: 1.4rem; padding-top: 4px;"></i>
-                        <span id="badge-notif" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none; font-size: 0.65rem;">0</span>
-                    </div>
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand d-flex align-items-center m-0" href="#">
+                <img src="IMG_1140.jpg" alt="Logo El Arca" class="logo-arca me-3" onerror="this.src='https://via.placeholder.com/55'">
+                <div>
+                    <h4 class="mb-0 fw-bold text-white" style="line-height: 1;">El Arca</h4>
+                    <small class="text-white" style="font-size: 0.75rem; font-style: italic; opacity: 0.8;">El amor en personas</small>
                 </div>
-            </div>
-
-            <!-- FILA INFERIOR: Usuario y Botón Salir (Flexbox Dinámico) -->
-            <div class="d-flex w-100 mt-2 align-items-center">
-                <div class="text-end" style="flex: 1; min-width: 0;">
-                    <span id="estado" class="badge bg-light text-dark py-2 px-3 rounded-pill shadow-sm d-inline-block text-truncate" style="font-size: 0.85rem; max-width: 100%;">Verificando...</span>
-                </div>
-                <button id="btn-logout" class="btn btn-danger btn-sm rounded-pill px-3 shadow-sm ms-2 flex-shrink-0" style="display:none; background-color: #e57373; border: none; color: #fff;" title="Cerrar sesión"><i class="fa-solid fa-right-from-bracket" style="margin: 0;"></i></button>
-            </div>
-            
+            </a>
+            <button id="btn-theme" class="btn btn-link text-white text-decoration-none p-0" style="font-size: 1.3rem;" onclick="toggleTheme()" title="Cambiar tema"><i class="fa-solid fa-circle-half-stroke m-0"></i></button>
         </div>
     </nav>
 
-    <!-- MODALES QR, ASISTENCIA, FORO Y CALENDARIO... -->
-    <div id="qr-fondo" class="modal-fondo">
-        <div id="qr-modal" class="modal-caja text-center bg-white position-relative">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('qr')"></button>
-            <h3 class="text-arca fw-bold">Escanear Asistencia</h3>
-            <h5 id="qr-evento-titulo" class="text-muted mb-3"></h5>
-            <div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-2 mx-auto" style="width: fit-content;"></div>
-            <p class="small text-muted mb-1">Si la cámara falla, toca este link directo:</p>
-            <a id="qr-enlace-directo" href="#" target="_blank" class="d-block mb-3 text-break fw-bold" style="font-size: 0.85rem;">Cargando enlace...</a>
-            <button class="btn btn-secondary w-100" onclick="cerrarModal('qr')">Cerrar</button>
-        </div>
-    </div>
+    <!-- MODALES VARIOS (QR, ASISTENCIA, FORO, CALENDARIO, NOTIFICACIONES, DONACIONES) -->
+    <!-- (Se mantienen intactos, ocultos hasta que se llaman) -->
+    <div id="qr-fondo" class="modal-fondo"><div id="qr-modal" class="modal-caja text-center bg-white position-relative"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('qr')"></button><h3 class="text-arca fw-bold">Escanear Asistencia</h3><h5 id="qr-evento-titulo" class="text-muted mb-3"></h5><div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-2 mx-auto" style="width: fit-content;"></div><p class="small text-muted mb-1">Si la cámara falla, toca este link directo:</p><a id="qr-enlace-directo" href="#" target="_blank" class="d-block mb-3 text-break fw-bold" style="font-size: 0.85rem;">Cargando enlace...</a><button class="btn btn-secondary w-100" onclick="cerrarModal('qr')">Cerrar</button></div></div>
+    <div id="asistencia-fondo" class="modal-fondo"><div id="asistencia-modal" class="modal-caja bg-white position-relative"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('asistencia')"></button><h3 class="text-arca fw-bold pe-4">Reporte de Asistencia</h3><h5 id="asistencia-evento-titulo" class="text-primary mb-3"></h5><div class="card bg-light border-0 mb-3 shadow-none"><div class="card-body p-3"><h6 class="card-title fw-bold text-arca">1. Registrar persona (Con cuenta)</h6><input type="text" id="buscador-select-asistencia" class="form-control form-control-sm mb-2 bg-white" placeholder="🔍 Buscar persona..."><div class="d-flex flex-wrap gap-2 mb-2"><select id="select-usuario-manual" class="form-select flex-grow-1 bg-white" style="min-width: 150px;"><option value="">Seleccione...</option></select><div class="contador-acomp bg-white shadow-sm"><button class="bg-light" onclick="cambiarNumero('input-acompanantes-manual', -1)">-</button><input type="number" id="input-acompanantes-manual" value="0" min="0" readonly><button class="bg-light" onclick="cambiarNumero('input-acompanantes-manual', 1)">+</button></div></div><input type="text" id="input-nombres-extra-manual" class="form-control form-control-sm mb-2 bg-white" placeholder="Nombres de acompañantes (Opcional)"><button class="btn btn-success w-100" onclick="registrarAsistenciaManual(this)">Agregar Asistencia</button><h6 class="card-title fw-bold text-arca border-top pt-3 mt-3">2. Registrar invitado (Sin App)</h6><div class="d-flex flex-wrap gap-2 mb-2"><input type="text" id="input-invitado-manual" class="form-control flex-grow-1 bg-white" placeholder="Nombre completo" style="min-width: 150px;"><div class="contador-acomp bg-white shadow-sm"><button class="bg-light" onclick="cambiarNumero('input-acompanantes-invitado', -1)">-</button><input type="number" id="input-acompanantes-invitado" value="0" min="0" readonly><button class="bg-light" onclick="cambiarNumero('input-acompanantes-invitado', 1)">+</button></div></div><input type="text" id="input-nombres-extra-invitado" class="form-control form-control-sm mb-2 bg-white" placeholder="Nombres de acompañantes (Opcional)"><button class="btn btn-primary w-100" onclick="registrarAsistenciaInvitado(this)">Crear y Agregar</button></div></div><div class="d-flex justify-content-between align-items-center mb-2 gap-2"><input type="text" id="buscador-tabla-asistencia" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar en la lista..."><button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Exportar</button></div><div class="table-responsive mb-3 border rounded" style="max-height: 30vh; overflow-y: auto;"><table class="table table-hover align-middle mb-0" id="tabla-exportar-asistencia"><thead class="table-cabecera-suave sticky-top"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead><tbody id="tabla-asistentes"></tbody></table></div><button class="btn btn-secondary w-100" onclick="cerrarModal('asistencia')">Cerrar Ventana</button></div></div>
+    <div id="foro-fondo" class="modal-fondo"><div id="foro-modal" class="modal-caja bg-white position-relative"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('foro')"></button><h3 class="text-arca fw-bold pe-4">Foro del Evento</h3><h6 id="foro-evento-titulo" class="text-muted border-bottom pb-2 mb-3"></h6><div id="lista-comentarios" class="foro-chat-box bg-light mb-3 d-flex flex-column gap-2"></div><form id="form-nuevo-comentario" class="input-group"><input type="text" id="foro-texto" class="form-control bg-white" placeholder="Escribe un comentario..." required><button type="submit" class="btn btn-arca fw-bold" id="btn-enviar-comentario">Enviar</button></form><button class="btn btn-secondary w-100 mt-3" onclick="cerrarModal('foro')">Cerrar Foro</button></div></div>
+    <div id="calendario-fondo" class="modal-fondo"><div id="calendario-modal" class="modal-caja bg-white text-center position-relative" style="max-width: 400px;"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('calendario')"></button><h3 class="text-success fw-bold mb-2">¡Inscripción Exitosa!</h3><p class="text-muted mb-4">Ya estás anotado en la lista. ¿Deseas agregar este evento a la agenda de tu teléfono para recibir un recordatorio?</p><div class="d-flex gap-2 justify-content-center"><button class="btn btn-outline-secondary w-50 fw-bold" onclick="cerrarModal('calendario')">No, gracias</button><button id="btn-confirmar-agenda" class="btn btn-arca w-50 fw-bold">📅 Agregar</button></div></div></div>
+    <div id="notif-fondo" class="modal-fondo"><div id="notif-modal" class="modal-caja bg-white position-relative" style="max-width: 400px;"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('notif')"></button><h4 class="text-arca fw-bold mb-3"><i class="fa-solid fa-bell"></i> Bandeja de Avisos</h4><div id="lista-notificaciones" class="d-flex flex-column gap-2 mb-3 text-start" style="max-height: 350px; overflow-y: auto;"><p class='text-muted small text-center mt-3'>Cargando...</p></div><button class="btn btn-sm btn-outline-secondary w-100 fw-bold" onclick="marcarNotificacionesLeidas()"><i class="fa-solid fa-check-double"></i> Marcar todas como leídas</button></div></div>
+    <div id="donacion-fondo" class="modal-fondo"><div id="donacion-modal" class="modal-caja bg-white position-relative" style="max-width: 450px;"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('donacion')"></button><h4 class="text-arca fw-bold mb-3">💖 Realizar Aporte</h4><div class="bg-light p-3 rounded mb-3 border text-start shadow-sm"><p class="mb-1 small text-muted">Datos de transferencia:</p><p class="mb-0 fw-bold text-arca">Pastor Pedro Esparza</p><p class="mb-0">RUT: 12.979.962-5</p><p class="mb-0">BancoEstado - Cuenta Vista</p><p class="mb-0">finanzas@elarca.cl</p><button class="btn btn-sm btn-outline-primary w-100 mt-3 fw-bold bg-white" onclick="copiarDatosBancarios(this)"><i class="fa-solid fa-copy"></i> Copiar Datos</button></div><form id="form-declarar-donacion" class="text-start border-top pt-3 mt-2"><label class="form-label small text-muted fw-bold">¿Ya transferiste? Notifica tu aporte aquí:</label><div class="input-group mb-2 shadow-sm"><span class="input-group-text bg-light text-muted"><i class="fa-solid fa-dollar-sign"></i></span><input type="number" id="donacion-monto" class="form-control bg-white" placeholder="Monto transferido" required min="1"><button type="submit" class="btn btn-success fw-bold" id="btn-enviar-donacion">Notificar</button></div><p class="small text-muted mb-0" style="font-size: 0.75rem;">Tu aporte quedará "Pendiente" hasta que el equipo de finanzas valide la recepción en el banco.</p></form></div></div>
 
-    <div id="asistencia-fondo" class="modal-fondo">
-        <div id="asistencia-modal" class="modal-caja bg-white position-relative">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('asistencia')"></button>
-            <h3 class="text-arca fw-bold pe-4">Reporte de Asistencia</h3>
-            <h5 id="asistencia-evento-titulo" class="text-primary mb-3"></h5>
-            
-            <div class="card bg-light border-0 mb-3 shadow-none">
-                <div class="card-body p-3">
-                    <h6 class="card-title fw-bold text-arca">1. Registrar persona (Con cuenta)</h6>
-                    <input type="text" id="buscador-select-asistencia" class="form-control form-control-sm mb-2 bg-white" placeholder="🔍 Buscar persona para agregar...">
-                    <div class="d-flex flex-wrap gap-2 mb-2">
-                        <select id="select-usuario-manual" class="form-select flex-grow-1 bg-white" style="min-width: 150px;"><option value="">Seleccione...</option></select>
-                        <div class="contador-acomp bg-white shadow-sm">
-                            <button class="bg-light" onclick="cambiarNumero('input-acompanantes-manual', -1)">-</button>
-                            <input type="number" id="input-acompanantes-manual" value="0" min="0" readonly>
-                            <button class="bg-light" onclick="cambiarNumero('input-acompanantes-manual', 1)">+</button>
-                        </div>
-                    </div>
-                    <input type="text" id="input-nombres-extra-manual" class="form-control form-control-sm mb-2 bg-white" placeholder="Nombres de acompañantes (Opcional)">
-                    <button class="btn btn-success w-100" onclick="registrarAsistenciaManual(this)">Agregar Asistencia</button>
-                    
-                    <h6 class="card-title fw-bold text-arca border-top pt-3 mt-3">2. Registrar invitado (Sin App)</h6>
-                    <div class="d-flex flex-wrap gap-2 mb-2">
-                        <input type="text" id="input-invitado-manual" class="form-control flex-grow-1 bg-white" placeholder="Nombre completo" style="min-width: 150px;">
-                        <div class="contador-acomp bg-white shadow-sm">
-                            <button class="bg-light" onclick="cambiarNumero('input-acompanantes-invitado', -1)">-</button>
-                            <input type="number" id="input-acompanantes-invitado" value="0" min="0" readonly>
-                            <button class="bg-light" onclick="cambiarNumero('input-acompanantes-invitado', 1)">+</button>
-                        </div>
-                    </div>
-                    <input type="text" id="input-nombres-extra-invitado" class="form-control form-control-sm mb-2 bg-white" placeholder="Nombres de acompañantes (Opcional)">
-                    <button class="btn btn-primary w-100" onclick="registrarAsistenciaInvitado(this)">Crear y Agregar</button>
-                </div>
-            </div>
-            
-            <div class="d-flex justify-content-between align-items-center mb-2 gap-2">
-                <input type="text" id="buscador-tabla-asistencia" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar en la lista...">
-                <button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Exportar</button>
-            </div>
-            
-            <div class="table-responsive mb-3 border rounded" style="max-height: 30vh; overflow-y: auto;">
-                <table class="table table-hover align-middle mb-0" id="tabla-exportar-asistencia">
-                    <thead class="table-cabecera-suave sticky-top"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead>
-                    <tbody id="tabla-asistentes"></tbody>
-                </table>
-            </div>
-            <button class="btn btn-secondary w-100" onclick="cerrarModal('asistencia')">Cerrar Ventana</button>
-        </div>
-    </div>
-
-    <div id="foro-fondo" class="modal-fondo">
-        <div id="foro-modal" class="modal-caja bg-white position-relative">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('foro')"></button>
-            <h3 class="text-arca fw-bold pe-4">Foro del Evento</h3>
-            <h6 id="foro-evento-titulo" class="text-muted border-bottom pb-2 mb-3"></h6>
-            <div id="lista-comentarios" class="foro-chat-box bg-light mb-3 d-flex flex-column gap-2"></div>
-            <form id="form-nuevo-comentario" class="input-group">
-                <input type="text" id="foro-texto" class="form-control bg-white" placeholder="Escribe un comentario..." required>
-                <button type="submit" class="btn btn-arca fw-bold" id="btn-enviar-comentario">Enviar</button>
-            </form>
-            <button class="btn btn-secondary w-100 mt-3" onclick="cerrarModal('foro')">Cerrar Foro</button>
-        </div>
-    </div>
-
-    <div id="calendario-fondo" class="modal-fondo">
-        <div id="calendario-modal" class="modal-caja bg-white text-center position-relative" style="max-width: 400px; z-index: 1060;">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('calendario')"></button>
-            <h3 class="text-success fw-bold mb-2">¡Inscripción Exitosa!</h3>
-            <p class="text-muted mb-4">Ya estás anotado en la lista. ¿Deseas agregar este evento a la agenda de tu teléfono para recibir un recordatorio?</p>
-            <div class="d-flex gap-2 justify-content-center">
-                <button class="btn btn-outline-secondary w-50 fw-bold" onclick="cerrarModal('calendario')">No, gracias</button>
-                <button id="btn-confirmar-agenda" class="btn btn-arca w-50 fw-bold">📅 Agregar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL NOTIFICACIONES -->
-    <div id="notif-fondo" class="modal-fondo">
-        <div id="notif-modal" class="modal-caja bg-white position-relative" style="max-width: 400px; z-index: 1060;">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('notif')"></button>
-            <h4 class="text-arca fw-bold mb-3"><i class="fa-solid fa-bell"></i> Bandeja de Avisos</h4>
-            <div id="lista-notificaciones" class="d-flex flex-column gap-2 mb-3 text-start" style="max-height: 350px; overflow-y: auto;">
-                <p class='text-muted small text-center mt-3'>Cargando...</p>
-            </div>
-            <button class="btn btn-sm btn-outline-secondary w-100 fw-bold" onclick="marcarNotificacionesLeidas()"><i class="fa-solid fa-check-double"></i> Marcar todas como leídas</button>
-        </div>
-    </div>
-
-    <!-- MODAL DONACIONES -->
-    <div id="donacion-fondo" class="modal-fondo">
-        <div id="donacion-modal" class="modal-caja bg-white position-relative" style="max-width: 450px; z-index: 1060;">
-            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('donacion')"></button>
-            <h4 class="text-arca fw-bold mb-3">💖 Realizar Aporte</h4>
-            
-            <div class="bg-light p-3 rounded mb-3 border text-start shadow-sm">
-                <p class="mb-1 small text-muted">Datos de transferencia:</p>
-                <p class="mb-0 fw-bold text-arca">Pastor Pedro Esparza</p>
-                <p class="mb-0">RUT: 12.979.962-5</p>
-                <p class="mb-0">BancoEstado - Cuenta Vista</p>
-                <p class="mb-0">finanzas@elarca.cl</p>
-                <button class="btn btn-sm btn-outline-primary w-100 mt-3 fw-bold bg-white" onclick="copiarDatosBancarios(this)"><i class="fa-solid fa-copy"></i> Copiar Datos</button>
-            </div>
-
-            <form id="form-declarar-donacion" class="text-start border-top pt-3 mt-2">
-                <label class="form-label small text-muted fw-bold">¿Ya transferiste? Notifica tu aporte aquí:</label>
-                <div class="input-group mb-2 shadow-sm">
-                    <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-dollar-sign"></i></span>
-                    <input type="number" id="donacion-monto" class="form-control bg-white" placeholder="Monto transferido" required min="1">
-                    <button type="submit" class="btn btn-success fw-bold" id="btn-enviar-donacion">Notificar</button>
-                </div>
-                <p class="small text-muted mb-0" style="font-size: 0.75rem;">Tu aporte quedará "Pendiente" hasta que el equipo de finanzas valide la recepción en el banco.</p>
-            </form>
-        </div>
-    </div>
-
-    <div class="container pb-5">
+    <div class="container pb-2">
         
-        <!-- PANTALLA DE ACCESO Y REGISTRO -->
+        <!-- PANTALLA DE ACCESO Y REGISTRO (VISIBLE AL INICIO) -->
         <div class="row justify-content-center" id="login-container">
-            <div class="col-md-5">
+            <div class="col-md-5 mt-4">
                 <div class="card bg-white p-4 text-center border-top border-4" style="border-top-color: var(--dorado-arca) !important;">
                     <img src="IMG_1140.jpg" alt="Logo" class="logo-arca mx-auto mb-3" style="width: 80px; height: 80px;" onerror="this.style.display='none'">
-                    
                     <div id="caja-login">
                         <h4 class="fw-bold text-arca mb-4">Iniciar Sesión</h4>
-                        <button type="button" id="btn-google-login" class="btn btn-google bg-white w-100 fw-bold rounded-pill mb-3 d-flex align-items-center justify-content-center shadow-sm">
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px; margin-right: 10px;"> Continuar con Google
-                        </button>
+                        <button type="button" id="btn-google-login" class="btn btn-google bg-white w-100 fw-bold rounded-pill mb-3 d-flex align-items-center justify-content-center shadow-sm"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px; margin-right: 10px;"> Continuar con Google</button>
                         <div class="d-flex align-items-center my-3"><hr class="flex-grow-1"><span class="mx-2 text-muted small">O con tu correo</span><hr class="flex-grow-1"></div>
                         <form id="login-form"><div class="mb-3"><input type="email" id="email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div><div class="mb-3"><input type="password" id="password" class="form-control form-control-lg bg-light" placeholder="Contraseña" required></div><button type="submit" class="btn btn-arca btn-lg w-100 rounded-pill">Ingresar</button></form>
                         <p class="mt-4 mb-0 text-muted">¿No tienes cuenta? <a href="#" id="link-registrar" class="text-arca fw-bold text-decoration-none">Regístrate aquí</a></p>
                     </div>
-
                     <div id="caja-registro" style="display: none;">
                         <h4 class="fw-bold text-arca mb-4">Crear Cuenta</h4>
-                        <button type="button" id="btn-google-registro" class="btn btn-google bg-white w-100 fw-bold rounded-pill mb-3 d-flex align-items-center justify-content-center shadow-sm">
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px; margin-right: 10px;"> Registrarse con Google
-                        </button>
+                        <button type="button" id="btn-google-registro" class="btn btn-google bg-white w-100 fw-bold rounded-pill mb-3 d-flex align-items-center justify-content-center shadow-sm"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px; margin-right: 10px;"> Registrarse con Google</button>
                         <div class="d-flex align-items-center my-3"><hr class="flex-grow-1"><span class="mx-2 text-muted small">O con tu correo</span><hr class="flex-grow-1"></div>
-                        <form id="registro-form">
-                            <div class="mb-3"><input type="text" id="reg-nombre" class="form-control form-control-lg bg-light" placeholder="Nombre completo" required></div>
-                            <div class="mb-3"><input type="email" id="reg-email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div>
-                            <div class="mb-3"><input type="tel" id="reg-telefono" class="form-control form-control-lg bg-light" placeholder="Teléfono (Opcional)"></div>
-                            <div class="mb-3"><input type="password" id="reg-password" class="form-control form-control-lg bg-light" placeholder="Contraseña (mínimo 6 letras)" required minlength="6"></div>
-                            <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill">Crear Cuenta</button>
-                        </form>
+                        <form id="registro-form"><div class="mb-3"><input type="text" id="reg-nombre" class="form-control form-control-lg bg-light" placeholder="Nombre completo" required></div><div class="mb-3"><input type="email" id="reg-email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div><div class="mb-3"><input type="tel" id="reg-telefono" class="form-control form-control-lg bg-light" placeholder="Teléfono (Opcional)"></div><div class="mb-3"><input type="password" id="reg-password" class="form-control form-control-lg bg-light" placeholder="Contraseña (mínimo 6 letras)" required minlength="6"></div><button type="submit" class="btn btn-success btn-lg w-100 rounded-pill">Crear Cuenta</button></form>
                         <p class="mt-4 mb-0 text-muted">¿Ya tienes cuenta? <a href="#" id="link-login" class="text-arca fw-bold text-decoration-none">Inicia Sesión</a></p>
                     </div>
                     <p id="auth-error" class="text-danger mt-3 fw-bold"></p>
@@ -294,210 +189,184 @@
             </div>
         </div>
 
+        <!-- CONTENEDOR PRINCIPAL DE LA APP (OCULTO HASTA LOGIN) -->
         <div id="dashboard-container">
-            
-            <!-- PORTAL DEL MIEMBRO -->
-            <div class="card bg-white" id="modulo-mi-perfil">
-                <div class="card-body p-4">
-                    <h4 class="text-arca fw-bold mb-4"><i class="fa-solid fa-user-circle"></i> Mi Perfil</h4>
-                    <div class="row mb-4 bg-light p-3 rounded mx-0">
-                        <div class="col-md-3 mb-2"><p class="mb-0 text-muted small">Nombre</p><h6 id="mi-nombre" class="fw-bold mb-0 text-arca"></h6></div>
-                        <div class="col-md-3 mb-2"><p class="mb-0 text-muted small">Estado</p><h6 id="mi-estado" class="mb-0"></h6></div>
-                        <div class="col-md-3 mb-2"><p class="mb-0 text-muted small">Ministerio asignado</p><h6 id="mi-ministerio-asignado" class="text-success fw-bold mb-0">Ninguno</h6></div>
-                        <div class="col-md-3 mb-0"><p class="mb-0 text-muted small">Contacto</p><span id="mi-contacto" class="text-secondary small"></span></div>
-                    </div>
-                    
-                    <div class="bg-light p-3 rounded border border-light shadow-sm mb-4 d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="fw-bold text-arca mb-0"><i class="fa-solid fa-hand-holding-heart"></i> Mis Aportes</h6>
-                            <small class="text-muted">Diezmos, ofrendas y donaciones</small>
-                        </div>
-                        <button class="btn btn-arca btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="abrirModalDonacion()">Realizar Aporte</button>
-                    </div>
 
-                    <h5 class="fw-bold text-arca mt-2"><i class="fa-solid fa-route"></i> Mi Ruta de Formación</h5>
-                    <div class="bg-light p-3 rounded border border-light shadow-sm mb-4"><h6 id="mi-avance-texto" class="text-primary fw-bold border-bottom pb-2"></h6><ul id="mi-lista-etapas" class="list-unstyled mb-0 mt-2"></ul></div>
-                    
-                    <h5 class="fw-bold text-arca"><i class="fa-solid fa-calendar-check"></i> Mi Historial de Asistencia</h5>
-                    <div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-cabecera-suave"><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead><tbody id="mi-tabla-asistencia"></tbody></table></div>
-                </div>
-            </div>
-
-            <!-- PANEL ADMINISTRATIVO -->
-            <div class="card bg-white" id="admin-panel">
-                <div class="card-body p-4">
-                    <h4 class="fw-bold text-arca mb-4"><i class="fa-solid fa-gears"></i> Panel de Gestión</h4>
-                    
-                    <div class="btn-group w-100 mb-4 flex-wrap shadow-sm rounded" role="group">
-                        <button type="button" class="btn btn-outline-primary active" id="btn-tab-usuarios"><i class="fa-solid fa-users"></i> Usuarios</button>
-                        <button type="button" class="btn btn-outline-primary" id="btn-tab-eventos"><i class="fa-solid fa-calendar-days"></i> Eventos</button>
-                        <button type="button" class="btn btn-outline-primary" id="btn-tab-ministerios"><i class="fa-solid fa-handshake-angle"></i> Ministerios</button>
-                        <button type="button" class="btn btn-outline-primary" id="btn-tab-catalogos"><i class="fa-solid fa-book-open"></i> Catálogos</button>
-                        <button type="button" class="btn btn-outline-primary" id="btn-tab-inventario"><i class="fa-solid fa-boxes-stacked"></i> Inventario</button>
-                        <button type="button" class="btn btn-outline-primary" id="btn-tab-finanzas"><i class="fa-solid fa-vault"></i> Finanzas</button>
-                    </div>
-
-                    <div class="seccion-gestion activa" id="sec-usuarios">
-                        <h5 class="fw-bold text-arca mb-3">👥 Directorio de Personas</h5>
-                        <div class="mb-3"><input type="text" id="buscador-usuarios-admin" class="form-control bg-light shadow-sm" placeholder="🔍 Buscar por nombre, perfil, estado o ministerio..."></div>
-                        <div class="table-responsive bg-white rounded shadow-sm border border-light">
-                            <table class="table table-hover align-middle mb-0"><thead class="table-cabecera-suave"><tr><th>Nombre</th><th>Perfil</th><th>Ministerio Asignado</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead><tbody id="tabla-usuarios"></tbody></table>
-                        </div>
-
-                        <div id="editor-usuario" class="card mt-4 border-0 shadow bg-light" style="display:none;">
-                            <div class="card-body">
-                                <h5 class="card-title text-arca fw-bold border-bottom pb-2">Editando a: <span id="edit-nombre-display"></span></h5>
-                                <p class="text-muted small mb-3">Correo: <span id="edit-email-display" class="fw-bold"></span></p>
-                                <form id="form-editar-usuario">
-                                    <input type="hidden" id="edit-uid">
-                                    <div class="row g-3 mb-3">
-                                        <div class="col-md-2"><label class="form-label small text-muted fw-bold">Teléfono</label><input type="text" id="edit-telefono" class="form-control bg-white"></div>
-                                        <div class="col-md-2"><label class="form-label small text-muted fw-bold">Perfil</label><select id="edit-perfil" class="form-select bg-white"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option><option>Invitado</option></select></div>
-                                        <div class="col-md-3"><label class="form-label small text-muted fw-bold">Cargo</label><select id="edit-cargo" class="form-select bg-white"><option>Pastor general</option><option>Pastor</option><option>Miembro</option><option>Invitado</option></select></div>
-                                        <div class="col-md-2"><label class="form-label small text-muted fw-bold">Estado</label><select id="edit-estado" class="form-select bg-white"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option><option>Asistente externo</option></select></div>
-                                        <div class="col-md-3">
-                                            <label class="form-label small text-muted fw-bold text-success">Ministerios a Cargo</label>
-                                            <div id="contenedor-checkboxes-ministerios" class="p-2 border rounded bg-white shadow-sm" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;">
-                                                <!-- Se llenará dinámicamente con checkboxes -->
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12 mt-2 border-top pt-3">
-                                            <div class="form-check form-switch fs-6">
-                                                <input class="form-check-input" type="checkbox" id="edit-vastago" role="switch" style="cursor: pointer;">
-                                                <label class="form-check-label fw-bold text-arca" for="edit-vastago" style="cursor: pointer;">
-                                                    <i class="fa-solid fa-star text-warning"></i> Privilegios de Vástago (Administrar Inventario y recibir alertas)
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <label class="form-label small text-muted fw-bold">Ruta Completada:</label>
-                                    <div class="p-3 border rounded bg-white mb-4 shadow-sm" id="contenedor-checkboxes-formacion"></div>
-                                    <button type="submit" class="btn btn-primary px-4 fw-bold" id="btn-guardar-usuario">Guardar Cambios</button>
-                                    <button type="button" class="btn btn-outline-secondary bg-white px-4 fw-bold" onclick="document.getElementById('editor-usuario').style.display='none'">Cancelar</button>
-                                </form>
+            <!-- PANTALLA 1: INICIO (Cartelera y Ministerios) -->
+            <div id="pantalla-inicio" class="app-pantalla activa">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card bg-white h-100">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold text-arca border-bottom pb-3 mb-4">📅 Cartelera de Eventos</h5>
+                                <div class="row g-4" id="lista-eventos"></div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="seccion-gestion" id="sec-eventos">
-                        <h5 class="fw-bold text-arca mb-3">📅 Crear Nuevo Evento</h5>
-                        <p id="aviso-lider" class="text-danger fw-bold" style="display:none;">⚠️ Al ser Líder, solo puedes crear eventos para tu ministerio asignado.</p>
-                        <form id="form-nuevo-evento" class="row g-3 bg-light p-3 rounded shadow-sm border border-light">
-                            <div class="col-md-4"><label class="small text-muted fw-bold">Título</label><input type="text" id="evento-titulo" class="form-control bg-white" required></div>
-                            <div class="col-md-4"><label class="small text-muted fw-bold">Categoría</label><select id="evento-tipo" class="form-select bg-white" required></select></div>
-                            <div class="col-md-4"><label class="small text-muted fw-bold">Público / Ministerio</label><select id="evento-ministerio-select" class="form-select bg-white" required><option value="General">General (Toda la iglesia)</option></select></div>
-                            <div class="col-md-4"><label class="small text-muted fw-bold">Fecha y Hora</label><input type="datetime-local" id="evento-fecha" class="form-control bg-white" required></div>
-                            <div class="col-md-4"><label class="small text-muted fw-bold">Ubicación</label><input type="text" id="evento-lugar" class="form-control bg-white" required></div>
-                            <div class="col-md-4"><label class="small text-muted fw-bold">Flyer (URL Imagen)</label><input type="text" id="evento-imagen-url" class="form-control bg-white" placeholder="ej. imgur.com/foto.jpg"></div>
-                            <div class="col-12 mt-4"><button type="submit" class="btn btn-arca w-100 fw-bold py-2">Publicar Evento</button></div>
-                        </form>
+                    <div class="col-lg-4">
+                        <div class="card bg-white mb-4">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold text-arca border-bottom pb-3 mb-3">🏛️ Ministerios Activos</h5>
+                                <ul class="list-group list-group-flush" id="lista-ministerios"></ul>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="seccion-gestion" id="sec-finanzas">
-                        <h5 class="fw-bold text-success mb-3">💰 Bóveda Financiera</h5>
-                        <div class="row g-3 mb-4"><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Ingresos Totales</h6><h3 class="text-success mb-0 fw-bold" id="total-ingresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Egresos Totales</h6><h3 class="text-danger mb-0 fw-bold" id="total-egresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100 border-bottom border-4" style="border-bottom-color: var(--dorado-arca) !important;"><div class="card-body"><h6 class="text-muted">Saldo Actual</h6><h3 class="text-dark mb-0 fw-bold" id="total-saldo">$0</h3></div></div></div></div>
-                        <div class="bg-light p-3 rounded shadow-sm border border-light mb-4"><h6 class="fw-bold text-arca mb-3">Registrar Movimiento</h6><form id="form-finanzas" class="row g-2 align-items-end"><div class="col-md-3"><label class="small text-muted">Tipo</label><select id="fin-tipo" class="form-select bg-white" required><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select></div><div class="col-md-3"><label class="small text-muted">Monto</label><input type="number" id="fin-monto" class="form-control bg-white" placeholder="$" min="1" required></div><div class="col-md-3"><label class="small text-muted">Fecha</label><input type="date" id="fin-fecha" class="form-control bg-white" required></div><div class="col-md-3"><label class="small text-muted">Concepto</label><input type="text" id="fin-concepto" class="form-control bg-white" required></div><div class="col-12 mt-3"><button type="submit" class="btn btn-success w-100 fw-bold">Guardar Transacción</button></div></form></div>
-                        <div class="d-flex justify-content-between align-items-end mb-2"><h6 class="fw-bold text-arca mb-0">Libro Mayor Financiero</h6><button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor.csv')">📥 Exportar Excel</button></div>
-                        <div class="table-responsive bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0" id="tabla-exportar-finanzas"><thead class="table-cabecera-suave"><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead><tbody id="tabla-finanzas"></tbody></table></div>
-                    </div>
-
-                    <div class="seccion-gestion" id="sec-ministerios">
-                        <h5 class="fw-bold text-arca mb-3">🤝 Agregar Ministerio</h5><form id="form-nuevo-ministerio" class="row g-2 bg-light p-3 rounded shadow-sm"><div class="col-md-4"><input type="text" id="min-nombre" class="form-control bg-white" placeholder="Nombre" required></div><div class="col-md-6"><input type="text" id="min-descripcion" class="form-control bg-white" placeholder="Descripción" required></div><div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Guardar</button></div></form>
-                    </div>
-                    
-                    <div class="seccion-gestion" id="sec-catalogos">
-                        <h5 class="fw-bold text-arca mb-3">📖 Gestión de Etapas de Formación</h5>
-                        <form id="form-nueva-etapa" class="row g-2 mb-4 bg-light p-3 rounded shadow-sm"><div class="col-md-9"><input type="text" id="etapa-nombre" class="form-control bg-white" placeholder="Nombre de nueva Etapa" required></div><div class="col-md-3"><button type="submit" class="btn btn-arca w-100 fw-bold">Agregar</button></div></form>
-                        <h6 class="text-muted fw-bold">Etapas Actuales (Presiona para Eliminar)</h6>
-                        <ul id="lista-admin-etapas" class="list-group shadow-sm"></ul>
-                    </div>
-
-                    <div class="seccion-gestion" id="sec-inventario">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold text-arca mb-0"><i class="fa-solid fa-boxes-stacked"></i> Control de Donaciones e Inventario</h5>
+            <!-- PANTALLA 2: PANEL ADMINISTRATIVO -->
+            <div id="pantalla-gestion" class="app-pantalla">
+                <div class="card bg-white" id="admin-panel">
+                    <div class="card-body p-4">
+                        <h4 class="fw-bold text-arca mb-4"><i class="fa-solid fa-gears"></i> Panel de Gestión</h4>
+                        
+                        <div class="btn-group w-100 mb-4 flex-wrap shadow-sm rounded" role="group">
+                            <button type="button" class="btn btn-outline-primary active" id="btn-tab-usuarios"><i class="fa-solid fa-users"></i> Usuarios</button>
+                            <button type="button" class="btn btn-outline-primary" id="btn-tab-eventos"><i class="fa-solid fa-calendar-days"></i> Eventos</button>
+                            <button type="button" class="btn btn-outline-primary" id="btn-tab-ministerios"><i class="fa-solid fa-handshake-angle"></i> Ministerios</button>
+                            <button type="button" class="btn btn-outline-primary" id="btn-tab-catalogos"><i class="fa-solid fa-book-open"></i> Catálogos</button>
+                            <button type="button" class="btn btn-outline-primary" id="btn-tab-inventario"><i class="fa-solid fa-boxes-stacked"></i> Inventario</button>
+                            <button type="button" class="btn" id="btn-tab-finanzas"><i class="fa-solid fa-vault"></i> Finanzas</button>
                         </div>
 
-                        <!-- Formulario de Nuevo Producto -->
-                        <div class="bg-light p-3 rounded shadow-sm border border-light mb-4">
-                            <h6 class="fw-bold text-arca mb-3">Registrar Nuevo Insumo</h6>
-                            <form id="form-nuevo-producto" class="row g-2 align-items-end">
-                                <div class="col-md-3">
-                                    <label class="small text-muted fw-bold">Nombre del Producto</label>
-                                    <input type="text" id="inv-nombre" class="form-control bg-white" placeholder="Ej. Arroz, Frazadas..." required>
+                        <div class="seccion-gestion activa" id="sec-usuarios">
+                            <h5 class="fw-bold text-arca mb-3">👥 Directorio de Personas</h5>
+                            <div class="mb-3"><input type="text" id="buscador-usuarios-admin" class="form-control bg-light shadow-sm" placeholder="🔍 Buscar por nombre, perfil, estado o ministerio..."></div>
+                            <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                                <table class="table table-hover align-middle mb-0"><thead class="table-cabecera-suave"><tr><th>Nombre</th><th>Perfil</th><th>Ministerio Asignado</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead><tbody id="tabla-usuarios"></tbody></table>
+                            </div>
+
+                            <div id="editor-usuario" class="card mt-4 border-0 shadow bg-light" style="display:none;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-arca fw-bold border-bottom pb-2">Editando a: <span id="edit-nombre-display"></span></h5>
+                                    <p class="text-muted small mb-3">Correo: <span id="edit-email-display" class="fw-bold"></span></p>
+                                    <form id="form-editar-usuario">
+                                        <input type="hidden" id="edit-uid">
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-2"><label class="form-label small text-muted fw-bold">Teléfono</label><input type="text" id="edit-telefono" class="form-control bg-white"></div>
+                                            <div class="col-md-2"><label class="form-label small text-muted fw-bold">Perfil</label><select id="edit-perfil" class="form-select bg-white"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option><option>Invitado</option></select></div>
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Cargo</label><select id="edit-cargo" class="form-select bg-white"><option>Pastor general</option><option>Pastor</option><option>Miembro</option><option>Invitado</option></select></div>
+                                            <div class="col-md-2"><label class="form-label small text-muted fw-bold">Estado</label><select id="edit-estado" class="form-select bg-white"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option><option>Asistente externo</option></select></div>
+                                            <div class="col-md-3">
+                                                <label class="form-label small text-muted fw-bold text-success">Ministerios a Cargo</label>
+                                                <div id="contenedor-checkboxes-ministerios" class="p-2 border rounded bg-white shadow-sm" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;"></div>
+                                            </div>
+                                            <div class="col-md-12 mt-2 border-top pt-3">
+                                                <div class="form-check form-switch fs-6">
+                                                    <input class="form-check-input" type="checkbox" id="edit-vastago" role="switch" style="cursor: pointer;">
+                                                    <label class="form-check-label fw-bold text-arca" for="edit-vastago" style="cursor: pointer;"><i class="fa-solid fa-star text-warning"></i> Privilegios de Vástago (Administrar Inventario y recibir alertas)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label class="form-label small text-muted fw-bold">Ruta Completada:</label>
+                                        <div class="p-3 border rounded bg-white mb-4 shadow-sm" id="contenedor-checkboxes-formacion"></div>
+                                        <button type="submit" class="btn btn-primary px-4 fw-bold" id="btn-guardar-usuario">Guardar Cambios</button>
+                                        <button type="button" class="btn btn-outline-secondary bg-white px-4 fw-bold" onclick="document.getElementById('editor-usuario').style.display='none'">Cancelar</button>
+                                    </form>
                                 </div>
-                                <div class="col-md-3">
-                                    <label class="small text-muted fw-bold">Categoría</label>
-                                    <select id="inv-categoria" class="form-select bg-white" required>
-                                        <option value="Alimentos">Alimentos no perecibles</option>
-                                        <option value="Ropa">Ropa y Abrigo</option>
-                                        <option value="Mobiliario">Mobiliario / Equipamiento</option>
-                                        <option value="Insumos">Insumos Varios</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="small text-muted fw-bold">Unidad</label>
-                                    <select id="inv-unidad" class="form-select bg-white">
-                                        <option value="Unidades">Unidades</option>
-                                        <option value="Kilos">Kilos</option>
-                                        <option value="Litros">Litros</option>
-                                        <option value="Cajas">Cajas</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2">
-                                    <label class="small text-muted fw-bold text-danger">Stock Crítico</label>
-                                    <input type="number" id="inv-minimo" class="form-control bg-white" placeholder="Alerta en..." min="1" required>
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="submit" class="btn btn-arca w-100 fw-bold">Crear Ficha</button>
-                                </div>
+                            </div>
+                        </div>
+
+                        <div class="seccion-gestion" id="sec-eventos">
+                            <h5 class="fw-bold text-arca mb-3">📅 Crear Nuevo Evento</h5>
+                            <p id="aviso-lider" class="text-danger fw-bold" style="display:none;">⚠️ Al ser Líder, solo puedes crear eventos para tu ministerio asignado.</p>
+                            <form id="form-nuevo-evento" class="row g-3 bg-light p-3 rounded shadow-sm border border-light">
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Título</label><input type="text" id="evento-titulo" class="form-control bg-white" required></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Categoría</label><select id="evento-tipo" class="form-select bg-white" required></select></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Público / Ministerio</label><select id="evento-ministerio-select" class="form-select bg-white" required><option value="General">General (Toda la iglesia)</option></select></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Fecha y Hora</label><input type="datetime-local" id="evento-fecha" class="form-control bg-white" required></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Ubicación</label><input type="text" id="evento-lugar" class="form-control bg-white" required></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Flyer (URL Imagen)</label><input type="text" id="evento-imagen-url" class="form-control bg-white" placeholder="ej. imgur.com/foto.jpg"></div>
+                                <div class="col-12 mt-4"><button type="submit" class="btn btn-arca w-100 fw-bold py-2">Publicar Evento</button></div>
                             </form>
                         </div>
 
-                        <!-- Buscador y Tabla de Inventario -->
-                        <div class="d-flex justify-content-between align-items-end mb-2 gap-2">
-                            <input type="text" id="buscador-inventario" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar insumo por nombre o categoría...">
-                            <button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-inventario', 'Reporte_Inventario.csv')">📥 Exportar Stock</button>
+                        <div class="seccion-gestion" id="sec-finanzas">
+                            <h5 class="fw-bold text-success mb-3">💰 Bóveda Financiera</h5>
+                            <div class="row g-3 mb-4"><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Ingresos Totales</h6><h3 class="text-success mb-0 fw-bold" id="total-ingresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Egresos Totales</h6><h3 class="text-danger mb-0 fw-bold" id="total-egresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100 border-bottom border-4" style="border-bottom-color: var(--dorado-arca) !important;"><div class="card-body"><h6 class="text-muted">Saldo Actual</h6><h3 class="text-dark mb-0 fw-bold" id="total-saldo">$0</h3></div></div></div></div>
+                            <div class="bg-light p-3 rounded shadow-sm border border-light mb-4"><h6 class="fw-bold text-arca mb-3">Registrar Movimiento</h6><form id="form-finanzas" class="row g-2 align-items-end"><div class="col-md-3"><label class="small text-muted">Tipo</label><select id="fin-tipo" class="form-select bg-white" required><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select></div><div class="col-md-3"><label class="small text-muted">Monto</label><input type="number" id="fin-monto" class="form-control bg-white" placeholder="$" min="1" required></div><div class="col-md-3"><label class="small text-muted">Fecha</label><input type="date" id="fin-fecha" class="form-control bg-white" required></div><div class="col-md-3"><label class="small text-muted">Concepto</label><input type="text" id="fin-concepto" class="form-control bg-white" required></div><div class="col-12 mt-3"><button type="submit" class="btn btn-success w-100 fw-bold">Guardar Transacción</button></div></form></div>
+                            <div class="d-flex justify-content-between align-items-end mb-2"><h6 class="fw-bold text-arca mb-0">Libro Mayor Financiero</h6><button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor.csv')">📥 Exportar Excel</button></div>
+                            <div class="table-responsive bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0" id="tabla-exportar-finanzas"><thead class="table-cabecera-suave"><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead><tbody id="tabla-finanzas"></tbody></table></div>
+                        </div>
+
+                        <div class="seccion-gestion" id="sec-ministerios">
+                            <h5 class="fw-bold text-arca mb-3">🤝 Agregar Ministerio</h5><form id="form-nuevo-ministerio" class="row g-2 bg-light p-3 rounded shadow-sm"><div class="col-md-4"><input type="text" id="min-nombre" class="form-control bg-white" placeholder="Nombre" required></div><div class="col-md-6"><input type="text" id="min-descripcion" class="form-control bg-white" placeholder="Descripción" required></div><div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Guardar</button></div></form>
                         </div>
                         
-                        <div class="table-responsive bg-white rounded shadow-sm border border-light">
-                            <table class="table table-hover align-middle mb-0" id="tabla-exportar-inventario">
-                                <thead class="table-cabecera-suave">
-                                    <tr>
-                                        <th>Producto</th>
-                                        <th>Categoría</th>
-                                        <th>Stock Actual</th>
-                                        <th>Estado</th>
-                                        <th>Dispensación / Ingreso</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabla-inventario">
-                                    <!-- Se llenará con JavaScript -->
-                                </tbody>
-                            </table>
+                        <div class="seccion-gestion" id="sec-catalogos">
+                            <h5 class="fw-bold text-arca mb-3">📖 Gestión de Etapas de Formación</h5>
+                            <form id="form-nueva-etapa" class="row g-2 mb-4 bg-light p-3 rounded shadow-sm"><div class="col-md-9"><input type="text" id="etapa-nombre" class="form-control bg-white" placeholder="Nombre de nueva Etapa" required></div><div class="col-md-3"><button type="submit" class="btn btn-arca w-100 fw-bold">Agregar</button></div></form>
+                            <h6 class="text-muted fw-bold">Etapas Actuales (Presiona para Eliminar)</h6>
+                            <ul id="lista-admin-etapas" class="list-group shadow-sm"></ul>
+                        </div>
+
+                        <div class="seccion-gestion" id="sec-inventario">
+                            <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold text-arca mb-0"><i class="fa-solid fa-boxes-stacked"></i> Control de Donaciones e Inventario</h5></div>
+                            <div class="bg-light p-3 rounded shadow-sm border border-light mb-4"><h6 class="fw-bold text-arca mb-3">Registrar Nuevo Insumo</h6><form id="form-nuevo-producto" class="row g-2 align-items-end"><div class="col-md-3"><label class="small text-muted fw-bold">Nombre del Producto</label><input type="text" id="inv-nombre" class="form-control bg-white" placeholder="Ej. Arroz, Frazadas..." required></div><div class="col-md-3"><label class="small text-muted fw-bold">Categoría</label><select id="inv-categoria" class="form-select bg-white" required><option value="Alimentos">Alimentos no perecibles</option><option value="Ropa">Ropa y Abrigo</option><option value="Mobiliario">Mobiliario / Equipamiento</option><option value="Insumos">Insumos Varios</option></select></div><div class="col-md-2"><label class="small text-muted fw-bold">Unidad</label><select id="inv-unidad" class="form-select bg-white"><option value="Unidades">Unidades</option><option value="Kilos">Kilos</option><option value="Litros">Litros</option><option value="Cajas">Cajas</option></select></div><div class="col-md-2"><label class="small text-muted fw-bold text-danger">Stock Crítico</label><input type="number" id="inv-minimo" class="form-control bg-white" placeholder="Alerta en..." min="1" required></div><div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Crear Ficha</button></div></form></div>
+                            <div class="d-flex justify-content-between align-items-end mb-2 gap-2"><input type="text" id="buscador-inventario" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar insumo por nombre o categoría..."><button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-inventario', 'Reporte_Inventario.csv')">📥 Exportar Stock</button></div>
+                            <div class="table-responsive bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0" id="tabla-exportar-inventario"><thead class="table-cabecera-suave"><tr><th>Producto</th><th>Categoría</th><th>Stock Actual</th><th>Estado</th><th>Dispensación / Ingreso</th></tr></thead><tbody id="tabla-inventario"></tbody></table></div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-4">
-                <div class="col-lg-8">
-                    <div class="card bg-white h-100">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold text-arca border-bottom pb-3 mb-4">📅 Cartelera de Eventos</h5>
-                            <div class="row g-4" id="lista-eventos"></div>
+            <!-- PANTALLA 3: MI PERFIL -->
+            <div id="pantalla-perfil" class="app-pantalla">
+                <div class="card bg-white" id="modulo-mi-perfil">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="text-arca fw-bold mb-0"><i class="fa-solid fa-user-circle"></i> Mi Perfil</h4>
+                            <!-- Botón de Logout ahora vive aquí -->
+                            <button id="btn-logout" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm fw-bold"><i class="fa-solid fa-right-from-bracket m-0 me-1"></i> Cerrar Sesión</button>
                         </div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="card bg-white mb-4">
-                        <div class="card-body p-4">
-                            <h5 class="fw-bold text-arca border-bottom pb-3 mb-3">🏛️ Ministerios Activos</h5>
-                            <ul class="list-group list-group-flush" id="lista-ministerios"></ul>
+                        
+                        <div class="row mb-4 bg-light p-3 rounded mx-0 shadow-sm border border-light">
+                            <div class="col-md-3 mb-2"><p class="mb-0 text-muted small">Nombre</p><h6 id="mi-nombre" class="fw-bold mb-0 text-arca"></h6></div>
+                            <div class="col-md-3 mb-2"><p class="mb-0 text-muted small">Estado</p><h6 id="mi-estado" class="mb-0"></h6></div>
+                            <div class="col-md-3 mb-2"><p class="mb-0 text-muted small">Ministerio asignado</p><h6 id="mi-ministerio-asignado" class="text-success fw-bold mb-0">Ninguno</h6></div>
+                            <div class="col-md-3 mb-0"><p class="mb-0 text-muted small">Contacto</p><span id="mi-contacto" class="text-secondary small"></span></div>
                         </div>
+                        
+                        <div class="bg-light p-3 rounded border border-light shadow-sm mb-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold text-arca mb-0"><i class="fa-solid fa-hand-holding-heart"></i> Mis Aportes</h6>
+                                <small class="text-muted">Diezmos, ofrendas y donaciones</small>
+                            </div>
+                            <button class="btn btn-arca btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="abrirModalDonacion()">Realizar Aporte</button>
+                        </div>
+
+                        <h5 class="fw-bold text-arca mt-2"><i class="fa-solid fa-route"></i> Mi Ruta de Formación</h5>
+                        <div class="bg-light p-3 rounded border border-light shadow-sm mb-4"><h6 id="mi-avance-texto" class="text-primary fw-bold border-bottom pb-2"></h6><ul id="mi-lista-etapas" class="list-unstyled mb-0 mt-2"></ul></div>
+                        
+                        <h5 class="fw-bold text-arca"><i class="fa-solid fa-calendar-check"></i> Mi Historial de Asistencia</h5>
+                        <div class="table-responsive"><table class="table table-hover align-middle"><thead class="table-cabecera-suave"><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead><tbody id="mi-tabla-asistencia"></tbody></table></div>
                     </div>
                 </div>
             </div>
+
         </div>
+    </div>
+
+    <!-- NUEVA BARRA DE NAVEGACIÓN INFERIOR (Oculta al inicio) -->
+    <div class="bottom-nav" id="bottom-navigation">
+        <!-- Tab 1: Inicio -->
+        <a href="#" class="bottom-nav-item active" id="nav-btn-inicio" onclick="cambiarPantallaApp('inicio', this)">
+            <i class="fa-solid fa-house"></i>
+        </a>
+        <!-- Tab 2: Panel de Gestión (Aparece según permisos) -->
+        <a href="#" class="bottom-nav-item" id="nav-btn-gestion" style="display: none;" onclick="cambiarPantallaApp('gestion', this)">
+            <i class="fa-solid fa-layer-group"></i>
+        </a>
+        <!-- Tab 3: Notificaciones (Llama al modal directamente) -->
+        <a href="#" class="bottom-nav-item" onclick="abrirModalNotificaciones()">
+            <i class="fa-solid fa-bell"></i>
+            <span id="badge-notif" class="position-absolute badge rounded-pill bg-danger" style="display:none; font-size: 0.6rem; top: 2px; right: 8px;">0</span>
+        </a>
+        <!-- Tab 4: Mi Perfil (Muestra Avatar) -->
+        <a href="#" class="bottom-nav-item" id="nav-btn-perfil" onclick="cambiarPantallaApp('perfil', this)">
+            <img id="nav-avatar-img" class="nav-avatar" style="display:none;" src="" alt="Avatar">
+            <div id="nav-avatar-text" class="nav-avatar">?</div>
+        </a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -518,14 +387,13 @@
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
         const themeBtn = document.getElementById('btn-theme'); let currentTheme = localStorage.getItem('theme') || 'auto';
-        function applyTheme(theme) { if (theme === 'auto') { const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light'); themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke"></i>'; themeBtn.title = 'Tema actual: Automático'; } else { document.documentElement.setAttribute('data-bs-theme', theme); themeBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>'; themeBtn.title = `Tema actual: ${theme === 'dark' ? 'Oscuro' : 'Claro'}`; } }
+        function applyTheme(theme) { if (theme === 'auto') { const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light'); themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke m-0"></i>'; themeBtn.title = 'Tema actual: Automático'; } else { document.documentElement.setAttribute('data-bs-theme', theme); themeBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-moon m-0"></i>' : '<i class="fa-solid fa-sun m-0"></i>'; themeBtn.title = `Tema actual: ${theme === 'dark' ? 'Oscuro' : 'Claro'}`; } }
         window.toggleTheme = function() { if (currentTheme === 'auto') currentTheme = 'light'; else if (currentTheme === 'light') currentTheme = 'dark'; else currentTheme = 'auto'; localStorage.setItem('theme', currentTheme); applyTheme(currentTheme); };
         applyTheme(currentTheme); window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if(currentTheme === 'auto') applyTheme('auto'); });
 
-        const estado = document.getElementById('estado');
-        const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos'), document.getElementById('btn-tab-finanzas'), document.getElementById('btn-tab-inventario')];
-        const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-finanzas'), document.getElementById('sec-inventario')];
-        
+        // Lógica de Tabs del Panel de Gestión interno
+        const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos'), document.getElementById('btn-tab-inventario'), document.getElementById('btn-tab-finanzas')];
+        const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-inventario'), document.getElementById('sec-finanzas')];
         btnTabs.forEach((btn, idx) => { if(!btn) return; btn.addEventListener('click', () => { btnTabs.forEach(b => { if(b) b.classList.remove('active', 'btn-primary'); }); if(btn.id !== 'btn-tab-finanzas') btn.classList.add('active'); secs.forEach((sec, i) => { if(!sec) return; i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'); }); }); });
 
         window.cambiarNumero = function(inputId, cantidad) { const input = document.getElementById(inputId); let valorActual = parseInt(input.value) || 0; let nuevoValor = valorActual + cantidad; if (nuevoValor < 0) nuevoValor = 0; input.value = nuevoValor; };
@@ -537,6 +405,15 @@
 
         document.getElementById('link-registrar').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-login').style.display = 'none'; document.getElementById('caja-registro').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
         document.getElementById('link-login').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-registro').style.display = 'none'; document.getElementById('caja-login').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
+
+        // NAVEGACIÓN BOTTOM BAR
+        window.cambiarPantallaApp = function(pantalla, btnElement) {
+            document.querySelectorAll('.app-pantalla').forEach(p => p.classList.remove('activa'));
+            document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+            document.getElementById(`pantalla-${pantalla}`).classList.add('activa');
+            if(btnElement) btnElement.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
 
         const loginConGoogle = async () => {
             const errorP = document.getElementById('auth-error'); errorP.textContent = "Conectando..."; errorP.className = "text-info mt-3 fw-bold";
@@ -550,6 +427,25 @@
         document.getElementById('btn-google-login').addEventListener('click', loginConGoogle);
         document.getElementById('btn-google-registro').addEventListener('click', loginConGoogle);
 
+        function setAvatar(userAuth, dU) {
+            const imgEl = document.getElementById('nav-avatar-img');
+            const txtEl = document.getElementById('nav-avatar-text');
+            if (userAuth.photoURL) {
+                imgEl.src = userAuth.photoURL;
+                imgEl.style.display = 'flex';
+                txtEl.style.display = 'none';
+            } else {
+                let iniciales = "?";
+                if(dU && dU.nombre) {
+                    const partes = dU.nombre.trim().split(" ");
+                    iniciales = partes.length > 1 ? (partes[0][0] + partes[1][0]).toUpperCase() : partes[0][0].toUpperCase();
+                }
+                txtEl.textContent = iniciales;
+                txtEl.style.display = 'flex';
+                imgEl.style.display = 'none';
+            }
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
@@ -559,10 +455,11 @@
                         const dU = userDoc.data(); window.perfilUsuarioActual = dU.perfilAcceso; 
                         window.ministeriosUsuarioActual = dU.ministeriosAsignados || (dU.ministerioAsignado && dU.ministerioAsignado !== "Ninguno" ? [dU.ministerioAsignado] : []);
                         window.esVastagoActual = dU.esVastago || false;
-                        
                         window.usuariosData[user.uid] = dU; 
-                        estado.textContent = `👤 ${dU.nombre} (${dU.perfilAcceso})`; estado.className = "badge bg-white text-dark py-2 px-3 rounded-pill shadow-sm d-inline-block text-truncate badge-usuario"; document.getElementById('btn-logout').style.display = "block";
-                        document.getElementById('modulo-mi-perfil').style.display = "block"; document.getElementById('btn-campana').style.display = "block"; 
+                        
+                        setAvatar(user, dU);
+                        
+                        document.getElementById('bottom-navigation').style.display = "flex";
                         await cargarPerfilMiembro(user.uid, dU);
 
                         let rolesNotif = [user.uid];
@@ -589,14 +486,13 @@
                             window.notificacionesPendientes = notifs.filter(n => !n.leida).map(n => n.id);
                         });
 
-                        // LÓGICA DE VISIBILIDAD DE PESTAÑAS (Roles + Vástago)
                         const isAdmin = dU.perfilAcceso === "Administrador";
                         const isPastor = dU.perfilAcceso === "Pastor";
                         const isLider = dU.perfilAcceso === "Líder";
                         const isVastago = window.esVastagoActual;
 
                         if (isAdmin || isPastor || isLider || isVastago) {
-                            document.getElementById('admin-panel').style.display = "block";
+                            document.getElementById('nav-btn-gestion').style.display = "flex";
                             document.getElementById('btn-tab-usuarios').style.display = isAdmin ? "inline-block" : "none";
                             document.getElementById('btn-tab-eventos').style.display = (isAdmin || isPastor || isLider) ? "inline-block" : "none";
                             document.getElementById('btn-tab-ministerios').style.display = isAdmin ? "inline-block" : "none";
@@ -604,30 +500,29 @@
                             document.getElementById('btn-tab-finanzas').style.display = isAdmin ? "inline-block" : "none";
                             document.getElementById('btn-tab-inventario').style.display = (isAdmin || isVastago) ? "inline-block" : "none";
 
-                            // Clic automático a la primera pestaña habilitada
                             if (isAdmin) { btnTabs[0].click(); await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas(); prepararSelectoresEventos(); cargarVistaEtapasAdmin(); cargarInventario(); }
                             else if (isPastor || isLider) { btnTabs[1].click(); cargarTiposEventosSelect(); prepararSelectoresEventos(); await cargarTablaUsuarios(); if(isVastago) cargarInventario(); }
                             else if (isVastago) { document.getElementById('btn-tab-inventario').click(); cargarInventario(); }
                         } else {
-                            document.getElementById('admin-panel').style.display = "none"; await cargarTablaUsuarios();
+                            document.getElementById('nav-btn-gestion').style.display = "none"; await cargarTablaUsuarios();
                         }
                     }
                 } catch (e) {}
                 document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
+                cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio')); // Pantalla default
             } else {
-                estado.textContent = "Inicia Sesión"; estado.className = "badge bg-warning text-dark py-2 px-3 rounded-pill shadow-sm d-inline-block text-truncate badge-usuario"; document.getElementById('btn-logout').style.display = "none"; document.getElementById('btn-campana').style.display = "none"; document.getElementById('btn-theme').style.display = "none"; document.getElementById('login-container').style.display = "flex"; document.getElementById('dashboard-container').style.display = "none"; 
+                document.getElementById('bottom-navigation').style.display = "none"; document.getElementById('login-container').style.display = "flex"; document.getElementById('dashboard-container').style.display = "none"; 
             }
         });
 
-        document.getElementById('login-form').addEventListener('submit', (e) => { e.preventDefault(); signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value).catch(() => { document.getElementById('auth-error').textContent = "Credenciales incorrectas."; }); });
-        document.getElementById('registro-form').addEventListener('submit', async (e) => { e.preventDefault(); const errorP = document.getElementById('auth-error'); errorP.textContent = "Creando..."; errorP.className = "text-warning mt-3 fw-bold"; const n = document.getElementById('reg-nombre').value; const em = document.getElementById('reg-email').value; const pass = document.getElementById('reg-password').value; const tel = document.getElementById('reg-telefono').value; try { const uc = await createUserWithEmailAndPassword(auth, em, pass); await setDoc(doc(db, "usuarios", uc.user.uid), { nombre: n, email: em, telefono: tel, perfilAcceso: "Miembro", cargo: "Miembro", estado: "En consolidación", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], esVastago: false, fechaRegistro: new Date().toISOString() }); errorP.textContent = "¡Cuenta creada! Entrando..."; errorP.className = "text-success mt-3 fw-bold"; } catch (err) { errorP.textContent = "Error."; errorP.className = "text-danger mt-3 fw-bold"; } });
         document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
         
         window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; document.body.style.overflow = ''; };
         window.abrirModalNotificaciones = function() { document.body.style.overflow = 'hidden'; document.getElementById('notif-fondo').style.display='flex'; document.getElementById('notif-modal').style.display='block'; };
         window.marcarNotificacionesLeidas = async function() { if(window.notificacionesPendientes.length > 0) { for(const nid of window.notificacionesPendientes) { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } } };
-        window.irAFinanzas = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-finanzas').style.display !== 'none') { document.getElementById('btn-tab-finanzas').click(); document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' }); } };
-        window.irAInventario = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-inventario').style.display !== 'none') { document.getElementById('btn-tab-inventario').click(); document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' }); } };
+        
+        window.irAFinanzas = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-finanzas').style.display !== 'none') { document.getElementById('btn-tab-finanzas').click(); cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); } };
+        window.irAInventario = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-inventario').style.display !== 'none') { document.getElementById('btn-tab-inventario').click(); cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); } };
 
         window.abrirModalDonacion = function() { document.body.style.overflow = 'hidden'; document.getElementById('donacion-fondo').style.display='flex'; document.getElementById('donacion-modal').style.display='block'; };
         window.copiarDatosBancarios = function(btn) { const texto = "Iglesia El Arca\nRUT: 65.000.000-0\nBancoEstado - Cuenta Vista\nN° 123456789\nfinanzas@elarca.cl"; navigator.clipboard.writeText(texto).then(()=>{ btn.innerText = "✅ ¡Copiado!"; setTimeout(()=>btn.innerHTML='<i class="fa-solid fa-copy"></i> Copiar Datos', 2000); }); };
@@ -640,7 +535,7 @@
             } catch(err){} finally { btn.disabled=false; btn.innerText="Notificar"; } 
         });
 
-        // ================= INVENTARIO (NUEVO MÓDULO) ================= //
+        // ================= INVENTARIO ================= //
         document.getElementById('form-nuevo-producto').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button'); btn.disabled = true;
@@ -695,20 +590,12 @@
 
             try {
                 await updateDoc(doc(db, "inventario", id), { stockActual: nuevoStock });
-                
-                // Gatillador automático de notificación a Vástagos y Administradores
                 if(nuevoStock <= p.stockMinimo && cantidad < 0 && p.stockActual > p.stockMinimo) {
-                    await addDoc(collection(db, "notificaciones"), {
-                        receptor: "Bodega",
-                        texto: `⚠️ <b>Alerta de Inventario:</b> "${p.nombre}" ha bajado a nivel crítico (${nuevoStock} ${p.unidad} restantes). Por favor, gestionar reposición.`,
-                        fecha: new Date().toISOString(),
-                        leida: false
-                    });
+                    await addDoc(collection(db, "notificaciones"), { receptor: "Bodega", texto: `⚠️ <b>Alerta de Inventario:</b> "${p.nombre}" ha bajado a nivel crítico (${nuevoStock} ${p.unidad} restantes). Por favor, gestionar reposición.`, fecha: new Date().toISOString(), leida: false });
                 }
                 cargarInventario();
             } catch(e) {}
         };
-        // ================= FIN INVENTARIO ================= //
 
         async function cargarFinanzas() { 
             const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; 
@@ -779,10 +666,8 @@
         
         async function cargarPerfilMiembro(uid, dU) { 
             document.getElementById('mi-nombre').textContent = dU.nombre || 'N/A'; document.getElementById('mi-estado').textContent = dU.estado || 'N/A'; 
-            
             const minText = (dU.ministeriosAsignados && dU.ministeriosAsignados.length > 0) ? dU.ministeriosAsignados.join(', ') : (dU.ministerioAsignado || 'Ninguno');
             document.getElementById('mi-ministerio-asignado').textContent = minText; 
-            
             const correoTexto = dU.email ? `📧 ${dU.email}` : ""; const telTexto = dU.telefono ? `<br>📱 ${dU.telefono}` : ""; document.getElementById('mi-contacto').innerHTML = `${correoTexto} ${telTexto}` || 'Sin datos';
             const c = dU.etapasCompletadas || []; const t = window.catalogoEtapas.length; const pct = t > 0 ? Math.round((c.length / t) * 100) : 0; document.getElementById('mi-avance-texto').textContent = `${c.length} de ${t} etapas completadas (${pct}%)`; const lst = document.getElementById('mi-lista-etapas'); lst.innerHTML = ""; window.catalogoEtapas.forEach(e => { const ch = c.includes(e) ? "✅" : "⏳"; const col = c.includes(e) ? "text-success" : "text-muted"; lst.innerHTML += `<li class="${col} mb-2 d-flex align-items-center gap-2"><span>${ch}</span> <span>${e}</span></li>`; }); 
             try { 
@@ -816,17 +701,13 @@
         
         window.abrirEditorUsuario = function(uid) { 
             const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; document.getElementById('edit-email-display').textContent = u.email || 'Sin correo'; document.getElementById('edit-telefono').value = u.telefono || ''; document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; 
-            
-            // Cargar el Switch de Vástago
             document.getElementById('edit-vastago').checked = u.esVastago || false;
-
             const cMin = document.getElementById('contenedor-checkboxes-ministerios'); cMin.innerHTML = "";
             const minsUser = u.ministeriosAsignados || (u.ministerioAsignado && u.ministerioAsignado !== "Ninguno" ? [u.ministerioAsignado] : []);
             window.catalogoMinisterios.forEach(m => {
                 const chk = minsUser.includes(m) ? "checked" : "";
                 cMin.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="ministerio-check" value="${m}" ${chk} id="chk-min-${m}"><label class="form-check-label text-dark" for="chk-min-${m}">${m}</label></div>`;
             });
-
             const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="etapas-check" value="${e}" ${ch} id="chk-${e}"><label class="form-check-label" for="chk-${e}">${e}</label></div>`; }); 
         };
 
@@ -835,9 +716,7 @@
             try { 
                 const minsSeleccionados = Array.from(document.querySelectorAll('input[name="ministerio-check"]:checked')).map(c => c.value);
                 const vastagoChecked = document.getElementById('edit-vastago').checked;
-
                 await updateDoc(doc(db, "usuarios", uid), { telefono: document.getElementById('edit-telefono').value, perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, ministeriosAsignados: minsSeleccionados, ministerioAsignado: minsSeleccionados.length > 0 ? minsSeleccionados[0] : "Ninguno", etapasCompletadas: Array.from(document.querySelectorAll('input[name="etapas-check"]:checked')).map(c => c.value), esVastago: vastagoChecked }); 
-                
                 btn.innerHTML = "✅ ¡Listo!"; setTimeout(() => { document.getElementById('editor-usuario').style.display = 'none'; btn.disabled = false; btn.innerHTML = textoOriginal; document.getElementById('buscador-usuarios-admin').value = ""; cargarTablaUsuarios(); if (uid === auth.currentUser.uid) { getDoc(doc(db, "usuarios", auth.currentUser.uid)).then(docSnap => { window.esVastagoActual = docSnap.data().esVastago || false; cargarPerfilMiembro(auth.currentUser.uid, docSnap.data()); }); } }, 400);
             } catch (err) { btn.innerHTML = "❌ Error"; setTimeout(() => { btn.disabled = false; btn.innerHTML = textoOriginal; }, 2000); } 
         });
@@ -925,7 +804,6 @@
         document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); });
     </script>
     
-    <!-- SCRIPT DE INSTALACIÓN PWA -->
     <script>
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW falló: ', err)); }); }
         const banner = document.getElementById('install-banner'); const btnInstall = document.getElementById('btn-install'); const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;

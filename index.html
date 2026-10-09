@@ -161,8 +161,8 @@
             <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarEscanerQR()"></button>
             <h4 class="text-arca fw-bold mb-3"><i class="fa-solid fa-camera"></i> Escáner de Asistencia</h4>
             
-            <!-- Aquí se inyectará la cámara -->
-            <div id="reader" class="bg-dark rounded mb-3 overflow-hidden" style="width: 100%; min-height: 250px; border: 2px dashed #6c757d;"></div>
+            <!-- Contenedor limpio para que la librería tome el control total -->
+            <div id="reader" class="mb-3" style="width: 100%; border-radius: 8px; overflow: hidden;"></div>
             
             <p class="text-muted small">Apunta la cámara al código QR generado por el Líder del evento.</p>
             <button class="btn btn-secondary w-100 fw-bold" onclick="cerrarEscanerQR()">Cancelar</button>
@@ -602,38 +602,39 @@
             document.getElementById('scanner-fondo').style.display='flex'; 
             document.getElementById('scanner-modal').style.display='block'; 
             
-            if (!escánerActivo) {
-                // Usamos el motor puro sin la interfaz fea
-                escánerActivo = new Html5Qrcode("reader");
-                
-                // Forzamos la cámara trasera ("environment")
-                escánerActivo.start(
-                    { facingMode: "environment" }, 
-                    {
-                        fps: 10,
-                        qrbox: { width: 250, height: 250 }
-                    },
-                    (textoDecodificado) => {
-                        // ¡Lectura exitosa!
-                        escánerActivo.stop().then(() => {
-                            escánerActivo.clear();
-                            escánerActivo = null;
-                            window.location.href = textoDecodificado;
-                        }).catch(err => console.log(err));
-                    },
-                    (errorMensaje) => {
-                        // Sigue buscando silenciosamente... (es normal que arroje errores invisibles mientras enfoca)
-                    }
-                ).catch(err => {
-                    console.error("Error al iniciar cámara:", err);
-                    alert("No se pudo iniciar la cámara. Asegúrate de dar permisos en tu navegador.");
-                });
-            }
+            // EL TRUCO: Esperar 300ms a que el modal esté 100% visible
+            setTimeout(() => {
+                if (!escánerActivo) {
+                    escánerActivo = new Html5Qrcode("reader");
+                    
+                    escánerActivo.start(
+                        { facingMode: "environment" }, 
+                        {
+                            fps: 10,
+                            qrbox: { width: 220, height: 220 }, // Tamaño seguro para celulares
+                            aspectRatio: 1.0 // Fuerza un cuadro perfecto para evitar distorsiones
+                        },
+                        (textoDecodificado) => {
+                            // ¡Lectura exitosa! Apagamos cámara y viajamos al link
+                            escánerActivo.stop().then(() => {
+                                escánerActivo.clear();
+                                escánerActivo = null;
+                                window.location.href = textoDecodificado;
+                            }).catch(err => console.log(err));
+                        },
+                        (errorMensaje) => {
+                            // Silencioso: sigue buscando cuadro por cuadro
+                        }
+                    ).catch(err => {
+                        console.error("Error al iniciar cámara:", err);
+                        alert("No se pudo iniciar la cámara.");
+                    });
+                }
+            }, 300);
         };
 
         window.cerrarEscanerQR = function() {
             if (escánerActivo) {
-                // Apagamos la cámara de forma segura
                 escánerActivo.stop().then(() => {
                     escánerActivo.clear();
                     escánerActivo = null;

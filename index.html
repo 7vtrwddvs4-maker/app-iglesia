@@ -602,27 +602,42 @@
             document.getElementById('scanner-fondo').style.display='flex'; 
             document.getElementById('scanner-modal').style.display='block'; 
             
-            // Si el escáner no está encendido, lo iniciamos
             if (!escánerActivo) {
-                escánerActivo = new Html5QrcodeScanner("reader", { fps: 10, qrbox: {width: 250, height: 250} }, false);
-                escánerActivo.render((textoDecodificado) => {
-                    // ¡Éxito! Leyó el QR.
-                    // 1. Apagamos la cámara para ahorrar batería
-                    escánerActivo.clear();
-                    escánerActivo = null;
-                    // 2. Redirigimos al link exacto de asistencia que tenía el QR
-                    window.location.href = textoDecodificado;
-                }, (error) => {
-                    // Sigue buscando silenciosamente...
+                // Usamos el motor puro sin la interfaz fea
+                escánerActivo = new Html5Qrcode("reader");
+                
+                // Forzamos la cámara trasera ("environment")
+                escánerActivo.start(
+                    { facingMode: "environment" }, 
+                    {
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 }
+                    },
+                    (textoDecodificado) => {
+                        // ¡Lectura exitosa!
+                        escánerActivo.stop().then(() => {
+                            escánerActivo.clear();
+                            escánerActivo = null;
+                            window.location.href = textoDecodificado;
+                        }).catch(err => console.log(err));
+                    },
+                    (errorMensaje) => {
+                        // Sigue buscando silenciosamente... (es normal que arroje errores invisibles mientras enfoca)
+                    }
+                ).catch(err => {
+                    console.error("Error al iniciar cámara:", err);
+                    alert("No se pudo iniciar la cámara. Asegúrate de dar permisos en tu navegador.");
                 });
             }
         };
 
         window.cerrarEscanerQR = function() {
-            // Si el usuario cancela, apagamos la cámara obligatoriamente
             if (escánerActivo) {
-                escánerActivo.clear().catch(error => console.error("Fallo al apagar cámara", error));
-                escánerActivo = null;
+                // Apagamos la cámara de forma segura
+                escánerActivo.stop().then(() => {
+                    escánerActivo.clear();
+                    escánerActivo = null;
+                }).catch(err => console.log(err));
             }
             window.cerrarModal('scanner');
         };

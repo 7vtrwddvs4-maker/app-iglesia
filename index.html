@@ -42,7 +42,7 @@
         [data-bs-theme="dark"] .burbuja-otro { background-color: #2b3035; color: #e0e0e0; border-color: #495057; }
         [data-bs-theme="dark"] .list-group-item { background-color: #212529; color: #e0e0e0; border-color: #373b3e; }
 
-        body { background-color: var(--fondo-crema); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--texto-oscuro); transition: background-color 0.3s, color 0.3s; padding-bottom: 85px; /* ESPACIO PARA LA BARRA INFERIOR */ }
+        body { background-color: var(--fondo-crema); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: var(--texto-oscuro); transition: background-color 0.3s, color 0.3s; padding-bottom: 85px; }
         .text-arca { color: var(--azul-arca) !important; }
         .bg-arca { background-color: var(--azul-arca); color: white; }
         
@@ -82,40 +82,41 @@
         .contador-acomp button { border: none; width: 35px; font-weight: bold; font-size: 1.2rem; cursor: pointer; color: var(--azul-arca); }
         .contador-acomp input { width: 40px; text-align: center; border: none; background: transparent; font-weight: bold; outline: none; }
 
-        /* ========= NUEVA BARRA INFERIOR (BOTTOM NAV) ========= */
+        /* ========= BARRA INFERIOR (BOTTOM NAV) ========= */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: fixed; bottom: 0; left: 0; right: 0;
             background-color: var(--fondo-crema);
             border-top: 1px solid #e0e0e0;
             box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 10px 0;
-            z-index: 1030;
-            padding-bottom: calc(10px + env(safe-area-inset-bottom)); /* Para iPhones modernos */
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 10px 0; z-index: 1030;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
         [data-bs-theme="dark"] .bottom-nav { background-color: #212529; border-top: 1px solid #373b3e; box-shadow: 0 -4px 15px rgba(0,0,0,0.5); }
         
         .bottom-nav-item {
-            color: #6c757d;
-            font-size: 1.6rem;
-            text-decoration: none;
-            position: relative;
-            padding: 5px 20px;
-            border-radius: 12px;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            color: #6c757d; font-size: 1.6rem; text-decoration: none;
+            position: relative; padding: 5px 20px; border-radius: 12px;
+            transition: all 0.2s; display: flex; flex-direction: column; align-items: center;
         }
-        .bottom-nav-item:hover { color: var(--azul-arca); }
-        .bottom-nav-item.active { color: var(--azul-arca); }
+        .bottom-nav-item:hover, .bottom-nav-item.active { color: var(--azul-arca); }
         [data-bs-theme="dark"] .bottom-nav-item:hover, [data-bs-theme="dark"] .bottom-nav-item.active { color: #4da3ff; }
         
+        /* BOTÓN CENTRAL QR FLOTANTE */
+        .central-btn {
+            background: linear-gradient(135deg, var(--azul-arca), #004d99);
+            color: white !important;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            margin-top: -35px;
+            border: 5px solid var(--fondo-crema);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            padding: 0;
+        }
+        [data-bs-theme="dark"] .central-btn { border-color: #121212; }
+        .central-btn i { margin: 0; font-size: 1.8rem; }
+
         .nav-avatar {
             width: 30px; height: 30px; border-radius: 50%;
             background-color: #6c757d; color: white;
@@ -126,21 +127,19 @@
         .bottom-nav-item.active .nav-avatar { border-color: var(--azul-arca); background-color: var(--azul-arca); }
         [data-bs-theme="dark"] .bottom-nav-item.active .nav-avatar { border-color: #4da3ff; }
         
-        /* Ocultar pantallas de la App */
         .app-pantalla { display: none; animation: fadeIn 0.3s; }
         .app-pantalla.activa { display: block; }
     </style>
 </head>
 <body>
 
-    <!-- BANNER DE INSTALACIÓN PWA -->
     <div id="install-banner" class="shadow-lg" style="display: none; position: fixed; bottom: 85px; width: 100%; background: var(--dorado-arca); color: var(--texto-oscuro); padding: 15px; z-index: 9999; text-align: center; border-top-left-radius: 15px; border-top-right-radius: 15px;">
         <span class="fw-bold me-2">📲 Instala la app de El Arca en tu inicio</span>
         <button id="btn-install" class="btn btn-dark btn-sm fw-bold rounded-pill px-3 ms-2">Instalar</button>
         <button id="btn-close-install" class="btn btn-sm text-dark ms-2" style="font-size: 1.2rem; padding: 0 5px;">&times;</button>
     </div>
 
-    <!-- CABECERA SUPERIOR LIMPIA -->
+    <!-- CABECERA SUPERIOR -->
     <nav class="navbar shadow-sm navbar-arca">
         <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand d-flex align-items-center m-0" href="#">
@@ -154,18 +153,67 @@
         </div>
     </nav>
 
-    <!-- MODALES VARIOS (QR, ASISTENCIA, FORO, CALENDARIO, NOTIFICACIONES, DONACIONES) -->
-    <!-- (Se mantienen intactos, ocultos hasta que se llaman) -->
+    <!-- MODAL ESCANER QR -->
+    <div id="scanner-fondo" class="modal-fondo">
+        <div id="scanner-modal" class="modal-caja text-center bg-white position-relative">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('scanner')"></button>
+            <h4 class="text-arca fw-bold mb-3"><i class="fa-solid fa-camera"></i> Escáner de Asistencia</h4>
+            <div class="bg-dark rounded mb-3 d-flex align-items-center justify-content-center" style="height: 250px; border: 2px dashed #6c757d;">
+                <div class="text-center text-secondary">
+                    <i class="fa-solid fa-qrcode fa-4x mb-2 opacity-50"></i>
+                    <p class="mb-0 small">Buscando cámara...</p>
+                </div>
+            </div>
+            <p class="text-muted small">Apunta la cámara al código QR generado por el Líder del evento.</p>
+            <button class="btn btn-secondary w-100 fw-bold" onclick="cerrarModal('scanner')">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODALES VARIOS -->
     <div id="qr-fondo" class="modal-fondo"><div id="qr-modal" class="modal-caja text-center bg-white position-relative"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('qr')"></button><h3 class="text-arca fw-bold">Escanear Asistencia</h3><h5 id="qr-evento-titulo" class="text-muted mb-3"></h5><div id="qrcode" class="d-flex justify-content-center bg-white p-3 border rounded mb-2 mx-auto" style="width: fit-content;"></div><p class="small text-muted mb-1">Si la cámara falla, toca este link directo:</p><a id="qr-enlace-directo" href="#" target="_blank" class="d-block mb-3 text-break fw-bold" style="font-size: 0.85rem;">Cargando enlace...</a><button class="btn btn-secondary w-100" onclick="cerrarModal('qr')">Cerrar</button></div></div>
     <div id="asistencia-fondo" class="modal-fondo"><div id="asistencia-modal" class="modal-caja bg-white position-relative"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('asistencia')"></button><h3 class="text-arca fw-bold pe-4">Reporte de Asistencia</h3><h5 id="asistencia-evento-titulo" class="text-primary mb-3"></h5><div class="card bg-light border-0 mb-3 shadow-none"><div class="card-body p-3"><h6 class="card-title fw-bold text-arca">1. Registrar persona (Con cuenta)</h6><input type="text" id="buscador-select-asistencia" class="form-control form-control-sm mb-2 bg-white" placeholder="🔍 Buscar persona..."><div class="d-flex flex-wrap gap-2 mb-2"><select id="select-usuario-manual" class="form-select flex-grow-1 bg-white" style="min-width: 150px;"><option value="">Seleccione...</option></select><div class="contador-acomp bg-white shadow-sm"><button class="bg-light" onclick="cambiarNumero('input-acompanantes-manual', -1)">-</button><input type="number" id="input-acompanantes-manual" value="0" min="0" readonly><button class="bg-light" onclick="cambiarNumero('input-acompanantes-manual', 1)">+</button></div></div><input type="text" id="input-nombres-extra-manual" class="form-control form-control-sm mb-2 bg-white" placeholder="Nombres de acompañantes (Opcional)"><button class="btn btn-success w-100" onclick="registrarAsistenciaManual(this)">Agregar Asistencia</button><h6 class="card-title fw-bold text-arca border-top pt-3 mt-3">2. Registrar invitado (Sin App)</h6><div class="d-flex flex-wrap gap-2 mb-2"><input type="text" id="input-invitado-manual" class="form-control flex-grow-1 bg-white" placeholder="Nombre completo" style="min-width: 150px;"><div class="contador-acomp bg-white shadow-sm"><button class="bg-light" onclick="cambiarNumero('input-acompanantes-invitado', -1)">-</button><input type="number" id="input-acompanantes-invitado" value="0" min="0" readonly><button class="bg-light" onclick="cambiarNumero('input-acompanantes-invitado', 1)">+</button></div></div><input type="text" id="input-nombres-extra-invitado" class="form-control form-control-sm mb-2 bg-white" placeholder="Nombres de acompañantes (Opcional)"><button class="btn btn-primary w-100" onclick="registrarAsistenciaInvitado(this)">Crear y Agregar</button></div></div><div class="d-flex justify-content-between align-items-center mb-2 gap-2"><input type="text" id="buscador-tabla-asistencia" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar en la lista..."><button class="btn btn-outline-info btn-sm" onclick="exportarTablaCSV('tabla-exportar-asistencia', 'Reporte_Asistencia.csv')">📥 Exportar</button></div><div class="table-responsive mb-3 border rounded" style="max-height: 30vh; overflow-y: auto;"><table class="table table-hover align-middle mb-0" id="tabla-exportar-asistencia"><thead class="table-cabecera-suave sticky-top"><tr><th>Nombre</th><th>Hora</th><th>Método</th></tr></thead><tbody id="tabla-asistentes"></tbody></table></div><button class="btn btn-secondary w-100" onclick="cerrarModal('asistencia')">Cerrar Ventana</button></div></div>
     <div id="foro-fondo" class="modal-fondo"><div id="foro-modal" class="modal-caja bg-white position-relative"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('foro')"></button><h3 class="text-arca fw-bold pe-4">Foro del Evento</h3><h6 id="foro-evento-titulo" class="text-muted border-bottom pb-2 mb-3"></h6><div id="lista-comentarios" class="foro-chat-box bg-light mb-3 d-flex flex-column gap-2"></div><form id="form-nuevo-comentario" class="input-group"><input type="text" id="foro-texto" class="form-control bg-white" placeholder="Escribe un comentario..." required><button type="submit" class="btn btn-arca fw-bold" id="btn-enviar-comentario">Enviar</button></form><button class="btn btn-secondary w-100 mt-3" onclick="cerrarModal('foro')">Cerrar Foro</button></div></div>
     <div id="calendario-fondo" class="modal-fondo"><div id="calendario-modal" class="modal-caja bg-white text-center position-relative" style="max-width: 400px;"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('calendario')"></button><h3 class="text-success fw-bold mb-2">¡Inscripción Exitosa!</h3><p class="text-muted mb-4">Ya estás anotado en la lista. ¿Deseas agregar este evento a la agenda de tu teléfono para recibir un recordatorio?</p><div class="d-flex gap-2 justify-content-center"><button class="btn btn-outline-secondary w-50 fw-bold" onclick="cerrarModal('calendario')">No, gracias</button><button id="btn-confirmar-agenda" class="btn btn-arca w-50 fw-bold">📅 Agregar</button></div></div></div>
-    <div id="notif-fondo" class="modal-fondo"><div id="notif-modal" class="modal-caja bg-white position-relative" style="max-width: 400px;"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('notif')"></button><h4 class="text-arca fw-bold mb-3"><i class="fa-solid fa-bell"></i> Bandeja de Avisos</h4><div id="lista-notificaciones" class="d-flex flex-column gap-2 mb-3 text-start" style="max-height: 350px; overflow-y: auto;"><p class='text-muted small text-center mt-3'>Cargando...</p></div><button class="btn btn-sm btn-outline-secondary w-100 fw-bold" onclick="marcarNotificacionesLeidas()"><i class="fa-solid fa-check-double"></i> Marcar todas como leídas</button></div></div>
-    <div id="donacion-fondo" class="modal-fondo"><div id="donacion-modal" class="modal-caja bg-white position-relative" style="max-width: 450px;"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('donacion')"></button><h4 class="text-arca fw-bold mb-3">💖 Realizar Aporte</h4><div class="bg-light p-3 rounded mb-3 border text-start shadow-sm"><p class="mb-1 small text-muted">Datos de transferencia:</p><p class="mb-0 fw-bold text-arca">Pastor Pedro Esparza</p><p class="mb-0">RUT: 12.979.962-5</p><p class="mb-0">BancoEstado - Cuenta Vista</p><p class="mb-0">finanzas@elarca.cl</p><button class="btn btn-sm btn-outline-primary w-100 mt-3 fw-bold bg-white" onclick="copiarDatosBancarios(this)"><i class="fa-solid fa-copy"></i> Copiar Datos</button></div><form id="form-declarar-donacion" class="text-start border-top pt-3 mt-2"><label class="form-label small text-muted fw-bold">¿Ya transferiste? Notifica tu aporte aquí:</label><div class="input-group mb-2 shadow-sm"><span class="input-group-text bg-light text-muted"><i class="fa-solid fa-dollar-sign"></i></span><input type="number" id="donacion-monto" class="form-control bg-white" placeholder="Monto transferido" required min="1"><button type="submit" class="btn btn-success fw-bold" id="btn-enviar-donacion">Notificar</button></div><p class="small text-muted mb-0" style="font-size: 0.75rem;">Tu aporte quedará "Pendiente" hasta que el equipo de finanzas valide la recepción en el banco.</p></form></div></div>
+    
+    <!-- MODAL NOTIFICACIONES (ESTILO FACEBOOK) -->
+    <div id="notif-fondo" class="modal-fondo">
+        <div id="notif-modal" class="modal-caja bg-white position-relative" style="max-width: 450px; padding: 20px;">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('notif')"></button>
+            <h4 class="text-arca fw-bold mb-3 border-bottom pb-2"><i class="fa-solid fa-bell"></i> Notificaciones</h4>
+            <div id="lista-notificaciones" class="d-flex flex-column gap-1 text-start" style="max-height: 50vh; overflow-y: auto;">
+                <p class='text-muted small text-center mt-3'>Cargando...</p>
+            </div>
+            <button class="btn btn-light btn-sm w-100 fw-bold mt-3 border" onclick="marcarNotificacionesLeidas()">Marcar todas como leídas</button>
+        </div>
+    </div>
+
+    <!-- MODAL DONACIONES -->
+    <div id="donacion-fondo" class="modal-fondo">
+        <div id="donacion-modal" class="modal-caja bg-white position-relative" style="max-width: 450px;">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('donacion')"></button>
+            <h4 class="text-arca fw-bold mb-3">💖 Realizar Aporte</h4>
+            <div class="bg-light p-3 rounded mb-3 border text-start shadow-sm">
+                <p class="mb-1 small text-muted">Datos de transferencia:</p>
+                <p class="mb-0 fw-bold text-arca">Pastor Pedro Esparza</p>
+                <p class="mb-0">RUT: 12.979.962-5</p>
+                <p class="mb-0">BancoEstado - Cuenta Vista</p>
+                <p class="mb-0">finanzas@elarca.cl</p>
+                <button class="btn btn-sm btn-outline-primary w-100 mt-3 fw-bold bg-white" onclick="copiarDatosBancarios(this)"><i class="fa-solid fa-copy"></i> Copiar Datos</button>
+            </div>
+            <form id="form-declarar-donacion" class="text-start border-top pt-3 mt-2">
+                <label class="form-label small text-muted fw-bold">¿Ya transferiste? Notifica tu aporte aquí:</label>
+                <div class="input-group mb-2 shadow-sm">
+                    <span class="input-group-text bg-light text-muted"><i class="fa-solid fa-dollar-sign"></i></span>
+                    <input type="number" id="donacion-monto" class="form-control bg-white" placeholder="Monto transferido" required min="1">
+                    <button type="submit" class="btn btn-success fw-bold" id="btn-enviar-donacion">Notificar</button>
+                </div>
+                <p class="small text-muted mb-0" style="font-size: 0.75rem;">Tu aporte quedará "Pendiente" hasta que finanzas lo valide en el banco.</p>
+            </form>
+        </div>
+    </div>
 
     <div class="container pb-2">
-        
-        <!-- PANTALLA DE ACCESO Y REGISTRO (VISIBLE AL INICIO) -->
+        <!-- PANTALLA DE ACCESO Y REGISTRO -->
         <div class="row justify-content-center" id="login-container">
             <div class="col-md-5 mt-4">
                 <div class="card bg-white p-4 text-center border-top border-4" style="border-top-color: var(--dorado-arca) !important;">
@@ -189,11 +237,23 @@
             </div>
         </div>
 
-        <!-- CONTENEDOR PRINCIPAL DE LA APP (OCULTO HASTA LOGIN) -->
+        <!-- CONTENEDOR PRINCIPAL DE LA APP -->
         <div id="dashboard-container">
 
-            <!-- PANTALLA 1: INICIO (Cartelera y Ministerios) -->
+            <!-- PANTALLA 1: INICIO -->
             <div id="pantalla-inicio" class="app-pantalla activa">
+                
+                <!-- BANNER DE DONACIÓN PROMINENTE (PÚBLICO) -->
+                <div class="card border-0 mb-4 shadow-sm" style="background: linear-gradient(135deg, var(--azul-arca), #004d99); color: white;">
+                    <div class="card-body d-flex justify-content-between align-items-center p-4">
+                        <div>
+                            <h5 class="fw-bold mb-1"><i class="fa-solid fa-hand-holding-dollar text-warning"></i> Apoya nuestra Iglesia</h5>
+                            <small style="opacity: 0.9;">Tus aportes nos ayudan a seguir creciendo</small>
+                        </div>
+                        <button class="btn btn-warning fw-bold rounded-pill px-4 text-dark shadow" onclick="abrirModalDonacion()">Donar Ahora</button>
+                    </div>
+                </div>
+
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <div class="card bg-white h-100">
@@ -229,6 +289,8 @@
                             <button type="button" class="btn" id="btn-tab-finanzas"><i class="fa-solid fa-vault"></i> Finanzas</button>
                         </div>
 
+                        <!-- Secciones ocultas de Gestión (Usuarios, Eventos, Finanzas, Inventario...) -->
+                        <!-- Usuarios -->
                         <div class="seccion-gestion activa" id="sec-usuarios">
                             <h5 class="fw-bold text-arca mb-3">👥 Directorio de Personas</h5>
                             <div class="mb-3"><input type="text" id="buscador-usuarios-admin" class="form-control bg-light shadow-sm" placeholder="🔍 Buscar por nombre, perfil, estado o ministerio..."></div>
@@ -247,16 +309,8 @@
                                             <div class="col-md-2"><label class="form-label small text-muted fw-bold">Perfil</label><select id="edit-perfil" class="form-select bg-white"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option><option>Invitado</option></select></div>
                                             <div class="col-md-3"><label class="form-label small text-muted fw-bold">Cargo</label><select id="edit-cargo" class="form-select bg-white"><option>Pastor general</option><option>Pastor</option><option>Miembro</option><option>Invitado</option></select></div>
                                             <div class="col-md-2"><label class="form-label small text-muted fw-bold">Estado</label><select id="edit-estado" class="form-select bg-white"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option><option>Asistente externo</option></select></div>
-                                            <div class="col-md-3">
-                                                <label class="form-label small text-muted fw-bold text-success">Ministerios a Cargo</label>
-                                                <div id="contenedor-checkboxes-ministerios" class="p-2 border rounded bg-white shadow-sm" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;"></div>
-                                            </div>
-                                            <div class="col-md-12 mt-2 border-top pt-3">
-                                                <div class="form-check form-switch fs-6">
-                                                    <input class="form-check-input" type="checkbox" id="edit-vastago" role="switch" style="cursor: pointer;">
-                                                    <label class="form-check-label fw-bold text-arca" for="edit-vastago" style="cursor: pointer;"><i class="fa-solid fa-star text-warning"></i> Privilegios de Vástago (Administrar Inventario y recibir alertas)</label>
-                                                </div>
-                                            </div>
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold text-success">Ministerios a Cargo</label><div id="contenedor-checkboxes-ministerios" class="p-2 border rounded bg-white shadow-sm" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;"></div></div>
+                                            <div class="col-md-12 mt-2 border-top pt-3"><div class="form-check form-switch fs-6"><input class="form-check-input" type="checkbox" id="edit-vastago" role="switch" style="cursor: pointer;"><label class="form-check-label fw-bold text-arca" for="edit-vastago" style="cursor: pointer;"><i class="fa-solid fa-star text-warning"></i> Privilegios de Vástago (Administrar Inventario y recibir alertas)</label></div></div>
                                         </div>
                                         <label class="form-label small text-muted fw-bold">Ruta Completada:</label>
                                         <div class="p-3 border rounded bg-white mb-4 shadow-sm" id="contenedor-checkboxes-formacion"></div>
@@ -267,6 +321,7 @@
                             </div>
                         </div>
 
+                        <!-- Eventos -->
                         <div class="seccion-gestion" id="sec-eventos">
                             <h5 class="fw-bold text-arca mb-3">📅 Crear Nuevo Evento</h5>
                             <p id="aviso-lider" class="text-danger fw-bold" style="display:none;">⚠️ Al ser Líder, solo puedes crear eventos para tu ministerio asignado.</p>
@@ -281,6 +336,7 @@
                             </form>
                         </div>
 
+                        <!-- Finanzas -->
                         <div class="seccion-gestion" id="sec-finanzas">
                             <h5 class="fw-bold text-success mb-3">💰 Bóveda Financiera</h5>
                             <div class="row g-3 mb-4"><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Ingresos Totales</h6><h3 class="text-success mb-0 fw-bold" id="total-ingresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Egresos Totales</h6><h3 class="text-danger mb-0 fw-bold" id="total-egresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100 border-bottom border-4" style="border-bottom-color: var(--dorado-arca) !important;"><div class="card-body"><h6 class="text-muted">Saldo Actual</h6><h3 class="text-dark mb-0 fw-bold" id="total-saldo">$0</h3></div></div></div></div>
@@ -289,10 +345,10 @@
                             <div class="table-responsive bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0" id="tabla-exportar-finanzas"><thead class="table-cabecera-suave"><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead><tbody id="tabla-finanzas"></tbody></table></div>
                         </div>
 
+                        <!-- Ministerios y Catálogos -->
                         <div class="seccion-gestion" id="sec-ministerios">
                             <h5 class="fw-bold text-arca mb-3">🤝 Agregar Ministerio</h5><form id="form-nuevo-ministerio" class="row g-2 bg-light p-3 rounded shadow-sm"><div class="col-md-4"><input type="text" id="min-nombre" class="form-control bg-white" placeholder="Nombre" required></div><div class="col-md-6"><input type="text" id="min-descripcion" class="form-control bg-white" placeholder="Descripción" required></div><div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Guardar</button></div></form>
                         </div>
-                        
                         <div class="seccion-gestion" id="sec-catalogos">
                             <h5 class="fw-bold text-arca mb-3">📖 Gestión de Etapas de Formación</h5>
                             <form id="form-nueva-etapa" class="row g-2 mb-4 bg-light p-3 rounded shadow-sm"><div class="col-md-9"><input type="text" id="etapa-nombre" class="form-control bg-white" placeholder="Nombre de nueva Etapa" required></div><div class="col-md-3"><button type="submit" class="btn btn-arca w-100 fw-bold">Agregar</button></div></form>
@@ -300,6 +356,7 @@
                             <ul id="lista-admin-etapas" class="list-group shadow-sm"></ul>
                         </div>
 
+                        <!-- Inventario -->
                         <div class="seccion-gestion" id="sec-inventario">
                             <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold text-arca mb-0"><i class="fa-solid fa-boxes-stacked"></i> Control de Donaciones e Inventario</h5></div>
                             <div class="bg-light p-3 rounded shadow-sm border border-light mb-4"><h6 class="fw-bold text-arca mb-3">Registrar Nuevo Insumo</h6><form id="form-nuevo-producto" class="row g-2 align-items-end"><div class="col-md-3"><label class="small text-muted fw-bold">Nombre del Producto</label><input type="text" id="inv-nombre" class="form-control bg-white" placeholder="Ej. Arroz, Frazadas..." required></div><div class="col-md-3"><label class="small text-muted fw-bold">Categoría</label><select id="inv-categoria" class="form-select bg-white" required><option value="Alimentos">Alimentos no perecibles</option><option value="Ropa">Ropa y Abrigo</option><option value="Mobiliario">Mobiliario / Equipamiento</option><option value="Insumos">Insumos Varios</option></select></div><div class="col-md-2"><label class="small text-muted fw-bold">Unidad</label><select id="inv-unidad" class="form-select bg-white"><option value="Unidades">Unidades</option><option value="Kilos">Kilos</option><option value="Litros">Litros</option><option value="Cajas">Cajas</option></select></div><div class="col-md-2"><label class="small text-muted fw-bold text-danger">Stock Crítico</label><input type="number" id="inv-minimo" class="form-control bg-white" placeholder="Alerta en..." min="1" required></div><div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Crear Ficha</button></div></form></div>
@@ -314,10 +371,9 @@
             <div id="pantalla-perfil" class="app-pantalla">
                 <div class="card bg-white" id="modulo-mi-perfil">
                     <div class="card-body p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
                             <h4 class="text-arca fw-bold mb-0"><i class="fa-solid fa-user-circle"></i> Mi Perfil</h4>
-                            <!-- Botón de Logout ahora vive aquí -->
-                            <button id="btn-logout" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm fw-bold"><i class="fa-solid fa-right-from-bracket m-0 me-1"></i> Cerrar Sesión</button>
+                            <button id="btn-logout" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm fw-bold"><i class="fa-solid fa-right-from-bracket m-0 me-1"></i> Salir</button>
                         </div>
                         
                         <div class="row mb-4 bg-light p-3 rounded mx-0 shadow-sm border border-light">
@@ -327,12 +383,17 @@
                             <div class="col-md-3 mb-0"><p class="mb-0 text-muted small">Contacto</p><span id="mi-contacto" class="text-secondary small"></span></div>
                         </div>
                         
-                        <div class="bg-light p-3 rounded border border-light shadow-sm mb-4 d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="fw-bold text-arca mb-0"><i class="fa-solid fa-hand-holding-heart"></i> Mis Aportes</h6>
-                                <small class="text-muted">Diezmos, ofrendas y donaciones</small>
+                        <!-- TABLA HISTORIAL DE DONACIONES PERSONALES -->
+                        <div class="bg-light p-3 rounded border border-light shadow-sm mb-4">
+                            <h6 class="fw-bold text-arca mb-3"><i class="fa-solid fa-hand-holding-heart"></i> Mi Historial de Aportes</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0 small">
+                                    <thead class="table-cabecera-suave"><tr><th>Fecha</th><th>Monto</th><th>Estado</th></tr></thead>
+                                    <tbody id="mi-tabla-aportes">
+                                        <tr><td colspan="3" class="text-center text-muted">Cargando...</td></tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <button class="btn btn-arca btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="abrirModalDonacion()">Realizar Aporte</button>
                         </div>
 
                         <h5 class="fw-bold text-arca mt-2"><i class="fa-solid fa-route"></i> Mi Ruta de Formación</h5>
@@ -347,22 +408,26 @@
         </div>
     </div>
 
-    <!-- NUEVA BARRA DE NAVEGACIÓN INFERIOR (Oculta al inicio) -->
+    <!-- BARRA DE NAVEGACIÓN INFERIOR -->
     <div class="bottom-nav" id="bottom-navigation">
-        <!-- Tab 1: Inicio -->
         <a href="#" class="bottom-nav-item active" id="nav-btn-inicio" onclick="cambiarPantallaApp('inicio', this)">
             <i class="fa-solid fa-house"></i>
         </a>
-        <!-- Tab 2: Panel de Gestión (Aparece según permisos) -->
+        
         <a href="#" class="bottom-nav-item" id="nav-btn-gestion" style="display: none;" onclick="cambiarPantallaApp('gestion', this)">
             <i class="fa-solid fa-layer-group"></i>
         </a>
-        <!-- Tab 3: Notificaciones (Llama al modal directamente) -->
+        
+        <!-- BOTÓN CENTRAL ESCÁNER QR -->
+        <a href="#" class="bottom-nav-item central-btn shadow-lg" onclick="abrirEscanerQR()">
+            <i class="fa-solid fa-qrcode"></i>
+        </a>
+
         <a href="#" class="bottom-nav-item" onclick="abrirModalNotificaciones()">
             <i class="fa-solid fa-bell"></i>
             <span id="badge-notif" class="position-absolute badge rounded-pill bg-danger" style="display:none; font-size: 0.6rem; top: 2px; right: 8px;">0</span>
         </a>
-        <!-- Tab 4: Mi Perfil (Muestra Avatar) -->
+
         <a href="#" class="bottom-nav-item" id="nav-btn-perfil" onclick="cambiarPantallaApp('perfil', this)">
             <img id="nav-avatar-img" class="nav-avatar" style="display:none;" src="" alt="Avatar">
             <div id="nav-avatar-text" class="nav-avatar">?</div>
@@ -391,7 +456,6 @@
         window.toggleTheme = function() { if (currentTheme === 'auto') currentTheme = 'light'; else if (currentTheme === 'light') currentTheme = 'dark'; else currentTheme = 'auto'; localStorage.setItem('theme', currentTheme); applyTheme(currentTheme); };
         applyTheme(currentTheme); window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if(currentTheme === 'auto') applyTheme('auto'); });
 
-        // Lógica de Tabs del Panel de Gestión interno
         const btnTabs = [document.getElementById('btn-tab-usuarios'), document.getElementById('btn-tab-eventos'), document.getElementById('btn-tab-ministerios'), document.getElementById('btn-tab-catalogos'), document.getElementById('btn-tab-inventario'), document.getElementById('btn-tab-finanzas')];
         const secs = [document.getElementById('sec-usuarios'), document.getElementById('sec-eventos'), document.getElementById('sec-ministerios'), document.getElementById('sec-catalogos'), document.getElementById('sec-inventario'), document.getElementById('sec-finanzas')];
         btnTabs.forEach((btn, idx) => { if(!btn) return; btn.addEventListener('click', () => { btnTabs.forEach(b => { if(b) b.classList.remove('active', 'btn-primary'); }); if(btn.id !== 'btn-tab-finanzas') btn.classList.add('active'); secs.forEach((sec, i) => { if(!sec) return; i === idx ? sec.classList.add('activa') : sec.classList.remove('activa'); }); }); });
@@ -406,7 +470,6 @@
         document.getElementById('link-registrar').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-login').style.display = 'none'; document.getElementById('caja-registro').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
         document.getElementById('link-login').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-registro').style.display = 'none'; document.getElementById('caja-login').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
 
-        // NAVEGACIÓN BOTTOM BAR
         window.cambiarPantallaApp = function(pantalla, btnElement) {
             document.querySelectorAll('.app-pantalla').forEach(p => p.classList.remove('activa'));
             document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
@@ -430,20 +493,8 @@
         function setAvatar(userAuth, dU) {
             const imgEl = document.getElementById('nav-avatar-img');
             const txtEl = document.getElementById('nav-avatar-text');
-            if (userAuth.photoURL) {
-                imgEl.src = userAuth.photoURL;
-                imgEl.style.display = 'flex';
-                txtEl.style.display = 'none';
-            } else {
-                let iniciales = "?";
-                if(dU && dU.nombre) {
-                    const partes = dU.nombre.trim().split(" ");
-                    iniciales = partes.length > 1 ? (partes[0][0] + partes[1][0]).toUpperCase() : partes[0][0].toUpperCase();
-                }
-                txtEl.textContent = iniciales;
-                txtEl.style.display = 'flex';
-                imgEl.style.display = 'none';
-            }
+            if (userAuth.photoURL) { imgEl.src = userAuth.photoURL; imgEl.style.display = 'flex'; txtEl.style.display = 'none'; } 
+            else { let iniciales = "?"; if(dU && dU.nombre) { const partes = dU.nombre.trim().split(" "); iniciales = partes.length > 1 ? (partes[0][0] + partes[1][0]).toUpperCase() : partes[0][0].toUpperCase(); } txtEl.textContent = iniciales; txtEl.style.display = 'flex'; imgEl.style.display = 'none'; }
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -458,7 +509,6 @@
                         window.usuariosData[user.uid] = dU; 
                         
                         setAvatar(user, dU);
-                        
                         document.getElementById('bottom-navigation').style.display = "flex";
                         await cargarPerfilMiembro(user.uid, dU);
 
@@ -474,12 +524,32 @@
                             
                             if(notifs.length === 0) { if(lista) lista.innerHTML = "<p class='text-muted small text-center mt-3'>No tienes notificaciones recientes.</p>"; } else {
                                 notifs.forEach(n => {
-                                    if(!n.leida) noLeidas++; const bg = n.leida ? "bg-white text-muted" : "bg-light fw-bold border-start border-4 border-primary";
+                                    if(!n.leida) noLeidas++; 
+                                    const bg = n.leida ? "bg-white" : "bg-light border-start border-4 border-primary";
                                     const f = new Date(n.fecha); const hora = `${f.getDate()}/${f.getMonth()+1} - ${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}`;
-                                    let accionClick = ""; let estiloCursor = ""; let tituloHover = "";
-                                    if ((n.texto.includes("💸") || n.texto.includes("fa-money-bill-transfer")) && (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor")) { accionClick = `onclick="irAFinanzas('${n.id}')"`; estiloCursor = "cursor: pointer;"; tituloHover = `title="Clic para ir a revisión de finanzas"`; }
-                                    if ((n.texto.includes("Alerta de Inventario")) && (dU.perfilAcceso === "Administrador" || window.esVastagoActual)) { accionClick = `onclick="irAInventario('${n.id}')"`; estiloCursor = "cursor: pointer;"; tituloHover = `title="Clic para ir a Bodega"`; }
-                                    if(lista) lista.innerHTML += `<div class="p-2 rounded shadow-sm mb-2 ${bg}" ${accionClick} style="${estiloCursor}" ${tituloHover}><p class="mb-1 small">${n.texto}</p><small class="text-secondary" style="font-size:0.7rem;">${hora}</small></div>`;
+                                    
+                                    // Diseño Estilo Facebook para Notificaciones
+                                    const icono = n.texto.includes("Inventario") ? "fa-boxes-stacked text-warning" : (n.texto.includes("💸") || n.texto.includes("fa-money-bill") ? "fa-money-bill-transfer text-success" : "fa-bell text-arca");
+                                    let accionClick = "";
+                                    if (n.texto.includes("💸") || n.texto.includes("fa-money-bill")) accionClick = `onclick="irAFinanzas('${n.id}')"`; 
+                                    if (n.texto.includes("Alerta de Inventario")) accionClick = `onclick="irAInventario('${n.id}')"`; 
+
+                                    lista.innerHTML += `
+                                    <div class="d-flex align-items-center p-2 rounded shadow-sm mb-2 ${bg}" style="cursor:pointer; border: 1px solid #eee;">
+                                        <div class="rounded-circle bg-white shadow-sm d-flex justify-content-center align-items-center me-3 border" style="width: 45px; height: 45px; flex-shrink: 0;" ${accionClick}>
+                                            <i class="fa-solid ${icono} fs-5"></i>
+                                        </div>
+                                        <div class="flex-grow-1" ${accionClick}>
+                                            <p class="mb-0 small" style="line-height: 1.2;">${n.texto}</p>
+                                            <small class="text-primary fw-bold" style="font-size:0.7rem;">${hora}</small>
+                                        </div>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-muted p-0 ms-2" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa-solid fa-ellipsis"></i></button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                <li><a class="dropdown-item small text-danger fw-bold" href="#" onclick="eliminarNotificacion('${n.id}'); return false;"><i class="fa-solid fa-trash"></i> Eliminar</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>`;
                                 });
                             }
                             document.getElementById('badge-notif').textContent = noLeidas > 0 ? noLeidas : ""; document.getElementById('badge-notif').style.display = noLeidas > 0 ? "inline-block" : "none";
@@ -509,7 +579,7 @@
                     }
                 } catch (e) {}
                 document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
-                cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio')); // Pantalla default
+                cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio'));
             } else {
                 document.getElementById('bottom-navigation').style.display = "none"; document.getElementById('login-container').style.display = "flex"; document.getElementById('dashboard-container').style.display = "none"; 
             }
@@ -520,9 +590,12 @@
         window.cerrarModal = function(tipo) { document.getElementById(`${tipo}-fondo`).style.display = 'none'; document.getElementById(`${tipo}-modal`).style.display = 'none'; document.body.style.overflow = ''; };
         window.abrirModalNotificaciones = function() { document.body.style.overflow = 'hidden'; document.getElementById('notif-fondo').style.display='flex'; document.getElementById('notif-modal').style.display='block'; };
         window.marcarNotificacionesLeidas = async function() { if(window.notificacionesPendientes.length > 0) { for(const nid of window.notificacionesPendientes) { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } } };
-        
+        window.eliminarNotificacion = async function(id) { if(confirm("¿Eliminar esta alerta?")) { try { await deleteDoc(doc(db, "notificaciones", id)); } catch(e) {} } };
+
         window.irAFinanzas = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-finanzas').style.display !== 'none') { document.getElementById('btn-tab-finanzas').click(); cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); } };
         window.irAInventario = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-inventario').style.display !== 'none') { document.getElementById('btn-tab-inventario').click(); cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); } };
+
+        window.abrirEscanerQR = function() { document.body.style.overflow = 'hidden'; document.getElementById('scanner-fondo').style.display='flex'; document.getElementById('scanner-modal').style.display='block'; };
 
         window.abrirModalDonacion = function() { document.body.style.overflow = 'hidden'; document.getElementById('donacion-fondo').style.display='flex'; document.getElementById('donacion-modal').style.display='block'; };
         window.copiarDatosBancarios = function(btn) { const texto = "Iglesia El Arca\nRUT: 65.000.000-0\nBancoEstado - Cuenta Vista\nN° 123456789\nfinanzas@elarca.cl"; navigator.clipboard.writeText(texto).then(()=>{ btn.innerText = "✅ ¡Copiado!"; setTimeout(()=>btn.innerHTML='<i class="fa-solid fa-copy"></i> Copiar Datos', 2000); }); };
@@ -531,27 +604,15 @@
             try { 
                 await addDoc(collection(db, "finanzas"), { tipo: "Ingreso", monto: monto, fecha: new Date().toISOString().split('T')[0], concepto: "Aporte de " + window.usuariosData[auth.currentUser.uid].nombre, estado: "Pendiente", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); 
                 await addDoc(collection(db, "notificaciones"), { receptor: "Administradores", texto: `<i class="fa-solid fa-money-bill-transfer text-success"></i> ${window.usuariosData[auth.currentUser.uid].nombre} ha notificado un nuevo aporte de ${formatoMoneda.format(monto)} para revisión.`, fecha: new Date().toISOString(), leida: false });
-                window.cerrarModal('donacion'); alert("¡Gracias! Tu aporte ha sido notificado y está en revisión por finanzas."); document.getElementById('form-declarar-donacion').reset(); cargarFinanzas(); 
+                window.cerrarModal('donacion'); alert("¡Gracias! Tu aporte ha sido notificado y está en revisión."); document.getElementById('form-declarar-donacion').reset(); cargarFinanzas(); 
+                if(document.getElementById('nav-btn-perfil').classList.contains('active')) { cargarPerfilMiembro(auth.currentUser.uid, window.usuariosData[auth.currentUser.uid]); }
             } catch(err){} finally { btn.disabled=false; btn.innerText="Notificar"; } 
         });
 
         // ================= INVENTARIO ================= //
         document.getElementById('form-nuevo-producto').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button'); btn.disabled = true;
-            try {
-                await addDoc(collection(db, "inventario"), {
-                    nombre: document.getElementById('inv-nombre').value,
-                    categoria: document.getElementById('inv-categoria').value,
-                    unidad: document.getElementById('inv-unidad').value,
-                    stockMinimo: parseInt(document.getElementById('inv-minimo').value),
-                    stockActual: 0,
-                    creadoPor: window.usuariosData[auth.currentUser.uid]?.nombre || "Usuario",
-                    fechaCreacion: new Date().toISOString()
-                });
-                document.getElementById('form-nuevo-producto').reset();
-                cargarInventario();
-            } catch(err) {} finally { btn.disabled = false; }
+            e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
+            try { await addDoc(collection(db, "inventario"), { nombre: document.getElementById('inv-nombre').value, categoria: document.getElementById('inv-categoria').value, unidad: document.getElementById('inv-unidad').value, stockMinimo: parseInt(document.getElementById('inv-minimo').value), stockActual: 0, creadoPor: window.usuariosData[auth.currentUser.uid]?.nombre || "Usuario", fechaCreacion: new Date().toISOString() }); document.getElementById('form-nuevo-producto').reset(); cargarInventario(); } catch(err) {} finally { btn.disabled = false; }
         });
 
         window.cargarInventario = async function() { 
@@ -563,36 +624,17 @@
                 
                 arr.forEach(p => { 
                     let estadoPill = ""; 
-                    if(p.stockActual === 0) estadoPill = `<span class="badge bg-danger rounded-pill px-3">Agotado</span>`; 
-                    else if(p.stockActual <= p.stockMinimo) estadoPill = `<span class="badge bg-warning text-dark rounded-pill px-3"><i class="fa-solid fa-triangle-exclamation"></i> Stock Bajo</span>`; 
-                    else estadoPill = `<span class="badge bg-success rounded-pill px-3">Óptimo</span>`; 
-                    
-                    t.innerHTML += `<tr>
-                        <td class="fw-bold">${p.nombre}</td>
-                        <td><span class="badge bg-light text-dark border">${p.categoria}</span></td>
-                        <td class="fs-5 fw-bold text-arca">${p.stockActual} <small class="text-muted fs-6">${p.unidad}</small></td>
-                        <td>${estadoPill}</td>
-                        <td>
-                            <div class="btn-group shadow-sm">
-                                <button class="btn btn-sm btn-outline-danger fw-bold px-3 fs-6" onclick="ajustarStock('${p.id}', -1)" title="Retirar 1 unidad">-</button>
-                                <button class="btn btn-sm btn-outline-success fw-bold px-3 fs-6" onclick="ajustarStock('${p.id}', 1)" title="Ingresar 1 unidad">+</button>
-                            </div>
-                        </td>
-                    </tr>`; 
+                    if(p.stockActual === 0) estadoPill = `<span class="badge bg-danger rounded-pill px-3">Agotado</span>`; else if(p.stockActual <= p.stockMinimo) estadoPill = `<span class="badge bg-warning text-dark rounded-pill px-3"><i class="fa-solid fa-triangle-exclamation"></i> Stock Bajo</span>`; else estadoPill = `<span class="badge bg-success rounded-pill px-3">Óptimo</span>`; 
+                    t.innerHTML += `<tr><td class="fw-bold">${p.nombre}</td><td><span class="badge bg-light text-dark border">${p.categoria}</span></td><td class="fs-5 fw-bold text-arca">${p.stockActual} <small class="text-muted fs-6">${p.unidad}</small></td><td>${estadoPill}</td><td><div class="btn-group shadow-sm"><button class="btn btn-sm btn-outline-danger fw-bold px-3 fs-6" onclick="ajustarStock('${p.id}', -1)" title="Retirar 1 unidad">-</button><button class="btn btn-sm btn-outline-success fw-bold px-3 fs-6" onclick="ajustarStock('${p.id}', 1)" title="Ingresar 1 unidad">+</button></div></td></tr>`; 
                 }); 
             } catch (e) {} 
         };
 
         window.ajustarStock = async function(id, cantidad) {
-            const p = window.inventarioData[id];
-            let nuevoStock = p.stockActual + cantidad;
-            if(nuevoStock < 0) nuevoStock = 0;
-
+            const p = window.inventarioData[id]; let nuevoStock = p.stockActual + cantidad; if(nuevoStock < 0) nuevoStock = 0;
             try {
                 await updateDoc(doc(db, "inventario", id), { stockActual: nuevoStock });
-                if(nuevoStock <= p.stockMinimo && cantidad < 0 && p.stockActual > p.stockMinimo) {
-                    await addDoc(collection(db, "notificaciones"), { receptor: "Bodega", texto: `⚠️ <b>Alerta de Inventario:</b> "${p.nombre}" ha bajado a nivel crítico (${nuevoStock} ${p.unidad} restantes). Por favor, gestionar reposición.`, fecha: new Date().toISOString(), leida: false });
-                }
+                if(nuevoStock <= p.stockMinimo && cantidad < 0 && p.stockActual > p.stockMinimo) { await addDoc(collection(db, "notificaciones"), { receptor: "Bodega", texto: `⚠️ <b>Alerta de Inventario:</b> "${p.nombre}" ha bajado a nivel crítico (${nuevoStock} ${p.unidad} restantes). Por favor, gestionar reposición.`, fecha: new Date().toISOString(), leida: false }); }
                 cargarInventario();
             } catch(e) {}
         };
@@ -616,36 +658,11 @@
             } catch (e) {} 
         }
         document.getElementById('form-finanzas').addEventListener('submit', async (e) => { e.preventDefault(); try { await addDoc(collection(db, "finanzas"), { tipo: document.getElementById('fin-tipo').value, monto: Number(document.getElementById('fin-monto').value), fecha: document.getElementById('fin-fecha').value, concepto: document.getElementById('fin-concepto').value, estado: "Activo", registradoPor: auth.currentUser.uid, timestamp: new Date().toISOString() }); document.getElementById('form-finanzas').reset(); cargarFinanzas(); } catch (e) {} });
-        window.anularTransaccion = async function(id) { 
-            if (confirm("¿Rechazar o anular este movimiento? Esta acción es irreversible.")) { 
-                const docRef = doc(db, "finanzas", id); const docSnap = await getDoc(docRef);
-                if(docSnap.exists()){
-                    const d = docSnap.data(); await updateDoc(docRef, { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); 
-                    if(d.estado === "Pendiente") { await addDoc(collection(db, "notificaciones"), { receptor: d.registradoPor, texto: `<i class="fa-solid fa-circle-xmark text-danger"></i> Tu aviso de aporte de ${formatoMoneda.format(d.monto)} ha sido Rechazado (No se validó en la cuenta bancaria).`, fecha: new Date().toISOString(), leida: false }); }
-                    cargarFinanzas(); 
-                }
-            } 
-        };
-        window.aprobarTransaccion = async function(id) { 
-            if (confirm("¿Confirmas que este dinero ya se reflejó en la cuenta bancaria de la iglesia?")) { 
-                const docRef = doc(db, "finanzas", id); const docSnap = await getDoc(docRef);
-                if(docSnap.exists()){
-                    const d = docSnap.data(); await updateDoc(docRef, { estado: "Activo", aprobadoPor: auth.currentUser.uid, fechaAprobacion: new Date().toISOString() }); 
-                    await addDoc(collection(db, "notificaciones"), { receptor: d.registradoPor, texto: `<i class="fa-solid fa-circle-check text-success"></i> Tu aporte de ${formatoMoneda.format(d.monto)} ha sido Aprobado. ¡Muchas gracias!`, fecha: new Date().toISOString(), leida: false });
-                    cargarFinanzas(); 
-                }
-            } 
-        };
+        window.anularTransaccion = async function(id) { if (confirm("¿Rechazar o anular este movimiento?")) { const docRef = doc(db, "finanzas", id); const docSnap = await getDoc(docRef); if(docSnap.exists()){ const d = docSnap.data(); await updateDoc(docRef, { estado: "Anulado", anuladoPor: auth.currentUser.uid, fechaAnulacion: new Date().toISOString() }); if(d.estado === "Pendiente") { await addDoc(collection(db, "notificaciones"), { receptor: d.registradoPor, texto: `<i class="fa-solid fa-circle-xmark text-danger"></i> Tu aviso de aporte de ${formatoMoneda.format(d.monto)} ha sido Rechazado (No se validó en banco).`, fecha: new Date().toISOString(), leida: false }); } cargarFinanzas(); } } };
+        window.aprobarTransaccion = async function(id) { if (confirm("¿Confirmas que este dinero ya se reflejó en la cuenta?")) { const docRef = doc(db, "finanzas", id); const docSnap = await getDoc(docRef); if(docSnap.exists()){ const d = docSnap.data(); await updateDoc(docRef, { estado: "Activo", aprobadoPor: auth.currentUser.uid, fechaAprobacion: new Date().toISOString() }); await addDoc(collection(db, "notificaciones"), { receptor: d.registradoPor, texto: `<i class="fa-solid fa-circle-check text-success"></i> Tu aporte de ${formatoMoneda.format(d.monto)} ha sido Aprobado. ¡Gracias!`, fecha: new Date().toISOString(), leida: false }); cargarFinanzas(); } } };
 
         window.abrirQR = function(id, tit) { try { document.body.style.overflow = 'hidden'; document.getElementById('qr-fondo').style.display = 'flex'; document.getElementById('qr-modal').style.display = 'block'; document.getElementById('qr-evento-titulo').textContent = tit; document.getElementById('qrcode').innerHTML = ""; let rutaBase = window.location.pathname.replace('index.html', ''); if (!rutaBase.endsWith('/')) rutaBase += '/'; let urlCompleta = window.location.origin + rutaBase + "asistencia.html?evento=" + id + "&nombreE=" + encodeURIComponent(tit); const linkTag = document.getElementById('qr-enlace-directo'); if (linkTag) { linkTag.href = urlCompleta; linkTag.textContent = urlCompleta; } new QRCode(document.getElementById("qrcode"), { text: urlCompleta, width: 220, height: 220 }); } catch (error) { alert("Error al generar el QR."); document.body.style.overflow = ''; } };
-        window.abrirAsistencia = async function(id, tit) { 
-            document.body.style.overflow = 'hidden'; window.eventoActualAsistenciaID = id; window.nombreEventoActualEnMemoria = tit; document.getElementById('asistencia-fondo').style.display='flex'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; document.getElementById('buscador-select-asistencia').value = ""; document.getElementById('buscador-tabla-asistencia').value = ""; document.getElementById('input-acompanantes-manual').value = "0"; document.getElementById('input-nombres-extra-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = "";
-            const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; const usuariosArray = Object.entries(window.usuariosData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || "")); for (const [uid, u] of usuariosArray) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; 
-            try { 
-                const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let totalAsistentesReales = 0; 
-                snap.forEach((d) => { const a = d.data(); const f = new Date(a.fechaHora); const cantAcomp = a.acompanantes ? parseInt(a.acompanantes) : 0; totalAsistentesReales += 1 + cantAcomp; let textoAcomp = ""; if (cantAcomp > 0) { let extraDesc = a.nombresAcompanantes ? ` <span class="small text-muted">(${a.nombresAcompanantes})</span>` : ""; textoAcomp = `<br><span class="badge bg-primary text-white rounded-pill px-2 small">+${cantAcomp} acomp.</span>${extraDesc}`; } tab.innerHTML += `<tr><td><span class="fw-bold">${window.usuariosData[a.usuarioID]?.nombre||"?"}</span>${textoAcomp}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; }); document.getElementById('asistencia-evento-titulo').textContent = `${tit} (${totalAsistentesReales} presentes en total)`; 
-            } catch(e){} 
-        };
+        window.abrirAsistencia = async function(id, tit) { document.body.style.overflow = 'hidden'; window.eventoActualAsistenciaID = id; window.nombreEventoActualEnMemoria = tit; document.getElementById('asistencia-fondo').style.display='flex'; document.getElementById('asistencia-modal').style.display='block'; document.getElementById('asistencia-evento-titulo').textContent = tit; document.getElementById('buscador-select-asistencia').value = ""; document.getElementById('buscador-tabla-asistencia').value = ""; document.getElementById('input-acompanantes-manual').value = "0"; document.getElementById('input-nombres-extra-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = ""; const sel = document.getElementById('select-usuario-manual'); sel.innerHTML = '<option value="">Seleccione...</option>'; const usuariosArray = Object.entries(window.usuariosData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || "")); for (const [uid, u] of usuariosArray) { sel.innerHTML += `<option value="${uid}">${u.nombre}</option>`; } const tab = document.getElementById('tabla-asistentes'); tab.innerHTML = ""; try { const q = query(collection(db, "asistencias"), where("eventoID", "==", id)); const snap = await getDocs(q); let totalAsistentesReales = 0; snap.forEach((d) => { const a = d.data(); const f = new Date(a.fechaHora); const cantAcomp = a.acompanantes ? parseInt(a.acompanantes) : 0; totalAsistentesReales += 1 + cantAcomp; let textoAcomp = ""; if (cantAcomp > 0) { let extraDesc = a.nombresAcompanantes ? ` <span class="small text-muted">(${a.nombresAcompanantes})</span>` : ""; textoAcomp = `<br><span class="badge bg-primary text-white rounded-pill px-2 small">+${cantAcomp} acomp.</span>${extraDesc}`; } tab.innerHTML += `<tr><td><span class="fw-bold">${window.usuariosData[a.usuarioID]?.nombre||"?"}</span>${textoAcomp}</td><td>${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}</td><td><span class="badge bg-secondary">${a.metodo}</span></td></tr>`; }); document.getElementById('asistencia-evento-titulo').textContent = `${tit} (${totalAsistentesReales} presentes en total)`; } catch(e){} };
 
         window.abrirForo = async function(id, tit) { document.body.style.overflow = 'hidden'; window.eventoActualForoID = id; document.getElementById('foro-fondo').style.display = 'flex'; document.getElementById('foro-modal').style.display = 'block'; document.getElementById('foro-evento-titulo').textContent = tit; await cargarComentariosForo(); }
         window.eliminarEvento = async function(id) { if(confirm("⚠ Eliminar evento definitivamente?")) { try { await deleteDoc(doc(db, "eventos", id)); cargarDatosGenerales(); } catch(e) {} } };
@@ -653,16 +670,7 @@
         window.exportarTablaCSV = function(tablaId, filename) { let csv = []; let table = document.getElementById(tablaId); let rows = table.querySelectorAll("tr"); for (let i = 0; i < rows.length; i++) { if(rows[i].style.display === 'none') continue; let row = []; let cols = rows[i].querySelectorAll("td, th"); for (let j = 0; j < cols.length; j++) { let clone = cols[j].cloneNode(true); clone.querySelectorAll('button').forEach(b => b.remove()); row.push('"' + clone.innerText.replace(/(\r\n|\n|\r)/gm, "").replace(/"/g, '""') + '"'); } csv.push(row.join(";")); } let csvFile = new Blob(["\uFEFF" + csv.join("\n")], {type: "text/csv;charset=utf-8;"}); let downloadLink = document.createElement("a"); downloadLink.download = filename; downloadLink.href = window.URL.createObjectURL(csvFile); downloadLink.style.display = "none"; document.body.appendChild(downloadLink); downloadLink.click(); document.body.removeChild(downloadLink); }
         async function cargarMinisteriosGbl() { window.catalogoMinisterios = []; const snap = await getDocs(collection(db, "ministerios")); snap.forEach(d => { if(d.data().estado) window.catalogoMinisterios.push(d.data().nombre); }); }
         
-        function prepararSelectoresEventos() { 
-            const s = document.getElementById('evento-ministerio-select'); s.innerHTML = '<option value="General">General (Toda la iglesia)</option>'; 
-            if (window.perfilUsuarioActual === "Líder") { 
-                document.getElementById('aviso-lider').style.display = "block"; 
-                window.ministeriosUsuarioActual.forEach(m => { if(m !== "Ninguno") s.innerHTML += `<option value="${m}">${m}</option>`; });
-            } else { 
-                document.getElementById('aviso-lider').style.display = "none"; 
-                window.catalogoMinisterios.forEach(m => { s.innerHTML += `<option value="${m}">${m}</option>`; }); 
-            } 
-        }
+        function prepararSelectoresEventos() { const s = document.getElementById('evento-ministerio-select'); s.innerHTML = '<option value="General">General (Toda la iglesia)</option>'; if (window.perfilUsuarioActual === "Líder") { document.getElementById('aviso-lider').style.display = "block"; window.ministeriosUsuarioActual.forEach(m => { if(m !== "Ninguno") s.innerHTML += `<option value="${m}">${m}</option>`; }); } else { document.getElementById('aviso-lider').style.display = "none"; window.catalogoMinisterios.forEach(m => { s.innerHTML += `<option value="${m}">${m}</option>`; }); } }
         
         async function cargarPerfilMiembro(uid, dU) { 
             document.getElementById('mi-nombre').textContent = dU.nombre || 'N/A'; document.getElementById('mi-estado').textContent = dU.estado || 'N/A'; 
@@ -673,15 +681,19 @@
             try { 
                 const eS = await getDocs(collection(db, "eventos")); const dic = {}; eS.forEach(d => dic[d.id] = d.data()); 
                 const q = query(collection(db, "asistencias"), where("usuarioID", "==", uid)); const s = await getDocs(q); const tab = document.getElementById('mi-tabla-asistencia'); tab.innerHTML = ""; 
-                if (s.empty) { tab.innerHTML = "<tr><td colspan='3'>Aún no has registrado asistencias.</td></tr>"; } else { 
-                    let a = []; s.forEach(d => a.push(d.data())); a.sort((x,y) => new Date(y.fechaHora) - new Date(x.fechaHora)); 
-                    a.forEach(i => { 
-                        const f = new Date(i.fechaHora); const cantAcomp = i.acompanantes ? parseInt(i.acompanantes) : 0; const badgeAcomp = cantAcomp > 0 ? `<br><span class="badge bg-info text-dark rounded-pill mt-1">+${cantAcomp} acomp.</span>` : "";
-                        let tituloEventoAMostrar = "Evento Borrado"; let ministerioAMostrar = "Desconocido";
-                        if (dic[i.eventoID]) { tituloEventoAMostrar = dic[i.eventoID].titulo; ministerioAMostrar = dic[i.eventoID].ministerio || "General"; } else { tituloEventoAMostrar = i.snapshotEventoTitulo || "Evento Borrado"; ministerioAMostrar = "Eliminado"; }
-                        tab.innerHTML += `<tr><td><strong class="text-arca">${tituloEventoAMostrar}</strong><br><span class="badge bg-light text-dark border">${ministerioAMostrar}</span></td><td>${f.toLocaleDateString()}<br><span class="text-muted small">${f.getHours()}:${f.getMinutes().toString().padStart(2,'0')}</span></td><td><span class="badge bg-secondary">${i.metodo}</span>${badgeAcomp}</td></tr>`; 
-                    }); 
-                } 
+                if (s.empty) { tab.innerHTML = "<tr><td colspan='3'>Aún no has registrado asistencias.</td></tr>"; } else { let a = []; s.forEach(d => a.push(d.data())); a.sort((x,y) => new Date(y.fechaHora) - new Date(x.fechaHora)); a.forEach(i => { const f = new Date(i.fechaHora); const cantAcomp = i.acompanantes ? parseInt(i.acompanantes) : 0; const badgeAcomp = cantAcomp > 0 ? `<br><span class="badge bg-info text-dark rounded-pill mt-1">+${cantAcomp} acomp.</span>` : ""; let tituloEventoAMostrar = "Evento Borrado"; let ministerioAMostrar = "Desconocido"; if (dic[i.eventoID]) { tituloEventoAMostrar = dic[i.eventoID].titulo; ministerioAMostrar = dic[i.eventoID].ministerio || "General"; } else { tituloEventoAMostrar = i.snapshotEventoTitulo || "Evento Borrado"; ministerioAMostrar = "Eliminado"; } tab.innerHTML += `<tr><td><strong class="text-arca">${tituloEventoAMostrar}</strong><br><span class="badge bg-light text-dark border">${ministerioAMostrar}</span></td><td>${f.toLocaleDateString()}<br><span class="text-muted small">${f.getHours()}:${f.getMinutes().toString().padStart(2,'0')}</span></td><td><span class="badge bg-secondary">${i.metodo}</span>${badgeAcomp}</td></tr>`; }); } 
+                
+                // Cargar Historial Personal de Donaciones
+                const qDonaciones = query(collection(db, "finanzas"), where("registradoPor", "==", uid));
+                const sDonaciones = await getDocs(qDonaciones);
+                const tabAportes = document.getElementById('mi-tabla-aportes'); tabAportes.innerHTML = "";
+                if(sDonaciones.empty) { tabAportes.innerHTML = "<tr><td colspan='3' class='text-center text-muted'>Aún no tienes aportes registrados en el sistema.</td></tr>"; } else {
+                    let arrDon = []; sDonaciones.forEach(d => arrDon.push(d.data())); arrDon.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+                    arrDon.forEach(d => {
+                        let badgeEstado = d.estado === "Activo" ? "bg-success" : (d.estado === "Anulado" ? "bg-secondary" : "bg-warning text-dark");
+                        tabAportes.innerHTML += `<tr><td class="text-muted">${d.fecha}</td><td class="fw-bold text-success">${formatoMoneda.format(d.monto)}</td><td><span class="badge ${badgeEstado}">${d.estado || 'Activo'}</span></td></tr>`;
+                    });
+                }
             } catch (e) {} 
         }
         
@@ -714,8 +726,7 @@
         document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { 
             e.preventDefault(); const uid = document.getElementById('edit-uid').value; const btn = document.getElementById('btn-guardar-usuario'); const textoOriginal = btn.innerHTML; btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
             try { 
-                const minsSeleccionados = Array.from(document.querySelectorAll('input[name="ministerio-check"]:checked')).map(c => c.value);
-                const vastagoChecked = document.getElementById('edit-vastago').checked;
+                const minsSeleccionados = Array.from(document.querySelectorAll('input[name="ministerio-check"]:checked')).map(c => c.value); const vastagoChecked = document.getElementById('edit-vastago').checked;
                 await updateDoc(doc(db, "usuarios", uid), { telefono: document.getElementById('edit-telefono').value, perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, ministeriosAsignados: minsSeleccionados, ministerioAsignado: minsSeleccionados.length > 0 ? minsSeleccionados[0] : "Ninguno", etapasCompletadas: Array.from(document.querySelectorAll('input[name="etapas-check"]:checked')).map(c => c.value), esVastago: vastagoChecked }); 
                 btn.innerHTML = "✅ ¡Listo!"; setTimeout(() => { document.getElementById('editor-usuario').style.display = 'none'; btn.disabled = false; btn.innerHTML = textoOriginal; document.getElementById('buscador-usuarios-admin').value = ""; cargarTablaUsuarios(); if (uid === auth.currentUser.uid) { getDoc(doc(db, "usuarios", auth.currentUser.uid)).then(docSnap => { window.esVastagoActual = docSnap.data().esVastago || false; cargarPerfilMiembro(auth.currentUser.uid, docSnap.data()); }); } }, 400);
             } catch (err) { btn.innerHTML = "❌ Error"; setTimeout(() => { btn.disabled = false; btn.innerHTML = textoOriginal; }, 2000); } 
@@ -723,48 +734,34 @@
 
         window.registrarAsistenciaManual = async function(btn) { 
             const v = document.getElementById('select-usuario-manual').value; const ac = document.getElementById('input-acompanantes-manual').value || 0; const nomsExtra = document.getElementById('input-nombres-extra-manual').value.trim();
-            if(!v) { alert("⚠️ Primero debes seleccionar a una persona de la lista."); return; }
-            btn.disabled = true; btn.innerText = "⏳...";
+            if(!v) { alert("⚠️ Primero debes seleccionar a una persona de la lista."); return; } btn.disabled = true; btn.innerText = "⏳...";
             try { 
                 const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); const snap = await getDocs(q); 
                 if(snap.empty){ 
                     await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
-                    document.getElementById('select-usuario-manual').value=""; document.getElementById('input-acompanantes-manual').value="0"; document.getElementById('input-nombres-extra-manual').value="";
-                    window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
-                    const evObj = window.eventosData[window.eventoActualAsistenciaID];
-                    if(evObj) { window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar }; document.getElementById('calendario-fondo').style.display = 'flex'; document.getElementById('calendario-modal').style.display = 'block'; }
+                    document.getElementById('select-usuario-manual').value=""; document.getElementById('input-acompanantes-manual').value="0"; document.getElementById('input-nombres-extra-manual').value=""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
+                    const evObj = window.eventosData[window.eventoActualAsistenciaID]; if(evObj) { window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar }; document.getElementById('calendario-fondo').style.display = 'flex'; document.getElementById('calendario-modal').style.display = 'block'; }
                 } else { alert("⚠️ Esta persona ya estaba registrada."); }
             } catch(e){} finally { btn.disabled = false; btn.innerText = "Agregar Asistencia"; }
         };
         
         window.registrarAsistenciaInvitado = async function(btn) { 
             const nom = document.getElementById('input-invitado-manual').value.trim(); const ac = document.getElementById('input-acompanantes-invitado').value || 0; const nomsExtra = document.getElementById('input-nombres-extra-invitado').value.trim();
-            if(!nom) { alert("⚠️ Escribe el nombre del invitado."); return; }
-            btn.disabled = true; btn.innerText = "⏳...";
+            if(!nom) { alert("⚠️ Escribe el nombre del invitado."); return; } btn.disabled = true; btn.innerText = "⏳...";
             try { 
                 const docRef = await addDoc(collection(db, "usuarios"), { nombre: nom, perfilAcceso: "Invitado", cargo: "Invitado", estado: "Asistente externo", ministeriosAsignados: [], ministerioAsignado: "Ninguno", etapasCompletadas: [], esVastago: false, fechaRegistro: new Date().toISOString() }); 
                 window.usuariosData[docRef.id] = { nombre: nom, perfilAcceso: "Invitado" }; 
                 await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: docRef.id, fechaHora: new Date().toISOString(), metodo: "Manual (Invitado)", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
-                document.getElementById('input-invitado-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = "";
-                window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
-                const evObj = window.eventosData[window.eventoActualAsistenciaID];
-                if(evObj) { window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar }; document.getElementById('calendario-fondo').style.display = 'flex'; document.getElementById('calendario-modal').style.display = 'block'; }
+                document.getElementById('input-invitado-manual').value = ""; document.getElementById('input-acompanantes-invitado').value = "0"; document.getElementById('input-nombres-extra-invitado').value = ""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
+                const evObj = window.eventosData[window.eventoActualAsistenciaID]; if(evObj) { window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar }; document.getElementById('calendario-fondo').style.display = 'flex'; document.getElementById('calendario-modal').style.display = 'block'; }
             } catch(e) {} finally { btn.disabled = false; btn.innerText = "Crear y Agregar"; }
         };
 
         window.agregarAlCalendarioLimpio = function(evento) {
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; const fI = new Date(evento.fechaInicio); const fT = new Date(fI.getTime() + (2 * 60 * 60 * 1000)); 
-            if (isIOS) {
-                const formatoICS = (f) => f.toISOString().replace(/-|:|\.\d{3}/g, '');
-                const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "BEGIN:VEVENT", `DTSTART:${formatoICS(fI)}`, `DTEND:${formatoICS(fT)}`, `SUMMARY:${evento.titulo}`, `LOCATION:${evento.lugar || 'Iglesia El Arca'}`, `DESCRIPTION:Inscripción desde El Arca App.`, "END:VEVENT", "END:VCALENDAR"].join("\n");
-                window.location.href = "data:text/calendar;charset=utf8," + encodeURIComponent(ics);
-            } else {
-                const formatoGoogle = (f) => f.toISOString().replace(/-|:|\.\d{3}/g, '');
-                const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evento.titulo)}&dates=${formatoGoogle(fI)}/${formatoGoogle(fT)}&details=${encodeURIComponent('Inscripción desde El Arca App.')}&location=${encodeURIComponent(evento.lugar || 'Iglesia El Arca')}`;
-                window.open(url, '_blank');
-            }
+            if (isIOS) { const formatoICS = (f) => f.toISOString().replace(/-|:|\.\d{3}/g, ''); const ics = ["BEGIN:VCALENDAR", "VERSION:2.0", "BEGIN:VEVENT", `DTSTART:${formatoICS(fI)}`, `DTEND:${formatoICS(fT)}`, `SUMMARY:${evento.titulo}`, `LOCATION:${evento.lugar || 'Iglesia El Arca'}`, `DESCRIPTION:Inscripción desde El Arca App.`, "END:VEVENT", "END:VCALENDAR"].join("\n"); window.location.href = "data:text/calendar;charset=utf8," + encodeURIComponent(ics);
+            } else { const formatoGoogle = (f) => f.toISOString().replace(/-|:|\.\d{3}/g, ''); const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(evento.titulo)}&dates=${formatoGoogle(fI)}/${formatoGoogle(fT)}&details=${encodeURIComponent('Inscripción desde El Arca App.')}&location=${encodeURIComponent(evento.lugar || 'Iglesia El Arca')}`; window.open(url, '_blank'); }
         };
-
         document.getElementById('btn-confirmar-agenda')?.addEventListener('click', () => { if (window.eventoParaCalendario) { window.agregarAlCalendarioLimpio(window.eventoParaCalendario); } window.cerrarModal('calendario'); });
 
         async function cargarComentariosForo() { const lista = document.getElementById('lista-comentarios'); lista.innerHTML = "<p class='text-center text-muted mt-3'>Cargando foro...</p>"; try { const q = query(collection(db, "comentarios"), where("eventoID", "==", window.eventoActualForoID)); const snap = await getDocs(q); if (snap.empty) { lista.innerHTML = "<p class='text-center text-muted mt-3 small'>Aún no hay comentarios. ¡Inicia la conversación!</p>"; } else { let arr = []; snap.forEach(d => arr.push(d.data())); arr.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)); lista.innerHTML = ""; arr.forEach(c => { const f = new Date(c.fecha); const fechaStr = `${f.getDate()}/${f.getMonth()+1} ${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}`; const esMio = c.usuarioID === auth.currentUser.uid; const align = esMio ? "text-end" : "text-start"; const burbujaClase = esMio ? "burbuja-mia" : "burbuja-otro"; lista.innerHTML += `<div class="${align} w-100"><small class="text-muted d-block" style="font-size: 0.7rem; margin-bottom: 2px;">${c.nombreUsuario} • ${fechaStr}</small><div class="burbuja ${burbujaClase} text-start shadow-sm">${c.texto}</div></div>`; }); lista.scrollTop = lista.scrollHeight; } } catch (e) { lista.innerHTML = "<p class='text-center text-danger mt-3'>Error.</p>"; } }
@@ -779,7 +776,7 @@
                     if(window.perfilUsuarioActual === "Líder" && (window.ministeriosUsuarioActual.includes(ev.ministerio) || ev.ministerio === "General")) puedeOperar = true; 
                     if(window.perfilUsuarioActual === "Líder" && window.ministeriosUsuarioActual.includes(ev.ministerio)) puedeEliminar = true; 
                     if (puedeEliminar) { btnEliminar = `<button class="btn btn-sm btn-outline-danger" onclick="eliminarEvento('${d.id}')"><i class="fa-solid fa-trash"></i></button>`; } 
-                    if (puedeOperar) { b_gestion = `${btnEliminar} <button class="btn btn-sm btn-primary" onclick="abrirQR('${d.id}','${ev.titulo}')"><i class="fa-solid fa-qrcode"></i></button> <button class="btn btn-sm btn-success" onclick="abrirAsistencia('${d.id}','${ev.titulo}')"><i class="fa-solid fa-list-check"></i></button>`; } 
+                    if (puedeOperar) { b_gestion = `${btnEliminar} <button class="btn btn-sm btn-primary" onclick="abrirQR('${d.id}','${ev.titulo}')"><i class="fa-solid fa-qrcode"></i> QR</button> <button class="btn btn-sm btn-success" onclick="abrirAsistencia('${d.id}','${ev.titulo}')"><i class="fa-solid fa-list-check"></i> Asistencia</button>`; } 
                     const imgHtml = ev.imagenUrl ? `<img src="${ev.imagenUrl}" class="card-img-top border-bottom" style="height: 180px; object-fit: cover;" alt="Imagen Evento" onerror="this.style.display='none'">` : ''; 
                     lE.innerHTML += `<div class="col-md-6 mb-4"><div class="card h-100 shadow-sm border-0 bg-white">${imgHtml}<div class="card-body d-flex flex-column"><h5 class="fw-bold text-arca mb-1">${ev.titulo}</h5><div class="mb-2"><span class="badge bg-light text-dark border">${ev.ministerio || 'General'}</span></div><small class="text-muted d-block mb-1">📅 ${ev.fecha.replace('T', ' ')}</small><small class="d-block mb-3 text-muted">📍 ${ev.lugar}</small><div class="mt-auto d-flex flex-wrap gap-2 justify-content-between"><button class="btn btn-sm btn-outline-secondary" onclick="abrirForo('${d.id}', '${ev.titulo}')"><i class="fa-regular fa-comments"></i> Foro</button><div class="btn-group shadow-sm">${b_gestion}</div></div></div></div></div>`; 
                 }); 
@@ -790,14 +787,7 @@
         
         async function cargarTiposEventosSelect(){ try { const dS = await getDoc(doc(db,"configuracion","tipos_eventos")); if (dS.exists()) { const s = document.getElementById('evento-tipo'); s.innerHTML = ""; dS.data().lista.forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`); } } catch(e) {} }
         
-        document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ 
-            e.preventDefault(); 
-            const minEvento = document.getElementById('evento-ministerio-select').value; 
-            const urlImagen = document.getElementById('evento-imagen-url').value.trim(); 
-            await addDoc(collection(db,"eventos"),{ titulo: document.getElementById('evento-titulo').value, tipo: document.getElementById('evento-tipo').value, ministerio: minEvento, fecha: document.getElementById('evento-fecha').value, lugar: document.getElementById('evento-lugar').value, imagenUrl: urlImagen, estado: "publicado" }); 
-            document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); 
-        });
-        
+        document.getElementById('form-nuevo-evento').addEventListener('submit',async(e)=>{ e.preventDefault(); const minEvento = document.getElementById('evento-ministerio-select').value; const urlImagen = document.getElementById('evento-imagen-url').value.trim(); await addDoc(collection(db,"eventos"),{ titulo: document.getElementById('evento-titulo').value, tipo: document.getElementById('evento-tipo').value, ministerio: minEvento, fecha: document.getElementById('evento-fecha').value, lugar: document.getElementById('evento-lugar').value, imagenUrl: urlImagen, estado: "publicado" }); document.getElementById('form-nuevo-evento').reset(); cargarDatosGenerales(); });
         document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); await cargarMinisteriosGbl(); cargarDatosGenerales(); prepararSelectoresEventos(); });
         function cargarVistaEtapasAdmin() { const lista = document.getElementById('lista-admin-etapas'); lista.innerHTML = ""; window.catalogoEtapas.forEach(e => { lista.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light">${e} <button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarEtapaFormacion('${e}')"><i class="fa-solid fa-trash"></i></button></li>`; }); }
         window.eliminarEtapaFormacion = async function(nombreEtapa) { if(confirm(`¿Estás seguro de eliminar la etapa '${nombreEtapa}'? Se borrará del catálogo.`)) { try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayRemove(nombreEtapa) }); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); } catch(e) { alert("Error al eliminar etapa."); } } }
@@ -808,10 +798,7 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW falló: ', err)); }); }
         const banner = document.getElementById('install-banner'); const btnInstall = document.getElementById('btn-install'); const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
         if (!isStandalone) {
-            if (isIOS) { btnInstall.style.display = 'none'; banner.querySelector('span').innerHTML = '📲 Para instalar: Toca Compartir en Safari y selecciona <b>"Agregar a inicio"</b>.'; banner.style.display = 'block'; } else {
-                let deferredPrompt; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; banner.style.display = 'block'; });
-                btnInstall.addEventListener('click', async () => { banner.style.display = 'none'; if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null; } });
-            }
+            if (isIOS) { btnInstall.style.display = 'none'; banner.querySelector('span').innerHTML = '📲 Para instalar: Toca Compartir en Safari y selecciona <b>"Agregar a inicio"</b>.'; banner.style.display = 'block'; } else { let deferredPrompt; window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; banner.style.display = 'block'; }); btnInstall.addEventListener('click', async () => { banner.style.display = 'none'; if (deferredPrompt) { deferredPrompt.prompt(); const { outcome } = await deferredPrompt.userChoice; deferredPrompt = null; } }); }
         }
         document.getElementById('btn-close-install').addEventListener('click', () => { banner.style.display = 'none'; });
     </script>

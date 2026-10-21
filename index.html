@@ -100,7 +100,7 @@
         <button id="btn-close-install" class="btn btn-sm text-dark ms-2" style="font-size: 1.2rem; padding: 0 5px;">&times;</button>
     </div>
 
-    <!-- CABECERA SUPERIOR -->
+    <!-- CABECERA SUPERIOR (CON BOTÓN DE TEMA Y MENSAJES) -->
     <nav class="navbar shadow-sm navbar-arca">
         <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand d-flex align-items-center m-0" href="#">
@@ -111,11 +111,16 @@
                 </div>
             </a>
             
-            <!-- ZONA DERECHA: ICONO DE MENSAJES -->
-            <div class="d-flex align-items-center" id="iconos-cabecera" style="display: none !important;">
-                <div class="position-relative me-2" style="cursor:pointer;" onclick="abrirBuzon()">
-                    <i class="fa-solid fa-comment-dots text-white" style="font-size: 1.4rem; padding-top: 4px;"></i>
-                    <span id="badge-mensajes" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none; font-size: 0.65rem;">0</span>
+            <!-- ZONA DERECHA: BOTÓN DÍA/NOCHE/AUTO + ICONO DE MENSAJES -->
+            <div class="d-flex align-items-center gap-3">
+                <button id="btn-theme" class="btn btn-link text-white text-decoration-none p-0 d-flex align-items-center" style="font-size: 1.35rem;" onclick="toggleTheme()" title="Cambiar tema">
+                    <i class="fa-solid fa-circle-half-stroke m-0"></i>
+                </button>
+                <div class="d-flex align-items-center" id="iconos-cabecera" style="display: none !important;">
+                    <div class="position-relative me-2" style="cursor:pointer;" onclick="abrirBuzon()" title="Buzón Pastoral">
+                        <i class="fa-solid fa-comment-dots text-white m-0" style="font-size: 1.45rem; padding-top: 2px;"></i>
+                        <span id="badge-mensajes" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none; font-size: 0.65rem;">0</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -138,7 +143,7 @@
         </div>
     </div>
 
-    <!-- NUEVO: MODAL BUZÓN PASTORAL -->
+    <!-- MODAL BUZÓN PASTORAL -->
     <div id="buzon-fondo" class="modal-fondo">
         <div id="buzon-modal" class="modal-caja bg-white position-relative" style="max-width: 500px; height: 80vh; display: flex; flex-direction: column; padding: 20px;">
             <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('buzon')"></button>
@@ -166,7 +171,7 @@
     <div id="donacion-fondo" class="modal-fondo"><div id="donacion-modal" class="modal-caja bg-white position-relative" style="max-width: 450px;"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarModal('donacion')"></button><h4 class="text-arca fw-bold mb-3">💖 Realizar Aporte</h4><div class="bg-light p-3 rounded mb-3 border text-start shadow-sm"><p class="mb-1 small text-muted">Datos de transferencia:</p><p class="mb-0 fw-bold text-arca">Pastor Pedro Esparza</p><p class="mb-0">RUT: 12979962-5</p><p class="mb-0">Banco del estado de Chile</p><p class="mb-0">Cuenta Corriente/Vista: 12979962</p><p class="mb-0">cristo@gmail.com</p><button class="btn btn-sm btn-outline-primary w-100 mt-3 fw-bold bg-white" onclick="copiarDatosBancarios(this)"><i class="fa-solid fa-copy"></i> Copiar Datos</button></div><form id="form-declarar-donacion" class="text-start border-top pt-3 mt-2"><label class="form-label small text-muted fw-bold">¿Ya transferiste? Notifica tu aporte aquí:</label><div class="input-group mb-2 shadow-sm"><span class="input-group-text bg-light text-muted"><i class="fa-solid fa-dollar-sign"></i></span><input type="number" id="donacion-monto" class="form-control bg-white" placeholder="Monto transferido" required min="1"><button type="submit" class="btn btn-success fw-bold" id="btn-enviar-donacion">Notificar</button></div><p class="small text-muted mb-0" style="font-size: 0.75rem;">Tu aporte quedará "Pendiente" hasta que finanzas lo valide en el banco.</p></form></div></div>
 
     <div class="container pb-2">
-        <!-- LOGIN -->
+        <!-- LOGIN Y REGISTRO -->
         <div class="row justify-content-center" id="login-container">
             <div class="col-md-5 mt-4">
                 <div class="card bg-white p-4 text-center border-top border-4" style="border-top-color: var(--dorado-arca) !important;">
@@ -175,14 +180,27 @@
                         <h4 class="fw-bold text-arca mb-4">Iniciar Sesión</h4>
                         <button type="button" id="btn-google-login" class="btn btn-google bg-white w-100 fw-bold rounded-pill mb-3 d-flex align-items-center justify-content-center shadow-sm"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px; margin-right: 10px;"> Continuar con Google</button>
                         <div class="d-flex align-items-center my-3"><hr class="flex-grow-1"><span class="mx-2 text-muted small">O con tu correo</span><hr class="flex-grow-1"></div>
-                        <form id="login-form"><div class="mb-3"><input type="email" id="email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div><div class="mb-3"><input type="password" id="password" class="form-control form-control-lg bg-light" placeholder="Contraseña" required></div><button type="submit" class="btn btn-arca btn-lg w-100 rounded-pill">Ingresar</button></form>
+                        <form id="login-form">
+                            <div class="mb-3"><input type="email" id="email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div>
+                            <div class="mb-2"><input type="password" id="password" class="form-control form-control-lg bg-light" placeholder="Contraseña" required></div>
+                            <div class="text-end mb-3">
+                                <a href="#" id="link-olvide-pass" class="small text-arca fw-bold text-decoration-none">¿Olvidaste tu contraseña?</a>
+                            </div>
+                            <button type="submit" class="btn btn-arca btn-lg w-100 rounded-pill">Ingresar</button>
+                        </form>
                         <p class="mt-4 mb-0 text-muted">¿No tienes cuenta? <a href="#" id="link-registrar" class="text-arca fw-bold text-decoration-none">Regístrate aquí</a></p>
                     </div>
                     <div id="caja-registro" style="display: none;">
                         <h4 class="fw-bold text-arca mb-4">Crear Cuenta</h4>
                         <button type="button" id="btn-google-registro" class="btn btn-google bg-white w-100 fw-bold rounded-pill mb-3 d-flex align-items-center justify-content-center shadow-sm"><img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" style="width: 20px; margin-right: 10px;"> Registrarse con Google</button>
                         <div class="d-flex align-items-center my-3"><hr class="flex-grow-1"><span class="mx-2 text-muted small">O con tu correo</span><hr class="flex-grow-1"></div>
-                        <form id="registro-form"><div class="mb-3"><input type="text" id="reg-nombre" class="form-control form-control-lg bg-light" placeholder="Nombre completo" required></div><div class="mb-3"><input type="email" id="reg-email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div><div class="mb-3"><input type="tel" id="reg-telefono" class="form-control form-control-lg bg-light" placeholder="Teléfono (Opcional)"></div><div class="mb-3"><input type="password" id="reg-password" class="form-control form-control-lg bg-light" placeholder="Contraseña (mínimo 6 letras)" required minlength="6"></div><button type="submit" class="btn btn-success btn-lg w-100 rounded-pill">Crear Cuenta</button></form>
+                        <form id="registro-form">
+                            <div class="mb-3"><input type="text" id="reg-nombre" class="form-control form-control-lg bg-light" placeholder="Nombre completo" required></div>
+                            <div class="mb-3"><input type="email" id="reg-email" class="form-control form-control-lg bg-light" placeholder="Correo electrónico" required></div>
+                            <div class="mb-3"><input type="tel" id="reg-telefono" class="form-control form-control-lg bg-light" placeholder="Teléfono (Opcional)"></div>
+                            <div class="mb-3"><input type="password" id="reg-password" class="form-control form-control-lg bg-light" placeholder="Contraseña (mínimo 6 letras)" required minlength="6"></div>
+                            <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill">Crear Cuenta</button>
+                        </form>
                         <p class="mt-4 mb-0 text-muted">¿Ya tienes cuenta? <a href="#" id="link-login" class="text-arca fw-bold text-decoration-none">Inicia Sesión</a></p>
                     </div>
                     <p id="auth-error" class="text-danger mt-3 fw-bold"></p>
@@ -193,7 +211,7 @@
         <!-- DASHBOARD APP -->
         <div id="dashboard-container">
 
-            <!-- PANTALLA 1: INICIO -->
+            <!-- PANTALLA 1: INICIO (SIN MINISTERIOS ACTIVOS, CARTELERA ANCHO COMPLETO) -->
             <div id="pantalla-inicio" class="app-pantalla activa">
                 <div class="card border-0 mb-4 shadow-sm" style="background: linear-gradient(135deg, var(--azul-arca), #004d99); color: white;">
                     <div class="card-body d-flex justify-content-between align-items-center p-4">
@@ -205,8 +223,14 @@
                     </div>
                 </div>
                 <div class="row g-4">
-                    <div class="col-lg-8"><div class="card bg-white h-100"><div class="card-body p-4"><h5 class="fw-bold text-arca border-bottom pb-3 mb-4">📅 Cartelera de Eventos</h5><div class="row g-4" id="lista-eventos"></div></div></div></div>
-                    <div class="col-lg-4"><div class="card bg-white mb-4"><div class="card-body p-4"><h5 class="fw-bold text-arca border-bottom pb-3 mb-3">🏛️ Ministerios Activos</h5><ul class="list-group list-group-flush" id="lista-ministerios"></ul></div></div></div>
+                    <div class="col-12">
+                        <div class="card bg-white h-100">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold text-arca border-bottom pb-3 mb-4">📅 Cartelera de Eventos</h5>
+                                <div class="row g-4" id="lista-eventos"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -219,15 +243,105 @@
                             <button type="button" class="btn btn-outline-primary active" id="btn-tab-usuarios"><i class="fa-solid fa-users"></i> Usuarios</button>
                             <button type="button" class="btn btn-outline-primary" id="btn-tab-eventos"><i class="fa-solid fa-calendar-days"></i> Eventos</button>
                             <button type="button" class="btn btn-outline-primary" id="btn-tab-ministerios"><i class="fa-solid fa-handshake-angle"></i> Ministerios</button>
-                            <button type="button" class="btn btn-outline-primary" id="btn-tab-catalogos"><i class="fa-solid fa-book-open"></i> Catálogos</button>
+                            <button type="button" class="btn btn-outline-primary" id="btn-tab-catalogos"><i class="fa-solid fa-book-open"></i> Etapas de Formación</button>
                             <button type="button" class="btn btn-outline-primary" id="btn-tab-inventario"><i class="fa-solid fa-boxes-stacked"></i> Inventario</button>
                             <button type="button" class="btn btn-outline-primary" id="btn-tab-finanzas"><i class="fa-solid fa-vault"></i> Finanzas</button>
                         </div>
 
-                        <div class="seccion-gestion activa" id="sec-usuarios"><h5 class="fw-bold text-arca mb-3">👥 Directorio de Personas</h5><div class="mb-3"><input type="text" id="buscador-usuarios-admin" class="form-control bg-light shadow-sm" placeholder="🔍 Buscar por nombre, perfil, estado o ministerio..."></div><div class="table-responsive bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0"><thead class="table-cabecera-suave"><tr><th>Nombre</th><th>Perfil</th><th>Ministerio Asignado</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead><tbody id="tabla-usuarios"></tbody></table></div><div id="editor-usuario" class="card mt-4 border-0 shadow bg-light" style="display:none;"><div class="card-body"><h5 class="card-title text-arca fw-bold border-bottom pb-2">Editando a: <span id="edit-nombre-display"></span></h5><p class="text-muted small mb-3">Correo: <span id="edit-email-display" class="fw-bold"></span></p><form id="form-editar-usuario"><input type="hidden" id="edit-uid"><div class="row g-3 mb-3"><div class="col-md-2"><label class="form-label small text-muted fw-bold">Teléfono</label><input type="text" id="edit-telefono" class="form-control bg-white"></div><div class="col-md-2"><label class="form-label small text-muted fw-bold">Perfil</label><select id="edit-perfil" class="form-select bg-white"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option><option>Invitado</option></select></div><div class="col-md-3"><label class="form-label small text-muted fw-bold">Cargo</label><select id="edit-cargo" class="form-select bg-white"><option>Pastor general</option><option>Pastor</option><option>Miembro</option><option>Invitado</option></select></div><div class="col-md-2"><label class="form-label small text-muted fw-bold">Estado</label><select id="edit-estado" class="form-select bg-white"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option><option>Asistente externo</option></select></div><div class="col-md-3"><label class="form-label small text-muted fw-bold text-success">Ministerios a Cargo</label><div id="contenedor-checkboxes-ministerios" class="p-2 border rounded bg-white shadow-sm" style="max-height: 80px; overflow-y: auto; font-size: 0.85rem;"></div></div><div class="col-md-12 mt-2 border-top pt-3"><div class="form-check form-switch fs-6"><input class="form-check-input" type="checkbox" id="edit-vastago" role="switch" style="cursor: pointer;"><label class="form-check-label fw-bold text-arca" for="edit-vastago" style="cursor: pointer;"><i class="fa-solid fa-star text-warning"></i> Privilegios de Vástago (Administrar Inventario y recibir alertas)</label></div></div></div><label class="form-label small text-muted fw-bold">Ruta Completada:</label><div class="p-3 border rounded bg-white mb-4 shadow-sm" id="contenedor-checkboxes-formacion"></div><button type="submit" class="btn btn-primary px-4 fw-bold" id="btn-guardar-usuario">Guardar Cambios</button><button type="button" class="btn btn-outline-secondary bg-white px-4 fw-bold" onclick="document.getElementById('editor-usuario').style.display='none'">Cancelar</button></form></div></div></div>
-                        <div class="seccion-gestion" id="sec-eventos"><h5 class="fw-bold text-arca mb-3">📅 Crear Nuevo Evento</h5><p id="aviso-lider" class="text-danger fw-bold" style="display:none;">⚠️ Al ser Líder, solo puedes crear eventos para tu ministerio asignado.</p><form id="form-nuevo-evento" class="row g-3 bg-light p-3 rounded shadow-sm border border-light"><div class="col-md-4"><label class="small text-muted fw-bold">Título</label><input type="text" id="evento-titulo" class="form-control bg-white" required></div><div class="col-md-4"><label class="small text-muted fw-bold">Categoría</label><select id="evento-tipo" class="form-select bg-white" required></select></div><div class="col-md-4"><label class="small text-muted fw-bold">Público / Ministerio</label><select id="evento-ministerio-select" class="form-select bg-white" required><option value="General">General (Toda la iglesia)</option></select></div><div class="col-md-4"><label class="small text-muted fw-bold">Fecha y Hora</label><input type="datetime-local" id="evento-fecha" class="form-control bg-white" required></div><div class="col-md-4"><label class="small text-muted fw-bold">Ubicación</label><input type="text" id="evento-lugar" class="form-control bg-white" required></div><div class="col-md-4"><label class="small text-muted fw-bold">Flyer (URL Imagen)</label><input type="text" id="evento-imagen-url" class="form-control bg-white" placeholder="ej. imgur.com/foto.jpg"></div><div class="col-12 mt-4"><button type="submit" class="btn btn-arca w-100 fw-bold py-2">Publicar Evento</button></div></form></div>
-                        <div class="seccion-gestion" id="sec-ministerios"><h5 class="fw-bold text-arca mb-3">🤝 Agregar Ministerio</h5><form id="form-nuevo-ministerio" class="row g-2 bg-light p-3 rounded shadow-sm"><div class="col-md-4"><input type="text" id="min-nombre" class="form-control bg-white" placeholder="Nombre" required></div><div class="col-md-6"><input type="text" id="min-descripcion" class="form-control bg-white" placeholder="Descripción" required></div><div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Guardar</button></div></form></div>
-                        <div class="seccion-gestion" id="sec-catalogos"><h5 class="fw-bold text-arca mb-3">📖 Gestión de Etapas de Formación</h5><form id="form-nueva-etapa" class="row g-2 mb-4 bg-light p-3 rounded shadow-sm"><div class="col-md-9"><input type="text" id="etapa-nombre" class="form-control bg-white" placeholder="Nombre de nueva Etapa" required></div><div class="col-md-3"><button type="submit" class="btn btn-arca w-100 fw-bold">Agregar</button></div></form><h6 class="text-muted fw-bold">Etapas Actuales (Presiona para Eliminar)</h6><ul id="lista-admin-etapas" class="list-group shadow-sm"></ul></div>
+                        <!-- Usuarios -->
+                        <div class="seccion-gestion activa" id="sec-usuarios">
+                            <h5 class="fw-bold text-arca mb-3">👥 Directorio de Personas</h5>
+                            <div class="mb-3"><input type="text" id="buscador-usuarios-admin" class="form-control bg-light shadow-sm" placeholder="🔍 Buscar por nombre, perfil, estado o ministerio..."></div>
+                            <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-cabecera-suave"><tr><th>Nombre</th><th>Perfil</th><th>Ministerio Asignado</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead>
+                                    <tbody id="tabla-usuarios"></tbody>
+                                </table>
+                            </div>
+                            <div id="editor-usuario" class="card mt-4 border-0 shadow bg-light" style="display:none;">
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-2 mb-2 gap-2">
+                                        <h5 class="card-title text-arca fw-bold mb-0">Editando a: <span id="edit-nombre-display"></span></h5>
+                                        <button type="button" id="btn-admin-reset-pass" class="btn btn-sm btn-outline-warning text-dark fw-bold bg-white shadow-sm" onclick="enviarResetDesdeAdmin()">
+                                            <i class="fa-solid fa-key text-warning"></i> Enviar correo para restablecer contraseña
+                                        </button>
+                                    </div>
+                                    <p class="text-muted small mb-3">Correo: <span id="edit-email-display" class="fw-bold"></span></p>
+                                    <form id="form-editar-usuario">
+                                        <input type="hidden" id="edit-uid">
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Teléfono</label><input type="text" id="edit-telefono" class="form-control bg-white"></div>
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Perfil</label><select id="edit-perfil" class="form-select bg-white"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option><option>Invitado</option></select></div>
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Cargo</label><select id="edit-cargo" class="form-select bg-white"><option>Pastor general</option><option>Pastor</option><option>Miembro</option><option>Invitado</option></select></div>
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Estado</label><select id="edit-estado" class="form-select bg-white"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option><option>Asistente externo</option></select></div>
+                                            
+                                            <!-- SELECTOR DINÁMICO DE MINISTERIOS A CARGO / LÍDER -->
+                                            <div class="col-md-12 mt-3">
+                                                <div class="p-3 border rounded bg-white shadow-sm">
+                                                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+                                                        <div>
+                                                            <label class="form-label small text-success fw-bold mb-0" id="label-ministerios-usuario"><i class="fa-solid fa-users-gear"></i> Ministerios Asignados / Liderados</label>
+                                                            <small class="text-muted d-block" style="font-size: 0.75rem;">Selecciona el ministerio principal o agrega más si lidera varios ministerios.</small>
+                                                        </div>
+                                                        <button type="button" class="btn btn-sm btn-outline-success fw-bold rounded-pill px-3" onclick="agregarSelectorMinisterioLider('')">
+                                                            <i class="fa-solid fa-plus"></i> Agregar otro ministerio líder
+                                                        </button>
+                                                    </div>
+                                                    <div id="contenedor-selectores-ministerios" class="d-flex flex-column gap-2 mt-2"></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12 mt-2 border-top pt-3">
+                                                <div class="form-check form-switch fs-6">
+                                                    <input class="form-check-input" type="checkbox" id="edit-vastago" role="switch" style="cursor: pointer;">
+                                                    <label class="form-check-label fw-bold text-arca" for="edit-vastago" style="cursor: pointer;"><i class="fa-solid fa-star text-warning"></i> Privilegios de Vástago (Administrar Inventario y recibir alertas)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <label class="form-label small text-muted fw-bold">Ruta Completada:</label>
+                                        <div class="p-3 border rounded bg-white mb-4 shadow-sm" id="contenedor-checkboxes-formacion"></div>
+                                        <button type="submit" class="btn btn-primary px-4 fw-bold" id="btn-guardar-usuario">Guardar Cambios</button>
+                                        <button type="button" class="btn btn-outline-secondary bg-white px-4 fw-bold" onclick="document.getElementById('editor-usuario').style.display='none'">Cancelar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Eventos -->
+                        <div class="seccion-gestion" id="sec-eventos">
+                            <h5 class="fw-bold text-arca mb-3">📅 Crear Nuevo Evento</h5>
+                            <p id="aviso-lider" class="text-danger fw-bold" style="display:none;">⚠️ Al ser Líder, solo puedes crear eventos para tu ministerio asignado.</p>
+                            <form id="form-nuevo-evento" class="row g-3 bg-light p-3 rounded shadow-sm border border-light">
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Título</label><input type="text" id="evento-titulo" class="form-control bg-white" required></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Categoría</label><select id="evento-tipo" class="form-select bg-white" required></select></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Público / Ministerio</label><select id="evento-ministerio-select" class="form-select bg-white" required><option value="General">General (Toda la iglesia)</option></select></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Fecha y Hora</label><input type="datetime-local" id="evento-fecha" class="form-control bg-white" required></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Ubicación</label><input type="text" id="evento-lugar" class="form-control bg-white" required></div>
+                                <div class="col-md-4"><label class="small text-muted fw-bold">Flyer (URL Imagen)</label><input type="text" id="evento-imagen-url" class="form-control bg-white" placeholder="ej. imgur.com/foto.jpg"></div>
+                                <div class="col-12 mt-4"><button type="submit" class="btn btn-arca w-100 fw-bold py-2">Publicar Evento</button></div>
+                            </form>
+                        </div>
+
+                        <!-- Ministerios (CON LISTA DE MINISTERIOS ACTIVOS TRASLADADA AQUÍ) -->
+                        <div class="seccion-gestion" id="sec-ministerios">
+                            <h5 class="fw-bold text-arca mb-3">🤝 Agregar Ministerio</h5>
+                            <form id="form-nuevo-ministerio" class="row g-2 bg-light p-3 rounded shadow-sm mb-4 border border-light">
+                                <div class="col-md-4"><input type="text" id="min-nombre" class="form-control bg-white" placeholder="Nombre" required></div>
+                                <div class="col-md-6"><input type="text" id="min-descripcion" class="form-control bg-white" placeholder="Descripción" required></div>
+                                <div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Guardar</button></div>
+                            </form>
+
+                            <h5 class="fw-bold text-arca border-bottom pb-2 mb-3">🏛️ Ministerios Activos</h5>
+                            <ul class="list-group shadow-sm" id="lista-ministerios"></ul>
+                        </div>
+
+                        <!-- Etapas de Formación -->
+                        <div class="seccion-gestion" id="sec-catalogos">
+                            <h5 class="fw-bold text-arca mb-3">📖 Gestión de Etapas de Formación</h5>
+                            <form id="form-nueva-etapa" class="row g-2 mb-4 bg-light p-3 rounded shadow-sm"><div class="col-md-9"><input type="text" id="etapa-nombre" class="form-control bg-white" placeholder="Nombre de nueva Etapa" required></div><div class="col-md-3"><button type="submit" class="btn btn-arca w-100 fw-bold">Agregar</button></div></form>
+                            <h6 class="text-muted fw-bold">Etapas Actuales (Presiona para Eliminar)</h6>
+                            <ul id="lista-admin-etapas" class="list-group shadow-sm"></ul>
+                        </div>
                         
                         <!-- Inventario -->
                         <div class="seccion-gestion" id="sec-inventario">
@@ -269,20 +383,7 @@
                         <div class="bg-light p-3 rounded border border-light shadow-sm mb-4"><h6 id="mi-avance-texto" class="text-primary fw-bold border-bottom pb-2"></h6><ul id="mi-lista-etapas" class="list-unstyled mb-0 mt-2"></ul></div>
                         
                         <h5 class="fw-bold text-arca"><i class="fa-solid fa-calendar-check"></i> Mi Historial de Asistencia</h5>
-                        <div class="table-responsive mb-4"><table class="table table-hover align-middle"><thead class="table-cabecera-suave"><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead><tbody id="mi-tabla-asistencia"></tbody></table></div>
-
-                        <!-- NUEVA ZONA DE PREFERENCIAS (TEMA AQUI) -->
-                        <h5 class="fw-bold text-arca mt-4"><i class="fa-solid fa-sliders"></i> Preferencias de la App</h5>
-                        <div class="bg-light p-3 rounded border border-light shadow-sm mb-4 d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="fw-bold text-arca mb-0">Apariencia visual</h6>
-                                <small class="text-muted">Cambiar entre Modo Claro y Oscuro</small>
-                            </div>
-                            <button id="btn-theme" class="btn btn-outline-secondary btn-sm px-3 shadow-sm bg-white fw-bold" onclick="toggleTheme()" style="font-size: 1.1rem;">
-                                <i class="fa-solid fa-circle-half-stroke m-0"></i> Tema
-                            </button>
-                        </div>
-
+                        <div class="table-responsive mb-2"><table class="table table-hover align-middle"><thead class="table-cabecera-suave"><tr><th>Evento</th><th>Fecha</th><th>Método</th></tr></thead><tbody id="mi-tabla-asistencia"></tbody></table></div>
                     </div>
                 </div>
             </div>
@@ -306,7 +407,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc, setDoc, addDoc, updateDoc, deleteDoc, arrayUnion, arrayRemove, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyDJbcs6gzCkQym6CS_kTYEG0E7rb5jXMTQ", authDomain: "app-iglesia-core.firebaseapp.com", projectId: "app-iglesia-core", storageBucket: "app-iglesia-core.firebasestorage.app", messagingSenderId: "710025721588", appId: "1:710025721588:web:6dd4dd0e49628b7d9bd0a1" };
         const app = initializeApp(firebaseConfig); const db = getFirestore(app); const auth = getAuth(app); 
@@ -315,11 +416,24 @@
         window.usuariosData = {}; window.eventosData = {}; window.inventarioData = {}; window.mensajesData = []; window.chatActivoId = null;
         window.perfilUsuarioActual = ""; window.ministeriosUsuarioActual = []; window.esVastagoActual = false;
         window.eventoActualAsistenciaID = ""; window.eventoActualForoID = ""; window.catalogoEtapas = []; window.catalogoMinisterios = []; window.nombreEventoActualEnMemoria = "Evento Desconocido"; window.eventoParaCalendario = null; window.notificacionesPendientes = []; 
-        
+        window.unsubscribeUsuarios = null;
+
         const formatoMoneda = new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' });
 
+        // BOTÓN DE TEMA EN CABECERA SUPERIOR
         const themeBtn = document.getElementById('btn-theme'); let currentTheme = localStorage.getItem('theme') || 'auto';
-        function applyTheme(theme) { if (theme === 'auto') { const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light'); themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke m-0"></i> Tema'; themeBtn.title = 'Tema actual: Automático'; } else { document.documentElement.setAttribute('data-bs-theme', theme); themeBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-moon m-0"></i> Tema' : '<i class="fa-solid fa-sun m-0"></i> Tema'; themeBtn.title = `Tema actual: ${theme === 'dark' ? 'Oscuro' : 'Claro'}`; } }
+        function applyTheme(theme) {
+            if (theme === 'auto') {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+                themeBtn.innerHTML = '<i class="fa-solid fa-circle-half-stroke m-0"></i>';
+                themeBtn.title = 'Tema actual: Automático';
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', theme);
+                themeBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-moon m-0"></i>' : '<i class="fa-solid fa-sun m-0"></i>';
+                themeBtn.title = `Tema actual: ${theme === 'dark' ? 'Oscuro' : 'Claro'}`;
+            }
+        }
         window.toggleTheme = function() { if (currentTheme === 'auto') currentTheme = 'light'; else if (currentTheme === 'light') currentTheme = 'dark'; else currentTheme = 'auto'; localStorage.setItem('theme', currentTheme); applyTheme(currentTheme); };
         applyTheme(currentTheme); window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if(currentTheme === 'auto') applyTheme('auto'); });
 
@@ -329,13 +443,84 @@
 
         window.cambiarNumero = function(inputId, cantidad) { const input = document.getElementById(inputId); let valorActual = parseInt(input.value) || 0; let nuevoValor = valorActual + cantidad; if (nuevoValor < 0) nuevoValor = 0; input.value = nuevoValor; };
 
-        document.getElementById('buscador-usuarios-admin').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const rows = document.querySelectorAll('#tabla-usuarios tr'); rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; }); });
+        window.filtrarTablaUsuarios = function() {
+            const term = (document.getElementById('buscador-usuarios-admin').value || "").toLowerCase();
+            const rows = document.querySelectorAll('#tabla-usuarios tr');
+            rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; });
+        };
+        document.getElementById('buscador-usuarios-admin').addEventListener('input', window.filtrarTablaUsuarios);
         document.getElementById('buscador-select-asistencia').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const options = document.querySelectorAll('#select-usuario-manual option'); options.forEach(opt => { if(opt.value === "") return; if(opt.text.toLowerCase().includes(term)) { opt.style.display = ''; opt.removeAttribute('disabled'); } else { opt.style.display = 'none'; opt.setAttribute('disabled', 'disabled'); } }); });
         document.getElementById('buscador-tabla-asistencia').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const rows = document.querySelectorAll('#tabla-asistentes tr'); rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; }); });
         document.getElementById('buscador-inventario').addEventListener('input', function(e) { const term = e.target.value.toLowerCase(); const rows = document.querySelectorAll('#tabla-inventario tr'); rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; }); });
 
         document.getElementById('link-registrar').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-login').style.display = 'none'; document.getElementById('caja-registro').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
         document.getElementById('link-login').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('caja-registro').style.display = 'none'; document.getElementById('caja-login').style.display = 'block'; document.getElementById('auth-error').textContent = ""; });
+
+        // AUTENTICACIÓN POR CORREO, REGISTRO Y RECUPERACIÓN DE CONTRASEÑA
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorP = document.getElementById('auth-error');
+            errorP.textContent = "Ingresando..."; errorP.className = "text-info mt-3 fw-bold";
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('email').value.trim(), document.getElementById('password').value);
+                errorP.textContent = "";
+            } catch (err) {
+                errorP.textContent = "❌ Correo o contraseña incorrectos."; errorP.className = "text-danger mt-3 fw-bold";
+            }
+        });
+
+        document.getElementById('registro-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorP = document.getElementById('auth-error');
+            errorP.textContent = "Creando cuenta..."; errorP.className = "text-info mt-3 fw-bold";
+            try {
+                const nom = document.getElementById('reg-nombre').value.trim();
+                const em = document.getElementById('reg-email').value.trim();
+                const tel = document.getElementById('reg-telefono').value.trim();
+                const pass = document.getElementById('reg-password').value;
+                const cred = await createUserWithEmailAndPassword(auth, em, pass);
+                await setDoc(doc(db, "usuarios", cred.user.uid), {
+                    nombre: nom, email: em, telefono: tel, perfilAcceso: "Miembro", cargo: "Miembro",
+                    estado: "En consolidación", ministeriosAsignados: [], ministerioAsignado: "Ninguno",
+                    etapasCompletadas: [], esVastago: false, fechaRegistro: new Date().toISOString()
+                });
+                errorP.textContent = "";
+                document.getElementById('registro-form').reset();
+            } catch (err) {
+                errorP.textContent = "❌ Error al registrar: Verifica que el correo no esté ya en uso."; errorP.className = "text-danger mt-3 fw-bold";
+            }
+        });
+
+        document.getElementById('link-olvide-pass').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('email').value.trim();
+            const correo = prompt("Ingresa tu correo electrónico para enviarte un enlace seguro de recuperación de contraseña:", emailInput);
+            if (correo && correo.trim() !== "") {
+                try {
+                    await sendPasswordResetEmail(auth, correo.trim());
+                    alert("✅ ¡Enlace enviado! Revisa tu bandeja de entrada (o la carpeta de Spam) en tu correo para crear tu nueva contraseña.");
+                } catch (err) {
+                    alert("❌ No se pudo enviar el correo. Verifica que la dirección esté bien escrita y registrada.");
+                }
+            }
+        });
+
+        window.enviarResetDesdeAdmin = async function() {
+            const uid = document.getElementById('edit-uid').value;
+            const u = window.usuariosData[uid];
+            if (!u || !u.email) {
+                alert("⚠️ Este usuario no tiene un correo electrónico registrado en su ficha.");
+                return;
+            }
+            if (confirm(`¿Deseas enviar un correo oficial de restablecimiento de contraseña a ${u.nombre} (${u.email})?`)) {
+                try {
+                    await sendPasswordResetEmail(auth, u.email.trim());
+                    alert(`✅ Se ha enviado un correo a ${u.email} con el enlace para que defina su nueva contraseña.`);
+                } catch (err) {
+                    alert("❌ Hubo un error al intentar enviar el correo de recuperación.");
+                }
+            }
+        };
 
         window.cambiarPantallaApp = function(pantalla, btnElement) {
             document.querySelectorAll('.app-pantalla').forEach(p => p.classList.remove('activa'));
@@ -363,11 +548,40 @@
             else { let iniciales = "?"; if(dU && dU.nombre) { const partes = dU.nombre.trim().split(" "); iniciales = partes.length > 1 ? (partes[0][0] + partes[1][0]).toUpperCase() : partes[0][0].toUpperCase(); } txtEl.textContent = iniciales; txtEl.style.display = 'flex'; imgEl.style.display = 'none'; }
         }
 
+        // ESCUCHADOR EN TIEMPO REAL DE USUARIOS (SOLUCIÓN AL PUNTO 1)
+        function iniciarEscuchaUsuariosTiempoReal() {
+            if (window.unsubscribeUsuarios) return;
+            window.unsubscribeUsuarios = onSnapshot(collection(db, "usuarios"), (snapshot) => {
+                const t = document.getElementById('tabla-usuarios');
+                if (t) t.innerHTML = "";
+                const tot = window.catalogoEtapas.length;
+                let arrUsuarios = [];
+                snapshot.forEach((d) => {
+                    const u = d.data();
+                    window.usuariosData[d.id] = u;
+                    arrUsuarios.push({ id: d.id, ...u });
+                });
+                arrUsuarios.sort((a, b) => (a.nombre || "").localeCompare(b.nombre || ""));
+                arrUsuarios.forEach((u) => {
+                    const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0;
+                    const r = tot > 0 ? `${c}/${tot}` : "N/A";
+                    const minData = (u.ministeriosAsignados && u.ministeriosAsignados.length > 0) ? u.ministeriosAsignados.join(', ') : (u.ministerioAsignado || 'Ninguno');
+                    const vastagoPill = u.esVastago ? ' <i class="fa-solid fa-star text-warning" title="Vástago"></i>' : '';
+                    if (t) {
+                        t.innerHTML += `<tr><td><span class="fw-bold">${u.nombre||''}</span>${vastagoPill}</td><td><span class="text-muted small">${u.perfilAcceso||''}</span></td><td><span class="badge bg-secondary rounded-pill px-3 text-wrap" style="max-width: 150px; line-height: 1.2;">${minData}</span></td><td><span class="badge bg-info text-dark rounded-pill">${u.estado||''}</span></td><td><strong>${r}</strong></td><td><div class="btn-group shadow-sm"><button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirChatAdmin('${u.id}', '${u.nombre}')" title="Enviar Mensaje"><i class="fa-solid fa-comment-dots m-0"></i></button><button class="btn btn-sm btn-primary fw-bold" onclick="abrirEditorUsuario('${u.id}')" title="Editar"><i class="fa-solid fa-pencil m-0"></i></button></div></td></tr>`;
+                    }
+                });
+                window.filtrarTablaUsuarios();
+            });
+        }
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
                     await cargarCatalogoEtapas(); await cargarMinisteriosGbl();
-                    const userDoc = await getDoc(doc(db, "usuarios", user.uid));
+                    iniciarEscuchaUsuariosTiempoReal(); // Sincronización instantánea de usuarios
+                    
+                    let userDoc = await getDoc(doc(db, "usuarios", user.uid));
                     if (userDoc.exists()) {
                         const dU = userDoc.data(); window.perfilUsuarioActual = dU.perfilAcceso; 
                         window.ministeriosUsuarioActual = dU.ministeriosAsignados || (dU.ministerioAsignado && dU.ministerioAsignado !== "Ninguno" ? [dU.ministerioAsignado] : []);
@@ -375,7 +589,7 @@
                         
                         setAvatar(user, dU);
                         document.getElementById('bottom-navigation').style.display = "flex";
-                        document.getElementById('iconos-cabecera').style.setProperty("display", "flex", "important"); // Mostrar iconos superiores
+                        document.getElementById('iconos-cabecera').style.setProperty("display", "flex", "important");
                         await cargarPerfilMiembro(user.uid, dU);
 
                         const esLiderazgo = (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder");
@@ -427,22 +641,22 @@
                             document.getElementById('btn-tab-finanzas').style.display = (dU.perfilAcceso === "Administrador") ? "inline-block" : "none";
                             document.getElementById('btn-tab-inventario').style.display = (dU.perfilAcceso === "Administrador" || window.esVastagoActual) ? "inline-block" : "none";
 
-                            if (dU.perfilAcceso === "Administrador") { btnTabs[0].click(); await cargarTablaUsuarios(); cargarTiposEventosSelect(); cargarFinanzas(); prepararSelectoresEventos(); cargarVistaEtapasAdmin(); cargarInventario(); }
-                            else if (dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder") { btnTabs[1].click(); cargarTiposEventosSelect(); prepararSelectoresEventos(); await cargarTablaUsuarios(); if(window.esVastagoActual) cargarInventario(); }
+                            if (dU.perfilAcceso === "Administrador") { btnTabs[0].click(); cargarTiposEventosSelect(); cargarFinanzas(); prepararSelectoresEventos(); cargarVistaEtapasAdmin(); cargarInventario(); }
+                            else if (dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder") { btnTabs[1].click(); cargarTiposEventosSelect(); prepararSelectoresEventos(); if(window.esVastagoActual) cargarInventario(); }
                             else if (window.esVastagoActual) { document.getElementById('btn-tab-inventario').click(); cargarInventario(); }
                         } else {
-                            document.getElementById('nav-btn-gestion').style.display = "none"; await cargarTablaUsuarios();
+                            document.getElementById('nav-btn-gestion').style.display = "none";
                         }
                     }
                 } catch (e) {}
                 document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
                 cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio'));
 
-                // EJECUCIÓN SILENCIOSA DE AUDITORÍA PASTORAL
                 if (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder") {
                     auditarInasistenciasAdoracion();
                 }
             } else {
+                if (window.unsubscribeUsuarios) { window.unsubscribeUsuarios(); window.unsubscribeUsuarios = null; }
                 document.getElementById('bottom-navigation').style.display = "none"; document.getElementById('iconos-cabecera').style.setProperty("display", "none", "important"); document.getElementById('login-container').style.display = "flex"; document.getElementById('dashboard-container').style.display = "none"; 
             }
         });
@@ -460,7 +674,6 @@
             const listaChats = document.getElementById('buzon-lista-chats'); const chatActivo = document.getElementById('buzon-chat-activo'); const cajaMsgs = document.getElementById('buzon-mensajes');
 
             if (esLiderazgo && !window.chatActivoId) {
-                // VISTA BANDEJA DE ENTRADA (ADMIN)
                 listaChats.style.display = 'block'; chatActivo.style.display = 'none'; document.getElementById('buzon-titulo').innerHTML = '<i class="fa-solid fa-inbox"></i> Bandeja Pastoral';
                 let grupos = {};
                 window.mensajesData.forEach(m => {
@@ -483,7 +696,6 @@
                     });
                 }
             } else {
-                // VISTA CHAT INTERNO
                 listaChats.style.display = 'none'; chatActivo.style.display = 'flex'; document.getElementById('buzon-chat-uid').value = window.chatActivoId;
                 if (esLiderazgo) { document.getElementById('btn-volver-chats').style.display = 'block'; } 
                 else { document.getElementById('btn-volver-chats').style.display = 'none'; document.getElementById('buzon-titulo').innerHTML = '<i class="fa-solid fa-envelope-open-text"></i> Cuidado Pastoral'; }
@@ -669,30 +881,95 @@
         
         async function cargarCatalogoEtapas() { try { const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); if (d.exists()) window.catalogoEtapas = d.data().lista || []; } catch (e) {} }
         
-        async function cargarTablaUsuarios() { 
-            try { 
-                const q = await getDocs(collection(db, "usuarios")); const t = document.getElementById('tabla-usuarios'); t.innerHTML = ""; const tot = window.catalogoEtapas.length; 
-                q.forEach((d) => { 
-                    const u = d.data(); window.usuariosData[d.id] = u; const c = u.etapasCompletadas ? u.etapasCompletadas.length : 0; const r = tot > 0 ? `${c}/${tot}` : "N/A"; 
-                    const minData = (u.ministeriosAsignados && u.ministeriosAsignados.length > 0) ? u.ministeriosAsignados.join(', ') : (u.ministerioAsignado || 'Ninguno'); const vastagoPill = u.esVastago ? ' <i class="fa-solid fa-star text-warning" title="Vástago"></i>' : '';
-                    t.innerHTML += `<tr><td><span class="fw-bold">${u.nombre||''}</span>${vastagoPill}</td><td><span class="text-muted small">${u.perfilAcceso||''}</span></td><td><span class="badge bg-secondary rounded-pill px-3 text-wrap" style="max-width: 150px; line-height: 1.2;">${minData}</span></td><td><span class="badge bg-info text-dark rounded-pill">${u.estado||''}</span></td><td><strong>${r}</strong></td><td><div class="btn-group shadow-sm"><button class="btn btn-sm btn-outline-primary fw-bold" onclick="abrirChatAdmin('${d.id}', '${u.nombre}')" title="Enviar Mensaje"><i class="fa-solid fa-comment-dots m-0"></i></button><button class="btn btn-sm btn-primary fw-bold" onclick="abrirEditorUsuario('${d.id}')" title="Editar"><i class="fa-solid fa-pencil m-0"></i></button></div></td></tr>`; 
-                }); 
-            } catch (e) {} 
-        }
-        
+        // FUNCIONES DINÁMICAS PARA ASIGNAR UNO O MÚLTIPLES MINISTERIOS AL LÍDER (PUNTO 5)
+        window.agregarSelectorMinisterioLider = function(valorSeleccionado = "") {
+            const cont = document.getElementById('contenedor-selectores-ministerios');
+            const fila = document.createElement('div');
+            fila.className = "input-group input-group-sm";
+            
+            let opciones = `<option value="">-- Ninguno / Seleccionar Ministerio --</option>`;
+            window.catalogoMinisterios.forEach(m => {
+                const sel = (m === valorSeleccionado) ? "selected" : "";
+                opciones += `<option value="${m}" ${sel}>${m}</option>`;
+            });
+
+            fila.innerHTML = `
+                <span class="input-group-text bg-light text-arca fw-bold"><i class="fa-solid fa-handshake-angle m-0"></i></span>
+                <select class="form-select bg-white select-ministerio-lider">${opciones}</select>
+                <button type="button" class="btn btn-outline-danger" onclick="if(document.querySelectorAll('.select-ministerio-lider').length > 1) { this.parentElement.remove(); } else { this.previousElementSibling.value = ''; }" title="Quitar ministerio">
+                    <i class="fa-solid fa-trash m-0"></i>
+                </button>
+            `;
+            cont.appendChild(fila);
+        };
+
+        document.getElementById('edit-perfil').addEventListener('change', function() {
+            const lbl = document.getElementById('label-ministerios-usuario');
+            if (this.value === 'Líder') {
+                lbl.innerHTML = `<i class="fa-solid fa-crown text-warning"></i> Ministerios donde es Líder:`;
+            } else {
+                lbl.innerHTML = `<i class="fa-solid fa-users-gear"></i> Ministerios Asignados / Liderados:`;
+            }
+        });
+
         window.abrirEditorUsuario = function(uid) { 
-            const u = window.usuariosData[uid]; document.getElementById('editor-usuario').style.display = 'block'; document.getElementById('edit-uid').value = uid; document.getElementById('edit-nombre-display').textContent = u.nombre; document.getElementById('edit-email-display').textContent = u.email || 'Sin correo'; document.getElementById('edit-telefono').value = u.telefono || ''; document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro'; document.getElementById('edit-cargo').value = u.cargo || 'Miembro'; document.getElementById('edit-estado').value = u.estado || 'En consolidación'; document.getElementById('edit-vastago').checked = u.esVastago || false;
-            const cMin = document.getElementById('contenedor-checkboxes-ministerios'); cMin.innerHTML = ""; const minsUser = u.ministeriosAsignados || (u.ministerioAsignado && u.ministerioAsignado !== "Ninguno" ? [u.ministerioAsignado] : []);
-            window.catalogoMinisterios.forEach(m => { const chk = minsUser.includes(m) ? "checked" : ""; cMin.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="ministerio-check" value="${m}" ${chk} id="chk-min-${m}"><label class="form-check-label text-dark" for="chk-min-${m}">${m}</label></div>`; });
-            const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || []; window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="etapas-check" value="${e}" ${ch} id="chk-${e}"><label class="form-check-label" for="chk-${e}">${e}</label></div>`; }); 
+            const u = window.usuariosData[uid];
+            document.getElementById('editor-usuario').style.display = 'block';
+            document.getElementById('edit-uid').value = uid;
+            document.getElementById('edit-nombre-display').textContent = u.nombre;
+            document.getElementById('edit-email-display').textContent = u.email || 'Sin correo';
+            document.getElementById('btn-admin-reset-pass').style.display = u.email ? 'inline-block' : 'none';
+            document.getElementById('edit-telefono').value = u.telefono || '';
+            document.getElementById('edit-perfil').value = u.perfilAcceso || 'Miembro';
+            document.getElementById('edit-cargo').value = u.cargo || 'Miembro';
+            document.getElementById('edit-estado').value = u.estado || 'En consolidación';
+            document.getElementById('edit-vastago').checked = u.esVastago || false;
+
+            const cMin = document.getElementById('contenedor-selectores-ministerios');
+            cMin.innerHTML = "";
+            const minsUser = u.ministeriosAsignados || (u.ministerioAsignado && u.ministerioAsignado !== "Ninguno" ? [u.ministerioAsignado] : []);
+            if (minsUser.length === 0) {
+                window.agregarSelectorMinisterioLider("");
+            } else {
+                minsUser.forEach(m => window.agregarSelectorMinisterioLider(m));
+            }
+            document.getElementById('edit-perfil').dispatchEvent(new Event('change'));
+
+            const c = document.getElementById('contenedor-checkboxes-formacion'); c.innerHTML = ""; const comp = u.etapasCompletadas || [];
+            window.catalogoEtapas.forEach((e) => { const ch = comp.includes(e) ? "checked" : ""; c.innerHTML += `<div class="form-check"><input class="form-check-input" type="checkbox" name="etapas-check" value="${e}" ${ch} id="chk-${e}"><label class="form-check-label" for="chk-${e}">${e}</label></div>`; });
+            document.getElementById('editor-usuario').scrollIntoView({ behavior: 'smooth' });
         };
 
         document.getElementById('form-editar-usuario').addEventListener('submit', async (e) => { 
             e.preventDefault(); const uid = document.getElementById('edit-uid').value; const btn = document.getElementById('btn-guardar-usuario'); const textoOriginal = btn.innerHTML; btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
             try { 
-                const minsSeleccionados = Array.from(document.querySelectorAll('input[name="ministerio-check"]:checked')).map(c => c.value); const vastagoChecked = document.getElementById('edit-vastago').checked;
-                await updateDoc(doc(db, "usuarios", uid), { telefono: document.getElementById('edit-telefono').value, perfilAcceso: document.getElementById('edit-perfil').value, cargo: document.getElementById('edit-cargo').value, estado: document.getElementById('edit-estado').value, ministeriosAsignados: minsSeleccionados, ministerioAsignado: minsSeleccionados.length > 0 ? minsSeleccionados[0] : "Ninguno", etapasCompletadas: Array.from(document.querySelectorAll('input[name="etapas-check"]:checked')).map(c => c.value), esVastago: vastagoChecked }); 
-                btn.innerHTML = "✅ ¡Listo!"; setTimeout(() => { document.getElementById('editor-usuario').style.display = 'none'; btn.disabled = false; btn.innerHTML = textoOriginal; document.getElementById('buscador-usuarios-admin').value = ""; cargarTablaUsuarios(); if (uid === auth.currentUser.uid) { getDoc(doc(db, "usuarios", auth.currentUser.uid)).then(docSnap => { window.esVastagoActual = docSnap.data().esVastago || false; cargarPerfilMiembro(auth.currentUser.uid, docSnap.data()); }); } }, 400);
+                const selectsMin = Array.from(document.querySelectorAll('.select-ministerio-lider')).map(s => s.value).filter(v => v !== "" && v !== "Ninguno");
+                const minsSeleccionados = [...new Set(selectsMin)]; // Elimina duplicados si eligió el mismo 2 veces
+                const vastagoChecked = document.getElementById('edit-vastago').checked;
+                
+                await updateDoc(doc(db, "usuarios", uid), {
+                    telefono: document.getElementById('edit-telefono').value,
+                    perfilAcceso: document.getElementById('edit-perfil').value,
+                    cargo: document.getElementById('edit-cargo').value,
+                    estado: document.getElementById('edit-estado').value,
+                    ministeriosAsignados: minsSeleccionados,
+                    ministerioAsignado: minsSeleccionados.length > 0 ? minsSeleccionados[0] : "Ninguno",
+                    etapasCompletadas: Array.from(document.querySelectorAll('input[name="etapas-check"]:checked')).map(c => c.value),
+                    esVastago: vastagoChecked
+                }); 
+                btn.innerHTML = "✅ ¡Listo!";
+                setTimeout(() => {
+                    document.getElementById('editor-usuario').style.display = 'none';
+                    btn.disabled = false; btn.innerHTML = textoOriginal;
+                    if (uid === auth.currentUser.uid) {
+                        getDoc(doc(db, "usuarios", auth.currentUser.uid)).then(docSnap => {
+                            window.esVastagoActual = docSnap.data().esVastago || false;
+                            window.ministeriosUsuarioActual = docSnap.data().ministeriosAsignados || [];
+                            cargarPerfilMiembro(auth.currentUser.uid, docSnap.data());
+                            prepararSelectoresEventos();
+                        });
+                    }
+                }, 400);
             } catch (err) { btn.innerHTML = "❌ Error"; setTimeout(() => { btn.disabled = false; btn.innerHTML = textoOriginal; }, 2000); } 
         });
 
@@ -745,8 +1022,14 @@
                     const imgHtml = ev.imagenUrl ? `<img src="${ev.imagenUrl}" class="card-img-top border-bottom" style="height: 180px; object-fit: cover;" alt="Imagen Evento" onerror="this.style.display='none'">` : ''; 
                     lE.innerHTML += `<div class="col-md-6 mb-4"><div class="card h-100 shadow-sm border-0 bg-white">${imgHtml}<div class="card-body d-flex flex-column"><h5 class="fw-bold text-arca mb-1">${ev.titulo}</h5><div class="mb-2"><span class="badge bg-light text-dark border">${ev.ministerio || 'General'}</span></div><small class="text-muted d-block mb-1">📅 ${ev.fecha.replace('T', ' ')}</small><small class="d-block mb-3 text-muted">📍 ${ev.lugar}</small><div class="mt-auto d-flex flex-wrap gap-2 justify-content-between"><button class="btn btn-sm btn-outline-secondary" onclick="abrirForo('${d.id}', '${ev.titulo}')"><i class="fa-regular fa-comments"></i> Foro</button><div class="btn-group shadow-sm">${b_gestion}</div></div></div></div></div>`; 
                 }); 
-                const mS = await getDocs(collection(db,"ministerios")); document.getElementById('lista-ministerios').innerHTML = ""; 
-                mS.forEach((d) => { if (d.data().estado) { let btnEliminarMin = (window.perfilUsuarioActual === "Administrador") ? `<button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarMinisterio('${d.id}')"><i class="fa-solid fa-trash"></i></button>` : ''; document.getElementById('lista-ministerios').innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light"><strong>${d.data().nombre}</strong> ${btnEliminarMin}</li>`; } }); 
+                const mS = await getDocs(collection(db,"ministerios")); const listaMinEl = document.getElementById('lista-ministerios'); if(listaMinEl) listaMinEl.innerHTML = ""; 
+                mS.forEach((d) => {
+                    if (d.data().estado && listaMinEl) {
+                        let desc = d.data().descripcion ? `<small class="text-muted d-block">${d.data().descripcion}</small>` : '';
+                        let btnEliminarMin = (window.perfilUsuarioActual === "Administrador") ? `<button class="btn btn-sm btn-outline-danger py-1 px-2 rounded" onclick="eliminarMinisterio('${d.id}')"><i class="fa-solid fa-trash m-0"></i></button>` : '';
+                        listaMinEl.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light"><div><strong>${d.data().nombre}</strong>${desc}</div> ${btnEliminarMin}</li>`;
+                    }
+                }); 
             } catch(e) {} 
         }
         
@@ -756,7 +1039,7 @@
         document.getElementById('form-nuevo-ministerio').addEventListener('submit', async (e) => { e.preventDefault(); await addDoc(collection(db, "ministerios"), { nombre: document.getElementById('min-nombre').value, descripcion: document.getElementById('min-descripcion').value, estado: true }); document.getElementById('form-nuevo-ministerio').reset(); await cargarMinisteriosGbl(); cargarDatosGenerales(); prepararSelectoresEventos(); });
         function cargarVistaEtapasAdmin() { const lista = document.getElementById('lista-admin-etapas'); lista.innerHTML = ""; window.catalogoEtapas.forEach(e => { lista.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light">${e} <button class="btn btn-sm btn-outline-danger py-0 px-2 rounded" onclick="eliminarEtapaFormacion('${e}')"><i class="fa-solid fa-trash"></i></button></li>`; }); }
         window.eliminarEtapaFormacion = async function(nombreEtapa) { if(confirm(`¿Estás seguro de eliminar la etapa '${nombreEtapa}'? Se borrará del catálogo.`)) { try { await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayRemove(nombreEtapa) }); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); } catch(e) { alert("Error al eliminar etapa."); } } }
-        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); await cargarTablaUsuarios(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); });
+        document.getElementById('form-nueva-etapa').addEventListener('submit', async (e) => { e.preventDefault(); await updateDoc(doc(db, "configuracion", "etapas_formacion"), { lista: arrayUnion(document.getElementById('etapa-nombre').value) }); document.getElementById('form-nueva-etapa').reset(); await cargarCatalogoEtapas(); cargarVistaEtapasAdmin(); await cargarPerfilMiembro(auth.currentUser.uid, (await getDoc(doc(db, "usuarios", auth.currentUser.uid))).data()); });
 
         // ================= SEGUIMIENTO PASTORAL (AUDITORÍA DE ASISTENCIA) ================= //
         window.auditarInasistenciasAdoracion = async function() {

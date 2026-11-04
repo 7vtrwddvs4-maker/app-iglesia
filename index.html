@@ -345,11 +345,136 @@
                         
                         <!-- Inventario -->
                         <div class="seccion-gestion" id="sec-inventario">
-                            <div class="d-flex justify-content-between align-items-center mb-3"><h5 class="fw-bold text-arca mb-0"><i class="fa-solid fa-boxes-stacked"></i> Control de Donaciones e Inventario</h5></div>
-                            <div class="bg-light p-3 rounded shadow-sm border border-light mb-4"><h6 class="fw-bold text-arca mb-3">Registrar Nuevo Insumo</h6><form id="form-nuevo-producto" class="row g-2 align-items-end"><div class="col-md-3"><label class="small text-muted fw-bold">Nombre del Producto</label><input type="text" id="inv-nombre" class="form-control bg-white" placeholder="Ej. Arroz, Frazadas..." required></div><div class="col-md-3"><label class="small text-muted fw-bold">Categoría</label><select id="inv-categoria" class="form-select bg-white" required><option value="Alimentos">Alimentos no perecibles</option><option value="Ropa">Ropa y Abrigo</option><option value="Mobiliario">Mobiliario / Equipamiento</option><option value="Insumos">Insumos Varios</option></select></div><div class="col-md-2"><label class="small text-muted fw-bold">Unidad</label><select id="inv-unidad" class="form-select bg-white"><option value="Unidades">Unidades</option><option value="Kilos">Kilos</option><option value="Litros">Litros</option><option value="Cajas">Cajas</option></select></div><div class="col-md-2"><label class="small text-muted fw-bold text-danger">Stock Crítico</label><input type="number" id="inv-minimo" class="form-control bg-white" placeholder="Alerta en..." min="1" required></div><div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Crear Ficha</button></div></form></div>
-                            <div class="d-flex justify-content-between align-items-end mb-2 gap-2"><input type="text" id="buscador-inventario" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar insumo por nombre..."><button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-inventario', 'Reporte_Inventario.csv')">📥 Exportar Stock</button></div>
-                            <div class="d-flex flex-wrap gap-2 mb-3 mt-2" id="filtros-categoria-inventario"><button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold filtro-btn active" data-cat="Todos">Todos</button><button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Alimentos">Alimentos</button><button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Ropa">Ropa</button><button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Mobiliario">Mobiliario</button><button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Insumos">Insumos</button></div>
-                            <div class="table-responsive bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0" id="tabla-exportar-inventario"><thead class="table-cabecera-suave"><tr><th style="width: 25%;">Producto</th><th style="width: 20%;">Categoría</th><th style="width: 20%;">Stock Actual</th><th style="width: 15%;">Estado</th><th style="width: 20%; min-width: 180px;">Dispensación / Ingreso</th></tr></thead><tbody id="tabla-inventario"></tbody></table></div>
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+                                <h5 class="fw-bold text-arca mb-0"><i class="fa-solid fa-boxes-stacked"></i> Control de Donaciones e Inventario</h5>
+                                <!-- Sub-menú para alternar entre Stock General y Cajas de Mercadería -->
+                                <div class="btn-group btn-group-sm shadow-sm" role="group">
+                                    <button type="button" class="btn btn-arca fw-bold active" id="btn-subtab-stock" onclick="cambiarSubTabInventario('stock')">
+                                        <i class="fa-solid fa-warehouse"></i> Stock General
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary bg-white fw-bold" id="btn-subtab-cajas" onclick="cambiarSubTabInventario('cajas')">
+                                        <i class="fa-solid fa-box-open"></i> Cajas de Mercadería y Familias
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- SUB-VISTA 1: STOCK GENERAL -->
+                            <div id="subvista-inventario-stock">
+                                <div class="bg-light p-3 rounded shadow-sm border border-light mb-4">
+                                    <h6 class="fw-bold text-arca mb-3">Registrar Nuevo Insumo</h6>
+                                    <form id="form-nuevo-producto" class="row g-2 align-items-end">
+                                        <div class="col-md-3"><label class="small text-muted fw-bold">Nombre del Producto</label><input type="text" id="inv-nombre" class="form-control bg-white" placeholder="Ej. Arroz, Frazadas..." required></div>
+                                        <div class="col-md-3"><label class="small text-muted fw-bold">Categoría</label><select id="inv-categoria" class="form-select bg-white" required><option value="Alimentos">Alimentos no perecibles</option><option value="Ropa">Ropa y Abrigo</option><option value="Mobiliario">Mobiliario / Equipamiento</option><option value="Insumos">Insumos Varios</option></select></div>
+                                        <div class="col-md-2"><label class="small text-muted fw-bold">Unidad</label><select id="inv-unidad" class="form-select bg-white"><option value="Unidades">Unidades</option><option value="Kilos">Kilos</option><option value="Litros">Litros</option><option value="Cajas">Cajas</option></select></div>
+                                        <div class="col-md-2"><label class="small text-muted fw-bold text-danger">Stock Crítico</label><input type="number" id="inv-minimo" class="form-control bg-white" placeholder="Alerta en..." min="1" required></div>
+                                        <div class="col-md-2"><button type="submit" class="btn btn-arca w-100 fw-bold">Crear Ficha</button></div>
+                                    </form>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-end mb-2 gap-2">
+                                    <input type="text" id="buscador-inventario" class="form-control form-control-sm w-50 bg-white" placeholder="🔍 Buscar insumo por nombre...">
+                                    <button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-inventario', 'Reporte_Inventario.csv')">📥 Exportar Stock</button>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 mb-3 mt-2" id="filtros-categoria-inventario">
+                                    <button class="btn btn-sm btn-primary rounded-pill px-3 fw-bold filtro-btn active" data-cat="Todos">Todos</button>
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Alimentos">Alimentos</button>
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Ropa">Ropa</button>
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Mobiliario">Mobiliario</button>
+                                    <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Insumos">Insumos</button>
+                                </div>
+                                <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                                    <table class="table table-hover align-middle mb-0" id="tabla-exportar-inventario">
+                                        <thead class="table-cabecera-suave">
+                                            <tr><th style="width: 25%;">Producto</th><th style="width: 20%;">Categoría</th><th style="width: 20%;">Stock Actual</th><th style="width: 15%;">Estado</th><th style="width: 20%; min-width: 180px;">Dispensación / Ingreso</th></tr>
+                                        </thead>
+                                        <tbody id="tabla-inventario"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- SUB-VISTA 2: CAJAS DE MERCADERÍA Y ENTREGA A FAMILIAS -->
+                            <div id="subvista-inventario-cajas" style="display: none;">
+                                <div class="row g-4 mb-4">
+                                    <!-- Columna Izquierda: Crear Plantilla de Caja -->
+                                    <div class="col-lg-6">
+                                        <div class="bg-light p-3 rounded shadow-sm border border-light h-100">
+                                            <h6 class="fw-bold text-arca border-bottom pb-2 mb-3"><i class="fa-solid fa-clipboard-list"></i> 1. Armar Plantilla de Caja</h6>
+                                            <form id="form-nueva-caja">
+                                                <div class="mb-2">
+                                                    <label class="small text-muted fw-bold">Nombre de la Caja / Canasta</label>
+                                                    <input type="text" id="caja-nombre" class="form-control form-control-sm bg-white" placeholder="Ej. Caja Mercadería Estándar" required>
+                                                </div>
+                                                <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                                                    <label class="small text-muted fw-bold mb-0">Artículos que incluye (descuento por caja):</label>
+                                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-pill py-0 px-2 fw-bold bg-white" onclick="agregarFilaIngredienteCaja()">
+                                                        <i class="fa-solid fa-plus"></i> Añadir artículo
+                                                    </button>
+                                                </div>
+                                                <div id="contenedor-ingredientes-caja" class="d-flex flex-column gap-2 mb-3"></div>
+                                                <button type="submit" class="btn btn-arca btn-sm w-100 fw-bold py-2">💾 Guardar Plantilla de Caja</button>
+                                            </form>
+
+                                            <h6 class="fw-bold text-muted small mt-4 mb-2">Plantillas de Cajas Disponibles:</h6>
+                                            <div id="lista-plantillas-cajas" class="d-flex flex-column gap-2"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Columna Derecha: Entregar Caja a Familia -->
+                                    <div class="col-lg-6">
+                                        <div class="bg-light p-3 rounded shadow-sm border border-light h-100">
+                                            <h6 class="fw-bold text-success border-bottom pb-2 mb-3"><i class="fa-solid fa-hand-holding-heart"></i> 2. Entregar Caja a Familia</h6>
+                                            <form id="form-entregar-caja">
+                                                <div class="mb-2">
+                                                    <label class="small text-muted fw-bold">Seleccionar Caja a Entregar</label>
+                                                    <select id="entrega-caja-id" class="form-select form-select-sm bg-white" required onchange="previsualizarCajaSeleccionada()">
+                                                        <option value="">Seleccione una plantilla...</option>
+                                                    </select>
+                                                </div>
+                                                <div id="preview-contenido-caja" class="p-2 mb-3 rounded bg-white border small text-muted" style="display: none;"></div>
+
+                                                <div class="row g-2 mb-2">
+                                                    <div class="col-sm-7">
+                                                        <label class="small text-muted fw-bold">Familia / Jefe de Hogar</label>
+                                                        <input type="text" id="entrega-familia" class="form-control form-control-sm bg-white" placeholder="Ej. Familia Pérez Soto / Juan Pérez" required oninput="verificarFamiliaDuplicada()">
+                                                    </div>
+                                                    <div class="col-sm-5">
+                                                        <label class="small text-muted fw-bold">RUT o Identificador (Opcional)</label>
+                                                        <input type="text" id="entrega-rut" class="form-control form-control-sm bg-white" placeholder="Ej. 12345678-9" oninput="verificarFamiliaDuplicada()">
+                                                    </div>
+                                                </div>
+
+                                                <!-- Alerta automática de entrega duplicada -->
+                                                <div id="alerta-familia-duplicada" class="alert alert-warning py-2 px-3 small mb-2" style="display: none;"></div>
+
+                                                <div class="mb-3">
+                                                    <label class="small text-muted fw-bold">Observaciones / Dirección (Opcional)</label>
+                                                    <input type="text" id="entrega-notas" class="form-control form-control-sm bg-white" placeholder="Ej. Campamento San José, 4 integrantes...">
+                                                </div>
+
+                                                <button type="submit" id="btn-confirmar-entrega-caja" class="btn btn-success w-100 fw-bold py-2">
+                                                    <i class="fa-solid fa-box-archive"></i> Entregar Caja y Descontar del Inventario
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tabla Historial de Entregas a Familias -->
+                                <div class="d-flex flex-wrap justify-content-between align-items-end mb-2 gap-2">
+                                    <div>
+                                        <h6 class="fw-bold text-arca mb-1"><i class="fa-solid fa-people-roof"></i> Registro Histórico de Entregas a Familias</h6>
+                                        <input type="text" id="buscador-entregas-cajas" class="form-control form-control-sm bg-white" style="min-width: 260px;" placeholder="🔍 Buscar familia, RUT o caja...">
+                                    </div>
+                                    <button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-entregas', 'Registro_Familias_Cajas.csv')">📥 Exportar Registro</button>
+                                </div>
+                                <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                                    <table class="table table-hover align-middle mb-0 small" id="tabla-exportar-entregas">
+                                        <thead class="table-cabecera-suave">
+                                            <tr><th>Fecha</th><th>Familia / Beneficiario</th><th>RUT / ID</th><th>Caja Entregada</th><th>Insumos Descontados</th><th>Notas</th><th>Entregado por</th></tr>
+                                        </thead>
+                                        <tbody id="tabla-entregas-cajas"></tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Finanzas -->
@@ -784,7 +909,32 @@
             } catch(err){} finally { btn.disabled=false; btn.innerText="Notificar"; } 
         });
 
-        // ================= INVENTARIO ================= //
+        // ================= INVENTARIO Y CAJAS DE MERCADERÍA ================= //
+        window.cajasPlantillasData = {};
+        window.entregasCajasData = [];
+
+        window.cambiarSubTabInventario = function(vista) {
+            const btnStock = document.getElementById('btn-subtab-stock');
+            const btnCajas = document.getElementById('btn-subtab-cajas');
+            const divStock = document.getElementById('subvista-inventario-stock');
+            const divCajas = document.getElementById('subvista-inventario-cajas');
+
+            if (vista === 'cajas') {
+                divStock.style.display = 'none';
+                divCajas.style.display = 'block';
+                btnCajas.className = 'btn btn-arca fw-bold active';
+                btnStock.className = 'btn btn-outline-primary bg-white fw-bold';
+                if (document.querySelectorAll('.fila-ingrediente-caja').length === 0) {
+                    window.agregarFilaIngredienteCaja();
+                }
+            } else {
+                divStock.style.display = 'block';
+                divCajas.style.display = 'none';
+                btnStock.className = 'btn btn-arca fw-bold active';
+                btnCajas.className = 'btn btn-outline-primary bg-white fw-bold';
+            }
+        };
+
         document.getElementById('form-nuevo-producto').addEventListener('submit', async (e) => {
             e.preventDefault(); const btn = e.target.querySelector('button'); btn.disabled = true;
             try { await addDoc(collection(db, "inventario"), { nombre: document.getElementById('inv-nombre').value, categoria: document.getElementById('inv-categoria').value, unidad: document.getElementById('inv-unidad').value, stockMinimo: parseInt(document.getElementById('inv-minimo').value), stockActual: 0, creadoPor: window.usuariosData[auth.currentUser.uid]?.nombre || "Usuario", fechaCreacion: new Date().toISOString() }); document.getElementById('form-nuevo-producto').reset(); cargarInventario(); } catch(err) {} finally { btn.disabled = false; }
@@ -815,7 +965,10 @@
                     
                     const diseñoStepperYControles = `<div class="d-flex align-items-center gap-1"><div class="input-group input-group-sm" style="width: 130px; flex-wrap: nowrap;"><button class="btn btn-outline-danger fw-bold px-2" type="button" onclick="cambiarCantidadTemporal('${p.id}', -1)">-</button><input type="number" id="input-stock-${p.id}" class="form-control text-center fw-bold px-0" value="${p.stockActual}" min="0"><button class="btn btn-outline-success fw-bold px-2" type="button" onclick="cambiarCantidadTemporal('${p.id}', 1)">+</button><button class="btn btn-primary px-2" type="button" onclick="guardarStockDirecto('${p.id}')"><i class="fa-solid fa-check m-0"></i></button></div><button class="btn btn-sm btn-outline-info fw-bold ms-1" onclick="editarStockMinimo('${p.id}', '${p.nombre}', ${p.stockMinimo})" title="Editar Stock Crítico"><i class="fa-solid fa-pencil m-0"></i></button><button class="btn btn-sm btn-outline-danger fw-bold" onclick="eliminarInsumo('${p.id}', '${p.nombre}')" title="Eliminar Producto"><i class="fa-solid fa-trash m-0"></i></button></div>`;
                     t.innerHTML += `<tr><td class="fw-bold">${p.nombre}</td><td><span class="badge bg-light text-dark border">${p.categoria}</span></td><td class="fs-5 fw-bold text-arca">${p.stockActual} <small class="text-muted fs-6">${p.unidad}</small><br><span class="text-muted fw-normal" style="font-size: 0.65rem;">Mín: ${p.stockMinimo}</span></td><td>${estadoPill}</td><td>${diseñoStepperYControles}</td></tr>`; 
-                }); 
+                });
+
+                await cargarPlantillasCajas();
+                await cargarHistorialEntregasCajas();
             } catch (e) {} 
         };
 
@@ -831,6 +984,302 @@
         };
         window.editarStockMinimo = async function(id, nombre, minActual) { const nuevoMin = prompt(`Modificar Stock Crítico para: ${nombre}\nIngresa el nuevo valor mínimo:`, minActual); if(nuevoMin !== null && nuevoMin.trim() !== "" && !isNaN(nuevoMin)) { try { await updateDoc(doc(db, "inventario", id), { stockMinimo: parseInt(nuevoMin) }); cargarInventario(); } catch(e) { alert("Error al actualizar."); } } };
         window.eliminarInsumo = async function(id, nombre) { if(confirm(`¿Estás seguro de eliminar "${nombre}" del inventario de forma definitiva?`)) { try { await deleteDoc(doc(db, "inventario", id)); cargarInventario(); } catch(e) { alert("Error al eliminar."); } } };
+
+        // --- LÓGICA DE PLANTILLAS DE CAJAS Y ENTREGAS A FAMILIAS ---
+        window.agregarFilaIngredienteCaja = function() {
+            const cont = document.getElementById('contenedor-ingredientes-caja');
+            const fila = document.createElement('div');
+            fila.className = "input-group input-group-sm fila-ingrediente-caja";
+
+            let opciones = `<option value="">Seleccione insumo...</option>`;
+            const productosOrdenados = Object.entries(window.inventarioData).sort((a,b) => (a[1].nombre || "").localeCompare(b[1].nombre || ""));
+            for (const [id, p] of productosOrdenados) {
+                opciones += `<option value="${id}">${p.nombre} (${p.unidad}) - Disp: ${p.stockActual}</option>`;
+            }
+
+            fila.innerHTML = `
+                <select class="form-select bg-white select-ingrediente-id" required>${opciones}</select>
+                <input type="number" class="form-control bg-white text-center fw-bold input-ingrediente-cant" style="max-width: 75px;" value="1" min="1" placeholder="Cant." required>
+                <button type="button" class="btn btn-outline-danger" onclick="if(document.querySelectorAll('.fila-ingrediente-caja').length > 1) this.parentElement.remove();" title="Quitar artículo">
+                    <i class="fa-solid fa-xmark m-0"></i>
+                </button>
+            `;
+            cont.appendChild(fila);
+        };
+
+        document.getElementById('form-nueva-caja').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombreCaja = document.getElementById('caja-nombre').value.trim();
+            const filas = document.querySelectorAll('.fila-ingrediente-caja');
+            let items = [];
+
+            filas.forEach(f => {
+                const prodId = f.querySelector('.select-ingrediente-id').value;
+                const cant = parseInt(f.querySelector('.input-ingrediente-cant').value) || 0;
+                if (prodId && cant > 0 && window.inventarioData[prodId]) {
+                    const existente = items.find(i => i.productoId === prodId);
+                    if (existente) {
+                        existente.cantidad += cant;
+                    } else {
+                        items.push({
+                            productoId: prodId,
+                            nombre: window.inventarioData[prodId].nombre,
+                            unidad: window.inventarioData[prodId].unidad,
+                            cantidad: cant
+                        });
+                    }
+                }
+            });
+
+            if (items.length === 0) {
+                alert("⚠️ Debes agregar al menos un insumo válido a la caja.");
+                return;
+            }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            try {
+                await addDoc(collection(db, "cajas_plantillas"), {
+                    nombre: nombreCaja,
+                    items: items,
+                    creadoPor: window.usuariosData[auth.currentUser.uid]?.nombre || "Usuario",
+                    fechaCreacion: new Date().toISOString()
+                });
+                document.getElementById('form-nueva-caja').reset();
+                document.getElementById('contenedor-ingredientes-caja').innerHTML = "";
+                window.agregarFilaIngredienteCaja();
+                await cargarPlantillasCajas();
+            } catch (err) {
+                alert("Error al guardar la plantilla de caja.");
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        window.cargarPlantillasCajas = async function() {
+            try {
+                const snap = await getDocs(collection(db, "cajas_plantillas"));
+                const listaEl = document.getElementById('lista-plantillas-cajas');
+                const selectEl = document.getElementById('entrega-caja-id');
+                if (listaEl) listaEl.innerHTML = "";
+                if (selectEl) selectEl.innerHTML = '<option value="">Seleccione una plantilla...</option>';
+                window.cajasPlantillasData = {};
+
+                if (snap.empty) {
+                    if (listaEl) listaEl.innerHTML = `<p class="text-muted small mb-0">No hay plantillas creadas aún.</p>`;
+                    return;
+                }
+
+                snap.forEach(d => {
+                    const c = d.data();
+                    window.cajasPlantillasData[d.id] = c;
+                    const resumenItems = (c.items || []).map(i => `${i.cantidad} ${i.nombre}`).join(', ');
+                    if (listaEl) {
+                        listaEl.innerHTML += `
+                            <div class="p-2 bg-white rounded border d-flex justify-content-between align-items-center shadow-sm">
+                                <div>
+                                    <strong class="text-arca small d-block">${c.nombre}</strong>
+                                    <span class="text-muted" style="font-size: 0.75rem;">${resumenItems}</span>
+                                </div>
+                                <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="eliminarPlantillaCaja('${d.id}', '${c.nombre}')" title="Eliminar plantilla">
+                                    <i class="fa-solid fa-trash m-0"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                    if (selectEl) {
+                        selectEl.innerHTML += `<option value="${d.id}">${c.nombre}</option>`;
+                    }
+                });
+                window.previsualizarCajaSeleccionada();
+            } catch (e) {}
+        };
+
+        window.eliminarPlantillaCaja = async function(id, nombre) {
+            if (confirm(`¿Eliminar la plantilla "${nombre}"?`)) {
+                try {
+                    await deleteDoc(doc(db, "cajas_plantillas", id));
+                    await cargarPlantillasCajas();
+                } catch (e) {}
+            }
+        };
+
+        window.previsualizarCajaSeleccionada = function() {
+            const id = document.getElementById('entrega-caja-id')?.value;
+            const prev = document.getElementById('preview-contenido-caja');
+            const btnSubmit = document.getElementById('btn-confirmar-entrega-caja');
+            if (!prev) return;
+
+            if (!id || !window.cajasPlantillasData[id]) {
+                prev.style.display = 'none';
+                if (btnSubmit) btnSubmit.disabled = false;
+                return;
+            }
+
+            const caja = window.cajasPlantillasData[id];
+            let html = `<strong class="text-arca d-block mb-1">Descuento automático por aplicar:</strong><ul class="mb-0 ps-3">`;
+            let stockSuficiente = true;
+
+            (caja.items || []).forEach(item => {
+                const prodActual = window.inventarioData[item.productoId];
+                const disp = prodActual ? prodActual.stockActual : 0;
+                const nombreProd = prodActual ? prodActual.nombre : item.nombre;
+                if (disp < item.cantidad) {
+                    stockSuficiente = false;
+                    html += `<li class="text-danger fw-bold">${nombreProd}: requiere ${item.cantidad} y solo hay ${disp} en stock ❌</li>`;
+                } else {
+                    html += `<li class="text-success">${nombreProd}: -${item.cantidad} (Quedarán ${disp - item.cantidad}) ✅</li>`;
+                }
+            });
+            html += `</ul>`;
+            prev.innerHTML = html;
+            prev.style.display = 'block';
+            if (btnSubmit) btnSubmit.disabled = !stockSuficiente;
+        };
+
+        window.verificarFamiliaDuplicada = function() {
+            const famInput = (document.getElementById('entrega-familia')?.value || "").trim().toLowerCase();
+            const rutInput = (document.getElementById('entrega-rut')?.value || "").trim().toLowerCase();
+            const alertaEl = document.getElementById('alerta-familia-duplicada');
+            if (!alertaEl) return;
+
+            if (famInput.length < 3 && rutInput.length < 4) {
+                alertaEl.style.display = 'none';
+                return;
+            }
+
+            const coincidencias = window.entregasCajasData.filter(e => {
+                const matchNombre = famInput.length >= 3 && (e.familia || "").toLowerCase().includes(famInput);
+                const matchRut = rutInput.length >= 4 && (e.rut || "").toLowerCase().includes(rutInput);
+                return matchNombre || matchRut;
+            });
+
+            if (coincidencias.length > 0) {
+                const ultima = coincidencias[0];
+                const f = new Date(ultima.fecha).toLocaleDateString();
+                alertaEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <b>¡Atención! Posible entrega duplicada:</b> Se encontraron <b>${coincidencias.length}</b> entrega(s) previa(s) para <b>${ultima.familia}</b> (Última entrega: ${f} - ${ultima.nombreCaja}).`;
+                alertaEl.style.display = 'block';
+            } else {
+                alertaEl.style.display = 'none';
+            }
+        };
+
+        document.getElementById('form-entregar-caja').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cajaId = document.getElementById('entrega-caja-id').value;
+            const familia = document.getElementById('entrega-familia').value.trim();
+            const rut = document.getElementById('entrega-rut').value.trim();
+            const notas = document.getElementById('entrega-notas').value.trim();
+
+            if (!cajaId || !window.cajasPlantillasData[cajaId]) return;
+            const caja = window.cajasPlantillasData[cajaId];
+
+            // 1. Verificar si hay stock suficiente para todos los insumos de la caja
+            for (const item of (caja.items || [])) {
+                const prod = window.inventarioData[item.productoId];
+                if (!prod || prod.stockActual < item.cantidad) {
+                    alert(`⚠️ No se puede entregar la caja: Stock insuficiente de "${item.nombre}".`);
+                    return;
+                }
+            }
+
+            // 2. Confirmación preventiva si la familia ya registra entregas previas
+            const alertaVisible = document.getElementById('alerta-familia-duplicada').style.display !== 'none';
+            if (alertaVisible) {
+                if (!confirm(`⚠️ La familia "${familia}" ya registra una entrega anterior en el historial.\n¿Confirmas que deseas entregarle una nueva caja de todas formas?`)) {
+                    return;
+                }
+            }
+
+            const btn = document.getElementById('btn-confirmar-entrega-caja');
+            btn.disabled = true;
+
+            try {
+                let detalleDescuento = [];
+                // 3. Descontar cada insumo del inventario general y evaluar alertas de stock crítico
+                for (const item of (caja.items || [])) {
+                    const prod = window.inventarioData[item.productoId];
+                    const nuevoStock = prod.stockActual - item.cantidad;
+                    await updateDoc(doc(db, "inventario", item.productoId), { stockActual: nuevoStock });
+                    detalleDescuento.push(`${item.cantidad} ${prod.nombre}`);
+
+                    if (nuevoStock <= prod.stockMinimo && prod.stockActual > prod.stockMinimo) {
+                        await addDoc(collection(db, "notificaciones"), {
+                            receptor: "Bodega",
+                            texto: `⚠️ <b>Alerta de Inventario:</b> "${prod.nombre}" ha bajado a nivel crítico (${nuevoStock} ${prod.unidad} restantes) tras entregar ${caja.nombre}.`,
+                            fecha: new Date().toISOString(),
+                            leida: false
+                        });
+                    }
+                }
+
+                // 4. Registrar la entrega a la familia en Firestore
+                const responsable = window.usuariosData[auth.currentUser.uid]?.nombre || "Usuario";
+                await addDoc(collection(db, "entregas_cajas"), {
+                    cajaId: cajaId,
+                    nombreCaja: caja.nombre,
+                    familia: familia,
+                    rut: rut || "S/I",
+                    notas: notas || "-",
+                    insumosDescontados: detalleDescuento.join(', '),
+                    entregadoPor: responsable,
+                    fecha: new Date().toISOString()
+                });
+
+                alert(`✅ ¡Entrega registrada con éxito a "${familia}"! Se descontaron los productos del inventario general.`);
+                document.getElementById('form-entregar-caja').reset();
+                document.getElementById('preview-contenido-caja').style.display = 'none';
+                document.getElementById('alerta-familia-duplicada').style.display = 'none';
+                await cargarInventario();
+            } catch (err) {
+                alert("❌ Ocurrió un error al procesar la entrega de la caja.");
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        window.cargarHistorialEntregasCajas = async function() {
+            try {
+                const snap = await getDocs(collection(db, "entregas_cajas"));
+                const tbody = document.getElementById('tabla-entregas-cajas');
+                if (tbody) tbody.innerHTML = "";
+                window.entregasCajasData = [];
+
+                snap.forEach(d => {
+                    window.entregasCajasData.push({ id: d.id, ...d.data() });
+                });
+                window.entregasCajasData.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+
+                if (window.entregasCajasData.length === 0) {
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="7" class="text-center text-muted py-3">Aún no se han registrado entregas de cajas.</td></tr>`;
+                    return;
+                }
+
+                window.entregasCajasData.forEach(e => {
+                    const f = new Date(e.fecha);
+                    const fechaStr = `${f.toLocaleDateString()} ${f.getHours().toString().padStart(2,'0')}:${f.getMinutes().toString().padStart(2,'0')}`;
+                    if (tbody) {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td class="text-muted">${fechaStr}</td>
+                                <td class="fw-bold text-arca">${e.familia}</td>
+                                <td><span class="badge bg-light text-dark border">${e.rut || 'S/I'}</span></td>
+                                <td><span class="badge bg-primary rounded-pill">${e.nombreCaja}</span></td>
+                                <td class="small text-secondary">${e.insumosDescontados}</td>
+                                <td class="small text-muted">${e.notas || '-'}</td>
+                                <td class="small fw-bold">${e.entregadoPor}</td>
+                            </tr>
+                        `;
+                    }
+                });
+            } catch (e) {}
+        };
+
+        document.getElementById('buscador-entregas-cajas')?.addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#tabla-entregas-cajas tr');
+            rows.forEach(row => { row.style.display = row.innerText.toLowerCase().includes(term) ? '' : 'none'; });
+        });
 
         async function cargarFinanzas() { 
             const t = document.getElementById('tabla-finanzas'); let sI = 0, sE = 0, aT = []; 

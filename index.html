@@ -90,6 +90,95 @@
         
         .app-pantalla { display: none; animation: fadeIn 0.3s; }
         .app-pantalla.activa { display: block; }
+
+        /* ========= EFECTO DE RESALTADO PARA EL TOUR GUIADO ========= */
+        @keyframes pulsoTour {
+            0% { box-shadow: 0 0 0 0 rgba(234, 182, 77, 0.85); }
+            70% { box-shadow: 0 0 0 12px rgba(234, 182, 77, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(234, 182, 77, 0); }
+        }
+        .tour-resaltado {
+            outline: 3px solid var(--dorado-arca) !important;
+            border-radius: 10px !important;
+            animation: pulsoTour 1.6s infinite !important;
+            position: relative;
+            z-index: 1055 !important;
+        }
+
+        /* ========= ADAPTACIÓN FLUIDA A TARJETAS EN TELÉFONOS (SIN SCROLL LATERAL) ========= */
+        @media (max-width: 767.98px) {
+            .tabla-movil-fluida { border: none !important; background: transparent !important; box-shadow: none !important; overflow-x: visible !important; }
+            .tabla-movil-fluida table, .tabla-movil-fluida tbody { display: block; width: 100%; }
+            .tabla-movil-fluida thead { display: none; }
+            .tabla-movil-fluida tbody tr {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                background-color: #ffffff;
+                border: 1px solid #e2e8f0 !important;
+                border-radius: 12px;
+                padding: 12px 14px;
+                margin-bottom: 12px;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+            }
+            [data-bs-theme="dark"] .tabla-movil-fluida tbody tr {
+                background-color: #212529;
+                border-color: #373b3e !important;
+            }
+            .tabla-movil-fluida tbody td {
+                border: none !important;
+                padding: 3px 0 !important;
+            }
+
+            /* 1. Diseño Móvil para Tabla de Inventario */
+            #tabla-exportar-inventario tbody td:nth-child(1) { width: 62%; font-size: 1.05rem; order: 1; text-align: left; }
+            #tabla-exportar-inventario tbody td:nth-child(4) { width: 38%; order: 2; text-align: right; }
+            #tabla-exportar-inventario tbody td:nth-child(2) { width: 45%; order: 3; text-align: left; margin-top: 4px; }
+            #tabla-exportar-inventario tbody td:nth-child(3) { width: 55%; order: 4; text-align: right; margin-top: 4px; line-height: 1.15; }
+            #tabla-exportar-inventario tbody td:nth-child(5) {
+                width: 100% !important;
+                min-width: 100% !important;
+                order: 5;
+                margin-top: 10px !important;
+                padding-top: 10px !important;
+                border-top: 1px dashed #dee2e6 !important;
+            }
+            [data-bs-theme="dark"] #tabla-exportar-inventario tbody td:nth-child(5) { border-top-color: #495057 !important; }
+            #tabla-exportar-inventario tbody td:nth-child(5) > div {
+                width: 100%;
+                justify-content: space-between;
+            }
+            #tabla-exportar-inventario tbody td:nth-child(5) .input-group {
+                width: 165px !important;
+            }
+
+            /* 2. Diseño Móvil para Directorio de Usuarios */
+            #sec-usuarios table tbody td:nth-child(1) { width: 60%; font-size: 1rem; order: 1; }
+            #sec-usuarios table tbody td:nth-child(4) { width: 40%; order: 2; text-align: right; }
+            #sec-usuarios table tbody td:nth-child(2) { width: 50%; order: 3; }
+            #sec-usuarios table tbody td:nth-child(5) { width: 50%; order: 4; text-align: right; font-size: 0.85rem; }
+            #sec-usuarios table tbody td:nth-child(5)::before { content: "Avance: "; color: #6c757d; font-weight: normal; }
+            #sec-usuarios table tbody td:nth-child(3) { width: 65%; order: 5; margin-top: 6px !important; }
+            #sec-usuarios table tbody td:nth-child(6) { width: 35%; order: 6; text-align: right; margin-top: 6px !important; }
+
+            /* 3. Diseño Móvil para Historial de Entregas de Cajas */
+            #tabla-exportar-entregas tbody td:nth-child(2) { width: 60%; font-size: 0.95rem; order: 1; }
+            #tabla-exportar-entregas tbody td:nth-child(1) { width: 40%; order: 2; text-align: right; font-size: 0.75rem; }
+            #tabla-exportar-entregas tbody td:nth-child(3) { width: 45%; order: 3; margin-top: 4px !important; }
+            #tabla-exportar-entregas tbody td:nth-child(4) { width: 55%; order: 4; text-align: right; margin-top: 4px !important; }
+            #tabla-exportar-entregas tbody td:nth-child(5) { width: 100%; order: 5; margin-top: 6px !important; padding-top: 6px !important; border-top: 1px dashed #dee2e6 !important; }
+            #tabla-exportar-entregas tbody td:nth-child(6) { width: 55%; order: 6; font-size: 0.75rem; }
+            #tabla-exportar-entregas tbody td:nth-child(7) { width: 45%; order: 7; text-align: right; font-size: 0.75rem; }
+
+            /* 4. Diseño Móvil para Libro Mayor de Finanzas */
+            #tabla-exportar-finanzas tbody td:nth-child(2) { width: 60%; font-weight: bold; order: 1; }
+            #tabla-exportar-finanzas tbody td:nth-child(4) { width: 40%; text-align: right; font-size: 1rem; order: 2; }
+            #tabla-exportar-finanzas tbody td:nth-child(1) { width: 50%; font-size: 0.8rem; color: #6c757d; order: 3; }
+            #tabla-exportar-finanzas tbody td:nth-child(3) { width: 50%; text-align: right; order: 4; }
+            #tabla-exportar-finanzas tbody td:nth-child(5) { width: 40%; order: 5; margin-top: 8px !important; padding-top: 8px !important; border-top: 1px dashed #dee2e6 !important; }
+            #tabla-exportar-finanzas tbody td:nth-child(6) { width: 60%; text-align: right; order: 6; margin-top: 8px !important; padding-top: 8px !important; border-top: 1px dashed #dee2e6 !important; }
+        }
     </style>
 </head>
 <body>
@@ -100,7 +189,7 @@
         <button id="btn-close-install" class="btn btn-sm text-dark ms-2" style="font-size: 1.2rem; padding: 0 5px;">&times;</button>
     </div>
 
-    <!-- CABECERA SUPERIOR (CON BOTÓN DE TEMA Y MENSAJES) -->
+    <!-- CABECERA SUPERIOR (CON BOTÓN DE TOUR ?, TEMA Y MENSAJES) -->
     <nav class="navbar shadow-sm navbar-arca">
         <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand d-flex align-items-center m-0" href="#">
@@ -111,13 +200,16 @@
                 </div>
             </a>
             
-            <!-- ZONA DERECHA: BOTÓN DÍA/NOCHE/AUTO + ICONO DE MENSAJES -->
+            <!-- ZONA DERECHA: BOTÓN TOUR (?) + BOTÓN DÍA/NOCHE/AUTO + ICONO DE MENSAJES -->
             <div class="d-flex align-items-center gap-3">
+                <button id="btn-tour" class="btn btn-link text-white text-decoration-none p-0 d-flex align-items-center" style="font-size: 1.35rem; display: none !important;" onclick="iniciarTourApp()" title="Tour guiado de la App">
+                    <i class="fa-solid fa-circle-question m-0"></i>
+                </button>
                 <button id="btn-theme" class="btn btn-link text-white text-decoration-none p-0 d-flex align-items-center" style="font-size: 1.35rem;" onclick="toggleTheme()" title="Cambiar tema">
                     <i class="fa-solid fa-circle-half-stroke m-0"></i>
                 </button>
                 <div class="d-flex align-items-center" id="iconos-cabecera" style="display: none !important;">
-                    <div class="position-relative me-2" style="cursor:pointer;" onclick="abrirBuzon()" title="Buzón Pastoral">
+                    <div class="position-relative me-2" style="cursor:pointer;" id="btn-buzon-cabecera" onclick="abrirBuzon()" title="Buzón Pastoral">
                         <i class="fa-solid fa-comment-dots text-white m-0" style="font-size: 1.45rem; padding-top: 2px;"></i>
                         <span id="badge-mensajes" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display:none; font-size: 0.65rem;">0</span>
                     </div>
@@ -125,6 +217,36 @@
             </div>
         </div>
     </nav>
+
+    <!-- MODAL DE TOUR INTERACTIVO POR ROL -->
+    <div id="tour-fondo" class="modal-fondo">
+        <div id="tour-modal" class="modal-caja bg-white position-relative" style="max-width: 460px; padding: 24px;">
+            <button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarTourApp()"></button>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge bg-arca rounded-pill px-3 py-1" id="tour-rol-badge">Guía de Usuario</span>
+                <span class="text-muted small fw-bold ms-auto me-4" id="tour-contador-paso">Paso 1 de 5</span>
+            </div>
+            <div class="progress mb-3" style="height: 6px;">
+                <div id="tour-progreso-barra" class="progress-bar bg-warning" role="progressbar" style="width: 20%;"></div>
+            </div>
+            <div class="text-center my-3">
+                <div id="tour-icono-circulo" class="rounded-circle bg-light d-inline-flex justify-content-center align-items-center mb-3 shadow-sm border" style="width: 68px; height: 68px;">
+                    <i id="tour-icono" class="fa-solid fa-compass text-arca fa-2x m-0"></i>
+                </div>
+                <h5 class="fw-bold text-arca mb-2" id="tour-titulo">Bienvenido a El Arca</h5>
+                <p class="text-muted small mb-0 px-2" id="tour-descripcion" style="line-height: 1.5;"></p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-3 gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm fw-bold px-3 rounded-pill" id="btn-tour-ant" onclick="cambiarPasoTour(-1)">
+                    <i class="fa-solid fa-arrow-left"></i> Anterior
+                </button>
+                <button type="button" class="btn btn-link text-muted small text-decoration-none p-0" onclick="cerrarTourApp()">Saltar</button>
+                <button type="button" class="btn btn-arca btn-sm fw-bold px-4 rounded-pill" id="btn-tour-sig" onclick="cambiarPasoTour(1)">
+                    Siguiente <i class="fa-solid fa-arrow-right m-0 ms-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODALES: QR, ASISTENCIA, FORO, CALENDARIO -->
     <div id="scanner-fondo" class="modal-fondo"><div id="scanner-modal" class="modal-caja text-center bg-white position-relative"><button type="button" class="btn-close position-absolute top-0 end-0 m-3" onclick="cerrarEscanerQR()"></button><h4 class="text-arca fw-bold mb-3"><i class="fa-solid fa-camera"></i> Escáner de Asistencia</h4><div id="reader" class="mb-3" style="width: 100%; border-radius: 8px; overflow: hidden; min-height: 250px;"></div><p class="text-muted small">Apunta la cámara al código QR generado por el Líder del evento.</p><button class="btn btn-secondary w-100 fw-bold" onclick="cerrarEscanerQR()">Cancelar</button></div></div>
@@ -211,9 +333,9 @@
         <!-- DASHBOARD APP -->
         <div id="dashboard-container">
 
-            <!-- PANTALLA 1: INICIO (SIN MINISTERIOS ACTIVOS, CARTELERA ANCHO COMPLETO) -->
+            <!-- PANTALLA 1: INICIO -->
             <div id="pantalla-inicio" class="app-pantalla activa">
-                <div class="card border-0 mb-4 shadow-sm" style="background: linear-gradient(135deg, var(--azul-arca), #004d99); color: white;">
+                <div class="card border-0 mb-4 shadow-sm" id="card-banner-donacion" style="background: linear-gradient(135deg, var(--azul-arca), #004d99); color: white;">
                     <div class="card-body d-flex justify-content-between align-items-center p-4">
                         <div>
                             <h5 class="fw-bold mb-1"><i class="fa-solid fa-hand-holding-dollar text-warning"></i> Apoya nuestra Iglesia</h5>
@@ -224,7 +346,7 @@
                 </div>
                 <div class="row g-4">
                     <div class="col-12">
-                        <div class="card bg-white h-100">
+                        <div class="card bg-white h-100" id="card-cartelera-eventos">
                             <div class="card-body p-4">
                                 <h5 class="fw-bold text-arca border-bottom pb-3 mb-4">📅 Cartelera de Eventos</h5>
                                 <div class="row g-4" id="lista-eventos"></div>
@@ -252,7 +374,7 @@
                         <div class="seccion-gestion activa" id="sec-usuarios">
                             <h5 class="fw-bold text-arca mb-3">👥 Directorio de Personas</h5>
                             <div class="mb-3"><input type="text" id="buscador-usuarios-admin" class="form-control bg-light shadow-sm" placeholder="🔍 Buscar por nombre, perfil, estado o ministerio..."></div>
-                            <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                            <div class="table-responsive tabla-movil-fluida bg-white rounded shadow-sm border border-light">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead class="table-cabecera-suave"><tr><th>Nombre</th><th>Perfil</th><th>Ministerio Asignado</th><th>Estado</th><th>Avance</th><th>Acción</th></tr></thead>
                                     <tbody id="tabla-usuarios"></tbody>
@@ -322,7 +444,7 @@
                             </form>
                         </div>
 
-                        <!-- Ministerios (CON LISTA DE MINISTERIOS ACTIVOS TRASLADADA AQUÍ) -->
+                        <!-- Ministerios -->
                         <div class="seccion-gestion" id="sec-ministerios">
                             <h5 class="fw-bold text-arca mb-3">🤝 Agregar Ministerio</h5>
                             <form id="form-nuevo-ministerio" class="row g-2 bg-light p-3 rounded shadow-sm mb-4 border border-light">
@@ -380,7 +502,7 @@
                                     <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Mobiliario">Mobiliario</button>
                                     <button class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-bold filtro-btn bg-white" data-cat="Insumos">Insumos</button>
                                 </div>
-                                <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                                <div class="table-responsive tabla-movil-fluida bg-white rounded shadow-sm border border-light">
                                     <table class="table table-hover align-middle mb-0" id="tabla-exportar-inventario">
                                         <thead class="table-cabecera-suave">
                                             <tr><th style="width: 25%;">Producto</th><th style="width: 20%;">Categoría</th><th style="width: 20%;">Stock Actual</th><th style="width: 15%;">Estado</th><th style="width: 20%; min-width: 180px;">Dispensación / Ingreso</th></tr>
@@ -461,7 +583,7 @@
                                     </div>
                                     <button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-entregas', 'Registro_Familias_Cajas.csv')">📥 Exportar Registro</button>
                                 </div>
-                                <div class="table-responsive bg-white rounded shadow-sm border border-light">
+                                <div class="table-responsive tabla-movil-fluida bg-white rounded shadow-sm border border-light">
                                     <table class="table table-hover align-middle mb-0 small" id="tabla-exportar-entregas">
                                         <thead class="table-cabecera-suave">
                                             <tr><th>Fecha</th><th>Familia / Beneficiario</th><th>RUT / ID</th><th>Caja Entregada</th><th>Insumos Descontados</th><th>Notas</th><th>Entregado por</th></tr>
@@ -473,7 +595,7 @@
                         </div>
 
                         <!-- Finanzas -->
-                        <div class="seccion-gestion" id="sec-finanzas"><h5 class="fw-bold text-success mb-3">💰 Bóveda Financiera</h5><div class="row g-3 mb-4"><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Ingresos Totales</h6><h3 class="text-success mb-0 fw-bold" id="total-ingresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Egresos Totales</h6><h3 class="text-danger mb-0 fw-bold" id="total-egresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100 border-bottom border-4" style="border-bottom-color: var(--dorado-arca) !important;"><div class="card-body"><h6 class="text-muted">Saldo Actual</h6><h3 class="text-dark mb-0 fw-bold" id="total-saldo">$0</h3></div></div></div></div><div class="bg-light p-3 rounded shadow-sm border border-light mb-4"><h6 class="fw-bold text-arca mb-3">Registrar Movimiento</h6><form id="form-finanzas" class="row g-2 align-items-end"><div class="col-md-3"><label class="small text-muted">Tipo</label><select id="fin-tipo" class="form-select bg-white" required><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select></div><div class="col-md-3"><label class="small text-muted">Monto</label><input type="number" id="fin-monto" class="form-control bg-white" placeholder="$" min="1" required></div><div class="col-md-3"><label class="small text-muted">Fecha</label><input type="date" id="fin-fecha" class="form-control bg-white" required></div><div class="col-md-3"><label class="small text-muted">Concepto</label><input type="text" id="fin-concepto" class="form-control bg-white" required></div><div class="col-12 mt-3"><button type="submit" class="btn btn-success w-100 fw-bold">Guardar Transacción</button></div></form></div><div class="d-flex justify-content-between align-items-end mb-2"><h6 class="fw-bold text-arca mb-0">Libro Mayor Financiero</h6><button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor.csv')">📥 Exportar Excel</button></div><div class="table-responsive bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0" id="tabla-exportar-finanzas"><thead class="table-cabecera-suave"><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead><tbody id="tabla-finanzas"></tbody></table></div></div>
+                        <div class="seccion-gestion" id="sec-finanzas"><h5 class="fw-bold text-success mb-3">💰 Bóveda Financiera</h5><div class="row g-3 mb-4"><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Ingresos Totales</h6><h3 class="text-success mb-0 fw-bold" id="total-ingresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100"><div class="card-body"><h6 class="text-muted">Egresos Totales</h6><h3 class="text-danger mb-0 fw-bold" id="total-egresos">$0</h3></div></div></div><div class="col-md-4"><div class="card bg-white border-0 shadow-sm text-center h-100 border-bottom border-4" style="border-bottom-color: var(--dorado-arca) !important;"><div class="card-body"><h6 class="text-muted">Saldo Actual</h6><h3 class="text-dark mb-0 fw-bold" id="total-saldo">$0</h3></div></div></div></div><div class="bg-light p-3 rounded shadow-sm border border-light mb-4"><h6 class="fw-bold text-arca mb-3">Registrar Movimiento</h6><form id="form-finanzas" class="row g-2 align-items-end"><div class="col-md-3"><label class="small text-muted">Tipo</label><select id="fin-tipo" class="form-select bg-white" required><option value="Ingreso">Ingreso (+)</option><option value="Egreso">Egreso (-)</option></select></div><div class="col-md-3"><label class="small text-muted">Monto</label><input type="number" id="fin-monto" class="form-control bg-white" placeholder="$" min="1" required></div><div class="col-md-3"><label class="small text-muted">Fecha</label><input type="date" id="fin-fecha" class="form-control bg-white" required></div><div class="col-md-3"><label class="small text-muted">Concepto</label><input type="text" id="fin-concepto" class="form-control bg-white" required></div><div class="col-12 mt-3"><button type="submit" class="btn btn-success w-100 fw-bold">Guardar Transacción</button></div></form></div><div class="d-flex justify-content-between align-items-end mb-2"><h6 class="fw-bold text-arca mb-0">Libro Mayor Financiero</h6><button class="btn btn-outline-secondary btn-sm bg-white fw-bold" onclick="exportarTablaCSV('tabla-exportar-finanzas', 'Libro_Mayor.csv')">📥 Exportar Excel</button></div><div class="table-responsive tabla-movil-fluida bg-white rounded shadow-sm border border-light"><table class="table table-hover align-middle mb-0" id="tabla-exportar-finanzas"><thead class="table-cabecera-suave"><tr><th>Fecha</th><th>Concepto</th><th>Tipo</th><th>Monto</th><th>Estado</th><th>Auditoría</th></tr></thead><tbody id="tabla-finanzas"></tbody></table></div></div>
                     </div>
                 </div>
             </div>
@@ -515,8 +637,8 @@
     <div class="bottom-nav" id="bottom-navigation" style="display: none;">
         <a href="#" class="bottom-nav-item active" id="nav-btn-inicio" onclick="cambiarPantallaApp('inicio', this)"><i class="fa-solid fa-house"></i></a>
         <a href="#" class="bottom-nav-item" id="nav-btn-gestion" style="display: none;" onclick="cambiarPantallaApp('gestion', this)"><i class="fa-solid fa-layer-group"></i></a>
-        <a href="#" class="bottom-nav-item central-btn shadow-lg" onclick="abrirEscanerQR()"><i class="fa-solid fa-qrcode"></i></a>
-        <a href="#" class="bottom-nav-item" onclick="abrirModalNotificaciones()">
+        <a href="#" class="bottom-nav-item central-btn shadow-lg" id="nav-btn-qr" onclick="abrirEscanerQR()"><i class="fa-solid fa-qrcode"></i></a>
+        <a href="#" class="bottom-nav-item" id="nav-btn-notif" onclick="abrirModalNotificaciones()">
             <i class="fa-solid fa-bell"></i>
             <span id="badge-notif" class="position-absolute badge rounded-pill bg-danger" style="display:none; font-size: 0.6rem; top: 2px; right: 8px;">0</span>
         </a>
@@ -710,6 +832,7 @@
                         setAvatar(user, dU);
                         document.getElementById('bottom-navigation').style.display = "flex";
                         document.getElementById('iconos-cabecera').style.setProperty("display", "flex", "important");
+                        document.getElementById('btn-tour').style.setProperty("display", "flex", "important");
                         await cargarPerfilMiembro(user.uid, dU);
 
                         const esAdminOPresbiterio = (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Presbiterio");
@@ -780,9 +903,184 @@
                 }
             } else {
                 if (window.unsubscribeUsuarios) { window.unsubscribeUsuarios(); window.unsubscribeUsuarios = null; }
-                document.getElementById('bottom-navigation').style.display = "none"; document.getElementById('iconos-cabecera').style.setProperty("display", "none", "important"); document.getElementById('login-container').style.display = "flex"; document.getElementById('dashboard-container').style.display = "none"; 
+                document.getElementById('bottom-navigation').style.display = "none";
+                document.getElementById('iconos-cabecera').style.setProperty("display", "none", "important");
+                document.getElementById('btn-tour').style.setProperty("display", "none", "important");
+                document.getElementById('login-container').style.display = "flex";
+                document.getElementById('dashboard-container').style.display = "none"; 
             }
         });
+
+        // ================= TOUR INTERACTIVO INTELIGENTE POR ROL (?) ================= //
+        window.pasosTourActual = [];
+        window.indicePasoTour = 0;
+
+        function limpiarResaltadoTour() {
+            document.querySelectorAll('.tour-resaltado').forEach(el => el.classList.remove('tour-resaltado'));
+        }
+
+        window.iniciarTourApp = function() {
+            const rol = window.perfilUsuarioActual || "Miembro";
+            const esAdminOPresb = (rol === "Administrador" || rol === "Presbiterio");
+            const puedeEventos = (rol === "Administrador" || rol === "Pastor" || rol === "Líder");
+            const puedeInventario = (esAdminOPresb || window.esVastagoActual);
+
+            let pasos = [
+                {
+                    titulo: "🏠 Inicio y Cartelera de Eventos",
+                    icono: "fa-solid fa-house text-arca",
+                    desc: "En la pantalla principal encontrarás los próximos eventos de nuestra iglesia. En cada evento puedes abrir el <b>Foro</b> para comentar y compartir con la congregación.",
+                    accion: () => { cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio')); },
+                    resaltar: "card-cartelera-eventos"
+                },
+                {
+                    titulo: "💖 Aportes y Donaciones",
+                    icono: "fa-solid fa-hand-holding-dollar text-warning",
+                    desc: "Desde el banner superior puedes copiar los datos bancarios de la iglesia con un toque y notificar tu transferencia para que quede registrada en tu historial personal.",
+                    accion: () => { cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio')); },
+                    resaltar: "card-banner-donacion"
+                },
+                {
+                    titulo: "📷 Escáner QR de Asistencia",
+                    icono: "fa-solid fa-qrcode text-primary",
+                    desc: "Al llegar a un culto o reunión, presiona este botón central de la barra inferior y apunta tu cámara al código QR del evento para registrar tu asistencia al instante.",
+                    accion: () => {},
+                    resaltar: "nav-btn-qr"
+                },
+                {
+                    titulo: "💬 Buzón de Cuidado Pastoral",
+                    icono: "fa-solid fa-comment-dots text-info",
+                    desc: esAdminOPresb || puedeEventos
+                        ? "Como parte del equipo de liderazgo, aquí recibirás las consultas o peticiones de los miembros con una alerta roja y podrás responderles en privado."
+                        : "Aquí puedes escribir tus consultas, peticiones de oración o mensajes directos. El equipo pastoral te responderá de forma privada.",
+                    accion: () => {},
+                    resaltar: "btn-buzon-cabecera"
+                },
+                {
+                    titulo: "🔔 Notificaciones y Modo Día/Noche",
+                    icono: "fa-solid fa-bell text-danger",
+                    desc: "En la campana inferior recibirás avisos importantes de la iglesia, y con el botón superior <b>◐</b> podrás alternar entre Modo Claro, Oscuro o Automático.",
+                    accion: () => {},
+                    resaltar: "nav-btn-notif"
+                }
+            ];
+
+            // Pasos exclusivos adicionales según los privilegios de gestión del usuario
+            if (esAdminOPresb) {
+                pasos.push({
+                    titulo: "👥 Gestión de Usuarios y Líderes",
+                    icono: "fa-solid fa-users-gear text-arca",
+                    desc: "En el Panel de Gestión puedes editar perfiles en tiempo real, asignar uno o múltiples ministerios a un Líder, otorgar privilegios de Vástago o enviar correos para restablecer contraseñas.",
+                    accion: () => { cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); document.getElementById('btn-tab-usuarios').click(); },
+                    resaltar: "btn-tab-usuarios"
+                });
+                pasos.push({
+                    titulo: "🤝 Ministerios y 📖 Etapas de Formación",
+                    icono: "fa-solid fa-book-open text-success",
+                    desc: "En estas pestañas puedes crear o administrar los Ministerios Activos de la iglesia y configurar las etapas de discipulado que aparecen en la ruta de cada miembro.",
+                    accion: () => { cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); document.getElementById('btn-tab-ministerios').click(); },
+                    resaltar: "btn-tab-ministerios"
+                });
+            }
+
+            if (puedeEventos) {
+                pasos.push({
+                    titulo: "📅 Publicación de Eventos y Asistencia",
+                    icono: "fa-solid fa-calendar-check text-primary",
+                    desc: "Publica eventos para la iglesia o tu ministerio. Además, en la cartelera podrás proyectar el <b>Código QR</b> y abrir la lista de <b>Asistencia</b> para anotar miembros o invitados.",
+                    accion: () => { cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); document.getElementById('btn-tab-eventos').click(); },
+                    resaltar: "btn-tab-eventos"
+                });
+            }
+
+            if (puedeInventario) {
+                pasos.push({
+                    titulo: "📦 Inventario y Cajas de Mercadería",
+                    icono: "fa-solid fa-boxes-stacked text-warning",
+                    desc: "Controla el stock general con alertas automáticas de nivel crítico y usa la sub-pestaña <b>Cajas de Mercadería y Familias</b> para armar canastas, descontar productos en bloque y evitar entregas duplicadas.",
+                    accion: () => { cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); document.getElementById('btn-tab-inventario').click(); },
+                    resaltar: "btn-tab-inventario"
+                });
+            }
+
+            if (rol === "Administrador") {
+                pasos.push({
+                    titulo: "💰 Bóveda Financiera y Auditoría",
+                    icono: "fa-solid fa-vault text-warning",
+                    desc: "Exclusivo para Administración: aprueba o rechaza aportes transferidos por los miembros, registra ingresos/egresos en el Libro Mayor y exporta reportes contables a Excel.",
+                    accion: () => { cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); document.getElementById('btn-tab-finanzas').click(); },
+                    resaltar: "btn-tab-finanzas"
+                });
+            }
+
+            // Paso final: Mi Perfil
+            pasos.push({
+                titulo: "👤 Mi Perfil y Ruta de Formación",
+                icono: "fa-solid fa-user-circle text-arca",
+                desc: "Finalmente, en tu Perfil puedes revisar tus datos de contacto, el estado de tus aportes, tu porcentaje de avance en las Etapas de Formación y tu historial de asistencia.",
+                accion: () => { cambiarPantallaApp('perfil', document.getElementById('nav-btn-perfil')); },
+                resaltar: "nav-btn-perfil"
+            });
+
+            window.pasosTourActual = pasos;
+            window.indicePasoTour = 0;
+
+            const rolEtiqueta = window.esVastagoActual && rol === "Miembro" ? "Miembro (Vástago)" : rol;
+            document.getElementById('tour-rol-badge').innerHTML = `<i class="fa-solid fa-id-badge"></i> Tour • ${rolEtiqueta}`;
+            document.body.style.overflow = 'hidden';
+            document.getElementById('tour-fondo').style.display = 'flex';
+            document.getElementById('tour-modal').style.display = 'block';
+            mostrarPasoTour();
+        };
+
+        function mostrarPasoTour() {
+            limpiarResaltadoTour();
+            const total = window.pasosTourActual.length;
+            const paso = window.pasosTourActual[window.indicePasoTour];
+            if (!paso) return;
+
+            if (typeof paso.accion === 'function') paso.accion();
+
+            document.getElementById('tour-contador-paso').textContent = `Paso ${window.indicePasoTour + 1} de ${total}`;
+            const pct = Math.round(((window.indicePasoTour + 1) / total) * 100);
+            document.getElementById('tour-progreso-barra').style.width = `${pct}%`;
+
+            document.getElementById('tour-icono').className = `${paso.icono} fa-2x m-0`;
+            document.getElementById('tour-titulo').textContent = paso.titulo;
+            document.getElementById('tour-descripcion').innerHTML = paso.desc;
+
+            document.getElementById('btn-tour-ant').disabled = (window.indicePasoTour === 0);
+            const btnSig = document.getElementById('btn-tour-sig');
+            if (window.indicePasoTour === total - 1) {
+                btnSig.innerHTML = `¡Finalizar! <i class="fa-solid fa-check m-0 ms-1"></i>`;
+                btnSig.className = "btn btn-success btn-sm fw-bold px-4 rounded-pill";
+            } else {
+                btnSig.innerHTML = `Siguiente <i class="fa-solid fa-arrow-right m-0 ms-1"></i>`;
+                btnSig.className = "btn btn-arca btn-sm fw-bold px-4 rounded-pill";
+            }
+
+            if (paso.resaltar) {
+                const el = document.getElementById(paso.resaltar);
+                if (el) el.classList.add('tour-resaltado');
+            }
+        }
+
+        window.cambiarPasoTour = function(direccion) {
+            const nuevoIndice = window.indicePasoTour + direccion;
+            if (nuevoIndice >= window.pasosTourActual.length) {
+                window.cerrarTourApp();
+                return;
+            }
+            if (nuevoIndice < 0) return;
+            window.indicePasoTour = nuevoIndice;
+            mostrarPasoTour();
+        };
+
+        window.cerrarTourApp = function() {
+            limpiarResaltadoTour();
+            window.cerrarModal('tour');
+            cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio'));
+        };
 
         // ================= BUZÓN PASTORAL (MENSAJES) ================= //
         window.abrirBuzon = function() {
@@ -1007,8 +1305,8 @@
                     else if(p.stockActual <= p.stockMinimo) estadoPill = `<span class="badge bg-warning text-dark rounded-pill px-3"><i class="fa-solid fa-triangle-exclamation"></i> Stock Bajo</span>`; 
                     else estadoPill = `<span class="badge bg-success rounded-pill px-3">Óptimo</span>`; 
                     
-                    const diseñoStepperYControles = `<div class="d-flex align-items-center gap-1"><div class="input-group input-group-sm" style="width: 130px; flex-wrap: nowrap;"><button class="btn btn-outline-danger fw-bold px-2" type="button" onclick="cambiarCantidadTemporal('${p.id}', -1)">-</button><input type="number" id="input-stock-${p.id}" class="form-control text-center fw-bold px-0" value="${p.stockActual}" min="0"><button class="btn btn-outline-success fw-bold px-2" type="button" onclick="cambiarCantidadTemporal('${p.id}', 1)">+</button><button class="btn btn-primary px-2" type="button" onclick="guardarStockDirecto('${p.id}')"><i class="fa-solid fa-check m-0"></i></button></div><button class="btn btn-sm btn-outline-info fw-bold ms-1" onclick="editarStockMinimo('${p.id}', '${p.nombre}', ${p.stockMinimo})" title="Editar Stock Crítico"><i class="fa-solid fa-pencil m-0"></i></button><button class="btn btn-sm btn-outline-danger fw-bold" onclick="eliminarInsumo('${p.id}', '${p.nombre}')" title="Eliminar Producto"><i class="fa-solid fa-trash m-0"></i></button></div>`;
-                    t.innerHTML += `<tr><td class="fw-bold">${p.nombre}</td><td><span class="badge bg-light text-dark border">${p.categoria}</span></td><td class="fs-5 fw-bold text-arca">${p.stockActual} <small class="text-muted fs-6">${p.unidad}</small><br><span class="text-muted fw-normal" style="font-size: 0.65rem;">Mín: ${p.stockMinimo}</span></td><td>${estadoPill}</td><td>${diseñoStepperYControles}</td></tr>`; 
+                    const diseñoStepperYControles = `<div class="d-flex align-items-center gap-1"><div class="input-group input-group-sm" style="width: 130px; flex-wrap: nowrap;"><button class="btn btn-outline-danger fw-bold px-2" type="button" onclick="cambiarCantidadTemporal('${p.id}', -1)">-</button><input type="number" id="input-stock-${p.id}" class="form-control text-center fw-bold px-0" value="${p.stockActual}" min="0"><button class="btn btn-outline-success fw-bold px-2" type="button" onclick="cambiarCantidadTemporal('${p.id}', 1)">+</button><button class="btn btn-primary px-2" type="button" onclick="guardarStockDirecto('${p.id}')"><i class="fa-solid fa-check m-0"></i></button></div><div class="d-flex gap-1 ms-auto"><button class="btn btn-sm btn-outline-info fw-bold" onclick="editarStockMinimo('${p.id}', '${p.nombre}', ${p.stockMinimo})" title="Editar Stock Crítico"><i class="fa-solid fa-pencil m-0"></i></button><button class="btn btn-sm btn-outline-danger fw-bold" onclick="eliminarInsumo('${p.id}', '${p.nombre}')" title="Eliminar Producto"><i class="fa-solid fa-trash m-0"></i></button></div></div>`;
+                    t.innerHTML += `<tr><td class="fw-bold">${p.nombre}</td><td><span class="badge bg-light text-dark border">${p.categoria}</span></td><td class="fs-5 fw-bold text-arca">${p.stockActual} <small class="text-muted fs-6">${p.unidad}</small><br><span class="text-muted fw-normal" style="font-size: 0.7rem;">Mín: ${p.stockMinimo}</span></td><td>${estadoPill}</td><td>${diseñoStepperYControles}</td></tr>`; 
                 });
 
                 await cargarPlantillasCajas();

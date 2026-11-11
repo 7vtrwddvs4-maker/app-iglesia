@@ -271,8 +271,8 @@
                                         <input type="hidden" id="edit-uid">
                                         <div class="row g-3 mb-3">
                                             <div class="col-md-3"><label class="form-label small text-muted fw-bold">Teléfono</label><input type="text" id="edit-telefono" class="form-control bg-white"></div>
-                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Perfil</label><select id="edit-perfil" class="form-select bg-white"><option>Administrador</option><option>Pastor</option><option>Líder</option><option>Miembro</option><option>Invitado</option></select></div>
-                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Cargo</label><select id="edit-cargo" class="form-select bg-white"><option>Pastor general</option><option>Pastor</option><option>Miembro</option><option>Invitado</option></select></div>
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Perfil</label><select id="edit-perfil" class="form-select bg-white"><option>Administrador</option><option>Presbiterio</option><option>Pastor</option><option>Líder</option><option>Miembro</option><option>Invitado</option></select></div>
+                                            <div class="col-md-3"><label class="form-label small text-muted fw-bold">Cargo</label><select id="edit-cargo" class="form-select bg-white"><option>Pastor general</option><option>Pastor</option><option>Presbiterio</option><option>Miembro</option><option>Invitado</option></select></div>
                                             <div class="col-md-3"><label class="form-label small text-muted fw-bold">Estado</label><select id="edit-estado" class="form-select bg-white"><option>Miembro activo</option><option>En consolidación</option><option>Miembro inactivo</option><option>Kids</option><option>Asistente externo</option></select></div>
                                             
                                             <!-- SELECTOR DINÁMICO DE MINISTERIOS A CARGO / LÍDER -->
@@ -343,11 +343,10 @@
                             <ul id="lista-admin-etapas" class="list-group shadow-sm"></ul>
                         </div>
                         
-                        <!-- Inventario -->
+                        <!-- Inventario y Cajas de Mercadería -->
                         <div class="seccion-gestion" id="sec-inventario">
                             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                                 <h5 class="fw-bold text-arca mb-0"><i class="fa-solid fa-boxes-stacked"></i> Control de Donaciones e Inventario</h5>
-                                <!-- Sub-menú para alternar entre Stock General y Cajas de Mercadería -->
                                 <div class="btn-group btn-group-sm shadow-sm" role="group">
                                     <button type="button" class="btn btn-arca fw-bold active" id="btn-subtab-stock" onclick="cambiarSubTabInventario('stock')">
                                         <i class="fa-solid fa-warehouse"></i> Stock General
@@ -394,7 +393,6 @@
                             <!-- SUB-VISTA 2: CAJAS DE MERCADERÍA Y ENTREGA A FAMILIAS -->
                             <div id="subvista-inventario-cajas" style="display: none;">
                                 <div class="row g-4 mb-4">
-                                    <!-- Columna Izquierda: Crear Plantilla de Caja -->
                                     <div class="col-lg-6">
                                         <div class="bg-light p-3 rounded shadow-sm border border-light h-100">
                                             <h6 class="fw-bold text-arca border-bottom pb-2 mb-3"><i class="fa-solid fa-clipboard-list"></i> 1. Armar Plantilla de Caja</h6>
@@ -418,7 +416,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Columna Derecha: Entregar Caja a Familia -->
                                     <div class="col-lg-6">
                                         <div class="bg-light p-3 rounded shadow-sm border border-light h-100">
                                             <h6 class="fw-bold text-success border-bottom pb-2 mb-3"><i class="fa-solid fa-hand-holding-heart"></i> 2. Entregar Caja a Familia</h6>
@@ -442,7 +439,6 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Alerta automática de entrega duplicada -->
                                                 <div id="alerta-familia-duplicada" class="alert alert-warning py-2 px-3 small mb-2" style="display: none;"></div>
 
                                                 <div class="mb-3">
@@ -458,7 +454,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Tabla Historial de Entregas a Familias -->
                                 <div class="d-flex flex-wrap justify-content-between align-items-end mb-2 gap-2">
                                     <div>
                                         <h6 class="fw-bold text-arca mb-1"><i class="fa-solid fa-people-roof"></i> Registro Histórico de Entregas a Familias</h6>
@@ -673,7 +668,7 @@
             else { let iniciales = "?"; if(dU && dU.nombre) { const partes = dU.nombre.trim().split(" "); iniciales = partes.length > 1 ? (partes[0][0] + partes[1][0]).toUpperCase() : partes[0][0].toUpperCase(); } txtEl.textContent = iniciales; txtEl.style.display = 'flex'; imgEl.style.display = 'none'; }
         }
 
-        // ESCUCHADOR EN TIEMPO REAL DE USUARIOS (SOLUCIÓN AL PUNTO 1)
+        // ESCUCHADOR EN TIEMPO REAL DE USUARIOS
         function iniciarEscuchaUsuariosTiempoReal() {
             if (window.unsubscribeUsuarios) return;
             window.unsubscribeUsuarios = onSnapshot(collection(db, "usuarios"), (snapshot) => {
@@ -704,7 +699,7 @@
             if (user) {
                 try {
                     await cargarCatalogoEtapas(); await cargarMinisteriosGbl();
-                    iniciarEscuchaUsuariosTiempoReal(); // Sincronización instantánea de usuarios
+                    iniciarEscuchaUsuariosTiempoReal();
                     
                     let userDoc = await getDoc(doc(db, "usuarios", user.uid));
                     if (userDoc.exists()) {
@@ -717,12 +712,13 @@
                         document.getElementById('iconos-cabecera').style.setProperty("display", "flex", "important");
                         await cargarPerfilMiembro(user.uid, dU);
 
-                        const esLiderazgo = (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder");
+                        const esAdminOPresbiterio = (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Presbiterio");
+                        const esLiderazgo = (esAdminOPresbiterio || dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder");
 
                         // 1. ESCUCHADOR DE NOTIFICACIONES (Campana)
                         let rolesNotif = [user.uid];
-                        if (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor") rolesNotif.push("Administradores");
-                        if (dU.perfilAcceso === "Administrador" || window.esVastagoActual) rolesNotif.push("Bodega");
+                        if (esAdminOPresbiterio || dU.perfilAcceso === "Pastor") rolesNotif.push("Administradores");
+                        if (esAdminOPresbiterio || window.esVastagoActual) rolesNotif.push("Bodega");
                         const qNotif = query(collection(db, "notificaciones"), where("receptor", "in", rolesNotif));
                         onSnapshot(qNotif, (snapshot) => {
                             let noLeidas = 0; const lista = document.getElementById('lista-notificaciones'); if(lista) lista.innerHTML = ""; let notifs = [];
@@ -756,17 +752,19 @@
                             if (document.getElementById('buzon-modal').style.display === 'block' || document.getElementById('buzon-fondo').style.display === 'flex') { renderizarBuzon(); }
                         });
 
-                        // LÓGICA DE TABS ADMIN
+                        // LÓGICA DE TABS ADMIN (PRESBITERIO NO CREA EVENTOS NI VE FINANZAS)
                         if (esLiderazgo || window.esVastagoActual) {
+                            const puedeCrearEventos = (dU.perfilAcceso === "Administrador" || dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder");
                             document.getElementById('nav-btn-gestion').style.display = "flex";
-                            document.getElementById('btn-tab-usuarios').style.display = (dU.perfilAcceso === "Administrador") ? "inline-block" : "none";
-                            document.getElementById('btn-tab-eventos').style.display = esLiderazgo ? "inline-block" : "none";
-                            document.getElementById('btn-tab-ministerios').style.display = (dU.perfilAcceso === "Administrador") ? "inline-block" : "none";
-                            document.getElementById('btn-tab-catalogos').style.display = (dU.perfilAcceso === "Administrador") ? "inline-block" : "none";
+                            document.getElementById('btn-tab-usuarios').style.display = esAdminOPresbiterio ? "inline-block" : "none";
+                            document.getElementById('btn-tab-eventos').style.display = puedeCrearEventos ? "inline-block" : "none";
+                            document.getElementById('btn-tab-ministerios').style.display = esAdminOPresbiterio ? "inline-block" : "none";
+                            document.getElementById('btn-tab-catalogos').style.display = esAdminOPresbiterio ? "inline-block" : "none";
                             document.getElementById('btn-tab-finanzas').style.display = (dU.perfilAcceso === "Administrador") ? "inline-block" : "none";
-                            document.getElementById('btn-tab-inventario').style.display = (dU.perfilAcceso === "Administrador" || window.esVastagoActual) ? "inline-block" : "none";
+                            document.getElementById('btn-tab-inventario').style.display = (esAdminOPresbiterio || window.esVastagoActual) ? "inline-block" : "none";
 
                             if (dU.perfilAcceso === "Administrador") { btnTabs[0].click(); cargarTiposEventosSelect(); cargarFinanzas(); prepararSelectoresEventos(); cargarVistaEtapasAdmin(); cargarInventario(); }
+                            else if (dU.perfilAcceso === "Presbiterio") { btnTabs[0].click(); cargarVistaEtapasAdmin(); cargarInventario(); }
                             else if (dU.perfilAcceso === "Pastor" || dU.perfilAcceso === "Líder") { btnTabs[1].click(); cargarTiposEventosSelect(); prepararSelectoresEventos(); if(window.esVastagoActual) cargarInventario(); }
                             else if (window.esVastagoActual) { document.getElementById('btn-tab-inventario').click(); cargarInventario(); }
                         } else {
@@ -777,7 +775,7 @@
                 document.getElementById('login-container').style.display = "none"; document.getElementById('dashboard-container').style.display = "block"; cargarDatosGenerales();
                 cambiarPantallaApp('inicio', document.getElementById('nav-btn-inicio'));
 
-                if (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder") {
+                if (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Presbiterio" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder") {
                     auditarInasistenciasAdoracion();
                 }
             } else {
@@ -789,13 +787,13 @@
         // ================= BUZÓN PASTORAL (MENSAJES) ================= //
         window.abrirBuzon = function() {
             document.body.style.overflow = 'hidden'; document.getElementById('buzon-fondo').style.display='flex'; document.getElementById('buzon-modal').style.display='flex'; 
-            const esLiderazgo = (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder");
+            const esLiderazgo = (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Presbiterio" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder");
             if (esLiderazgo) { window.chatActivoId = null; } else { window.chatActivoId = auth.currentUser.uid; }
             renderizarBuzon();
         };
 
         window.renderizarBuzon = function() {
-            const esLiderazgo = (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder");
+            const esLiderazgo = (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Presbiterio" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder");
             const listaChats = document.getElementById('buzon-lista-chats'); const chatActivo = document.getElementById('buzon-chat-activo'); const cajaMsgs = document.getElementById('buzon-mensajes');
 
             if (esLiderazgo && !window.chatActivoId) {
@@ -860,7 +858,7 @@
         document.getElementById('form-nuevo-mensaje').addEventListener('submit', async (e) => { 
             e.preventDefault(); const txt = document.getElementById('buzon-texto'); if (!txt.value.trim()) return; const btn = document.getElementById('btn-enviar-mensaje'); btn.disabled = true; 
             try { 
-                const esLiderazgo = (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder");
+                const esLiderazgo = (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Presbiterio" || window.perfilUsuarioActual === "Pastor" || window.perfilUsuarioActual === "Líder");
                 const cid = document.getElementById('buzon-chat-uid').value; const miNombre = window.usuariosData[auth.currentUser.uid] ? window.usuariosData[auth.currentUser.uid].nombre : "Usuario"; 
                 await addDoc(collection(db, "mensajes"), { chatId: cid, remitente: esLiderazgo ? 'Liderazgo' : 'Miembro', nombreUsuario: esLiderazgo ? 'Equipo Pastoral' : miNombre, texto: txt.value.trim(), fecha: new Date().toISOString(), leido: false }); 
                 txt.value = ""; 
@@ -877,23 +875,69 @@
         window.irAFinanzas = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-finanzas').style.display !== 'none') { document.getElementById('btn-tab-finanzas').click(); cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); } };
         window.irAInventario = async function(nid) { window.cerrarModal('notif'); if(nid) { try { await updateDoc(doc(db, "notificaciones", nid), { leida: true }); } catch(e){} } if(document.getElementById('btn-tab-inventario').style.display !== 'none') { document.getElementById('btn-tab-inventario').click(); cambiarPantallaApp('gestion', document.getElementById('nav-btn-gestion')); } };
 
-        // ESCÁNER QR
+        // ESCÁNER QR BLINDADO
         let escánerActivo = null;
-        window.abrirEscanerQR = function() { 
-            document.body.style.overflow = 'hidden'; document.getElementById('scanner-fondo').style.display='flex'; document.getElementById('scanner-modal').style.display='block'; 
-            setTimeout(() => {
-                if (!escánerActivo) {
+        let timerAperturaQR = null;
+
+        window.abrirEscanerQR = async function() { 
+            document.body.style.overflow = 'hidden'; 
+            document.getElementById('scanner-fondo').style.display = 'flex'; 
+            document.getElementById('scanner-modal').style.display = 'block'; 
+            
+            if (timerAperturaQR) clearTimeout(timerAperturaQR);
+
+            timerAperturaQR = setTimeout(async () => {
+                try {
+                    if (escánerActivo) {
+                        try { await escánerActivo.stop(); } catch(e) {}
+                        try { escánerActivo.clear(); } catch(e) {}
+                        escánerActivo = null;
+                    }
+                    const readerEl = document.getElementById("reader");
+                    if (readerEl) readerEl.innerHTML = "";
+
                     escánerActivo = new Html5Qrcode("reader");
-                    escánerActivo.start({ facingMode: "environment" }, { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 }, (textoDecodificado) => {
-                            escánerActivo.stop().then(() => { escánerActivo.clear(); escánerActivo = null; window.location.href = textoDecodificado; }).catch(err => console.log(err));
-                        }, (errorMensaje) => { }
-                    ).catch(err => { console.error("Error cámara:", err); alert("No se pudo iniciar la cámara."); });
+                    await escánerActivo.start(
+                        { facingMode: "environment" }, 
+                        { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 }, 
+                        async (textoDecodificado) => {
+                            await window.cerrarEscanerQR();
+                            window.location.href = textoDecodificado;
+                        }, 
+                        () => {}
+                    );
+                } catch (err) {
+                    console.error("Error cámara:", err);
+                    await window.cerrarEscanerQR();
+                    alert("No se pudo iniciar la cámara. Verifica los permisos del navegador.");
                 }
-            }, 300);
+            }, 250);
         };
-        window.cerrarEscanerQR = function() {
-            if (escánerActivo) { escánerActivo.stop().then(() => { escánerActivo.clear(); escánerActivo = null; }).catch(err => console.log(err)); }
+
+        window.cerrarEscanerQR = async function() {
+            if (timerAperturaQR) {
+                clearTimeout(timerAperturaQR);
+                timerAperturaQR = null;
+            }
             window.cerrarModal('scanner');
+            const instancia = escánerActivo;
+            escánerActivo = null;
+
+            if (instancia) {
+                try {
+                    if (instancia.isScanning) {
+                        await instancia.stop();
+                    }
+                } catch (err) {}
+                try { instancia.clear(); } catch (err) {}
+            }
+            const videoEl = document.querySelector('#reader video');
+            if (videoEl && videoEl.srcObject) {
+                videoEl.srcObject.getTracks().forEach(track => track.stop());
+                videoEl.srcObject = null;
+            }
+            const readerEl = document.getElementById("reader");
+            if (readerEl) readerEl.innerHTML = "";
         };
 
         // DONACIONES
@@ -985,7 +1029,7 @@
         window.editarStockMinimo = async function(id, nombre, minActual) { const nuevoMin = prompt(`Modificar Stock Crítico para: ${nombre}\nIngresa el nuevo valor mínimo:`, minActual); if(nuevoMin !== null && nuevoMin.trim() !== "" && !isNaN(nuevoMin)) { try { await updateDoc(doc(db, "inventario", id), { stockMinimo: parseInt(nuevoMin) }); cargarInventario(); } catch(e) { alert("Error al actualizar."); } } };
         window.eliminarInsumo = async function(id, nombre) { if(confirm(`¿Estás seguro de eliminar "${nombre}" del inventario de forma definitiva?`)) { try { await deleteDoc(doc(db, "inventario", id)); cargarInventario(); } catch(e) { alert("Error al eliminar."); } } };
 
-        // --- LÓGICA DE PLANTILLAS DE CAJAS Y ENTREGAS A FAMILIAS ---
+        // --- PLANTILLAS DE CAJAS Y ENTREGAS A FAMILIAS ---
         window.agregarFilaIngredienteCaja = function() {
             const cont = document.getElementById('contenedor-ingredientes-caja');
             const fila = document.createElement('div');
@@ -1174,7 +1218,6 @@
             if (!cajaId || !window.cajasPlantillasData[cajaId]) return;
             const caja = window.cajasPlantillasData[cajaId];
 
-            // 1. Verificar si hay stock suficiente para todos los insumos de la caja
             for (const item of (caja.items || [])) {
                 const prod = window.inventarioData[item.productoId];
                 if (!prod || prod.stockActual < item.cantidad) {
@@ -1183,7 +1226,6 @@
                 }
             }
 
-            // 2. Confirmación preventiva si la familia ya registra entregas previas
             const alertaVisible = document.getElementById('alerta-familia-duplicada').style.display !== 'none';
             if (alertaVisible) {
                 if (!confirm(`⚠️ La familia "${familia}" ya registra una entrega anterior en el historial.\n¿Confirmas que deseas entregarle una nueva caja de todas formas?`)) {
@@ -1196,7 +1238,6 @@
 
             try {
                 let detalleDescuento = [];
-                // 3. Descontar cada insumo del inventario general y evaluar alertas de stock crítico
                 for (const item of (caja.items || [])) {
                     const prod = window.inventarioData[item.productoId];
                     const nuevoStock = prod.stockActual - item.cantidad;
@@ -1213,7 +1254,6 @@
                     }
                 }
 
-                // 4. Registrar la entrega a la familia en Firestore
                 const responsable = window.usuariosData[auth.currentUser.uid]?.nombre || "Usuario";
                 await addDoc(collection(db, "entregas_cajas"), {
                     cajaId: cajaId,
@@ -1330,7 +1370,7 @@
         
         async function cargarCatalogoEtapas() { try { const d = await getDoc(doc(db, "configuracion", "etapas_formacion")); if (d.exists()) window.catalogoEtapas = d.data().lista || []; } catch (e) {} }
         
-        // FUNCIONES DINÁMICAS PARA ASIGNAR UNO O MÚLTIPLES MINISTERIOS AL LÍDER (PUNTO 5)
+        // FUNCIONES DINÁMICAS PARA ASIGNAR UNO O MÚLTIPLES MINISTERIOS AL LÍDER
         window.agregarSelectorMinisterioLider = function(valorSeleccionado = "") {
             const cont = document.getElementById('contenedor-selectores-ministerios');
             const fila = document.createElement('div');
@@ -1393,7 +1433,7 @@
             e.preventDefault(); const uid = document.getElementById('edit-uid').value; const btn = document.getElementById('btn-guardar-usuario'); const textoOriginal = btn.innerHTML; btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
             try { 
                 const selectsMin = Array.from(document.querySelectorAll('.select-ministerio-lider')).map(s => s.value).filter(v => v !== "" && v !== "Ninguno");
-                const minsSeleccionados = [...new Set(selectsMin)]; // Elimina duplicados si eligió el mismo 2 veces
+                const minsSeleccionados = [...new Set(selectsMin)];
                 const vastagoChecked = document.getElementById('edit-vastago').checked;
                 
                 await updateDoc(doc(db, "usuarios", uid), {
@@ -1429,7 +1469,7 @@
                 const q = query(collection(db, "asistencias"), where("eventoID", "==", window.eventoActualAsistenciaID), where("usuarioID", "==", v)); const snap = await getDocs(q); 
                 if(snap.empty){ 
                     await addDoc(collection(db, "asistencias"), { eventoID: window.eventoActualAsistenciaID, usuarioID: v, fechaHora: new Date().toISOString(), metodo: "Manual", acompanantes: parseInt(ac), nombresAcompanantes: nomsExtra, snapshotEventoTitulo: window.nombreEventoActualEnMemoria }); 
-                    await updateDoc(doc(db, "usuarios", v), { alertaAusenciaEnviada: false }).catch(()=>{}); // Limpia alerta pastoral si existe
+                    await updateDoc(doc(db, "usuarios", v), { alertaAusenciaEnviada: false }).catch(()=>{});
                     document.getElementById('select-usuario-manual').value=""; document.getElementById('input-acompanantes-manual').value="0"; document.getElementById('input-nombres-extra-manual').value=""; window.abrirAsistencia(window.eventoActualAsistenciaID, document.getElementById('asistencia-evento-titulo').textContent.split(' (')[0]); 
                     const evObj = window.eventosData[window.eventoActualAsistenciaID]; if(evObj) { window.eventoParaCalendario = { titulo: evObj.titulo, fechaInicio: evObj.fecha, lugar: evObj.lugar }; document.getElementById('calendario-fondo').style.display = 'flex'; document.getElementById('calendario-modal').style.display = 'block'; }
                 } else { alert("⚠️ Esta persona ya estaba registrada."); }
@@ -1464,6 +1504,7 @@
                 eS.forEach((d) => { 
                     const ev = d.data(); window.eventosData[d.id] = ev; let b_gestion = ""; let btnEliminar = ""; let puedeOperar = false; let puedeEliminar = false; 
                     if(window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Pastor") { puedeOperar = true; puedeEliminar = true; } 
+                    if(window.perfilUsuarioActual === "Presbiterio") { puedeOperar = true; puedeEliminar = false; } 
                     if(window.perfilUsuarioActual === "Líder" && (window.ministeriosUsuarioActual.includes(ev.ministerio) || ev.ministerio === "General")) puedeOperar = true; 
                     if(window.perfilUsuarioActual === "Líder" && window.ministeriosUsuarioActual.includes(ev.ministerio)) puedeEliminar = true; 
                     if (puedeEliminar) { btnEliminar = `<button class="btn btn-sm btn-outline-danger" onclick="eliminarEvento('${d.id}')"><i class="fa-solid fa-trash"></i></button>`; } 
@@ -1475,7 +1516,7 @@
                 mS.forEach((d) => {
                     if (d.data().estado && listaMinEl) {
                         let desc = d.data().descripcion ? `<small class="text-muted d-block">${d.data().descripcion}</small>` : '';
-                        let btnEliminarMin = (window.perfilUsuarioActual === "Administrador") ? `<button class="btn btn-sm btn-outline-danger py-1 px-2 rounded" onclick="eliminarMinisterio('${d.id}')"><i class="fa-solid fa-trash m-0"></i></button>` : '';
+                        let btnEliminarMin = (window.perfilUsuarioActual === "Administrador" || window.perfilUsuarioActual === "Presbiterio") ? `<button class="btn btn-sm btn-outline-danger py-1 px-2 rounded" onclick="eliminarMinisterio('${d.id}')"><i class="fa-solid fa-trash m-0"></i></button>` : '';
                         listaMinEl.innerHTML += `<li class="list-group-item d-flex justify-content-between align-items-center border-light"><div><strong>${d.data().nombre}</strong>${desc}</div> ${btnEliminarMin}</li>`;
                     }
                 }); 
